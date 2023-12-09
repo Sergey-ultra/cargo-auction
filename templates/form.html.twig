@@ -1,0 +1,90 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Добавление груза{% endblock %}
+
+{% block body %}
+    <h1>Добавление груза</h1>
+    <form action="{{ path('cargo.store') }}" method="POST">
+        <div class="legend">Описание груза</div>
+        <div class="fieldset">
+            <div class="item">
+                <div class="label">Тип груза</div>
+                <div class="input">
+                    <select name="cargoType" id="">
+                        {% for key, type in cargoTypes %}
+                            <option value="{{ key }}">{{ type }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="item">
+                <div class="label">Упаковка</div>
+                <div class="input">
+                    <select name="packageType" id="">
+                        {% for key, type in packageTypes %}
+                            {% if type.children is not defined %}
+                                <option value="{{ key }}">{{ type }}</option>
+                            {% else %}
+                                <optgroup label="{{ type.value }}">
+                                    {% for childKey, childType in type.children %}
+                                        <option value="{{ childKey }}">{{ childType }}</option>
+                                    {% endfor %}
+                                </optgroup>
+                            {% endif %}
+
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="item">
+                <div class="label">Объём (на одну машину)</div>
+                <div class="input">
+                    <input type="number" name="volume">
+                </div>
+            </div>
+            <div class="item">
+                <div class="label">Вес (на одну машину)</div>
+                <div class="input">
+                    <input type="number" name="weight">
+                </div>
+            </div>
+            <div class="item">
+                <div class="label">Температурный режим</div>
+                <div class="input">
+                    <input type="number" name="temperatureModeFrom" placeholder="в ℃" min="-30" max="30" step="1">
+                </div>
+                -
+                <div class="input">
+                    <input type="number" name="temperatureModeTo" placeholder="в ℃" min="-30" max="30" step="1"  value="">
+                </div>
+            </div>
+            <div class="item">
+                <div class="label">Санитарный паспорт</div>
+                <div class="input">
+                    <input type="checkbox">
+                </div>
+            </div>
+        </div>
+        <div class="buttons">
+            <button type="submit" class="button">Добавить</button>
+        </div>
+    </form>
+    <style>
+        .legend {
+            font-size: 1.5em;
+            padding-bottom: .5em;
+        }
+        .fieldset {
+            background-color: #fff;
+            padding: 1em 1em;
+            margin-bottom: 1.5em;
+            box-shadow: 0px 4px 5px 0px rgba(50,50,50,0.1);
+        }
+        .item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+    </style>
+{% endblock %}

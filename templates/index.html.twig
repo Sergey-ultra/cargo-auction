@@ -1,0 +1,65 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Главная{% endblock %}
+
+{% block body %}
+    <h1>Поиск грузов</h1>
+
+    <a class="button" href="{{ path('cargo.edit') }}">Добавить</a>
+
+    <form action="{{ path('cargo.index') }}" method="GET" class="filter">
+        <div class="filter__row">
+            <label>
+                <span>Откуда</span>
+                <input type="text" name="from">
+            </label>
+            <label>
+                <span>Куда</span>
+                <input type="text" name="to">
+            </label>
+            <label>
+                <span>Вес</span>
+                <input type="text" name="weight">
+            </label>
+            <label>
+                <span>Объем</span>
+                <input type="text" name="volume">
+            </label>
+        </div>
+        <div class="filter__row">
+            <button type="submit" class="button">Найти</button>
+        </div>
+    </form>
+    <div class="table">
+        <div class="row">
+            <div class="table-item">Откуда</div>
+            <div class="table-item">Куда</div>
+            <div class="table-item">Груз</div>
+            <div class="table-item">Ставка</div>
+            <div class="table-item">Готов</div>
+            <div class="table-item">Транспорт</div>
+        </div>
+    </div>
+    <style>
+        .filter {
+            padding: 20px;
+            background: #ffffff;
+            margin-bottom: 20px;
+        }
+        .filter__row {
+            display: flex;
+            margin-bottom: 15px;
+        }
+        .table {
+            background-color: #fff;
+        }
+        .row {
+            display: flex;
+            justify-content: space-between;
+        }
+        .table-item {
+            padding: 6px 15px;
+        }
+
+    </style>
+{% endblock %}

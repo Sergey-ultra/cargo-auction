@@ -1,0 +1,18 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Отчет{% endblock %}
+
+{% block body %}
+    <h1>Отчет</h1>
+    <div style="display:flex;flex-wrap:wrap;justify-content:space-between;width: 100%;">
+        {% for image in images.urls %}
+            <div style="width: 23%;height: 200px;margin-bottom: 25px;">
+                <img style="height: 100%;width: 100%;object-fit: cover;" src="{{ image }}" alt="">
+            </div>
+        {% endfor %}
+    </div>
+    <h3>Количество фотографий</h3>
+    <div>{{ count(images) }}</div>
+    <h3>Общий размер фотографий в мб</h3>
+    <div>{{ images.commonSizeInMb }}</div>
+{% endblock %}

@@ -1,0 +1,65 @@
+version: "3"
+services:
+
+  #Nginx Service
+  nginx:
+    image: nginx:alpine
+    container_name: cargo_nginx
+    restart: unless-stopped
+    tty: true
+    environment:
+      - VIRTUAL_PORT=80
+      - VIRTUAL_HOST=symfony-products.local
+    ports:
+      - "4600:80"
+    links:
+      - app
+    volumes:
+      - ./:/var/www
+      - ./docker/nginx/conf.d/app.conf:/etc/nginx/conf.d/default.conf:rw
+      - ./docker/logs/nginx:/var/logs/nginx:rw
+    networks:
+      - proj
+
+
+
+  #PHP Service
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cargo_php
+    restart: unless-stopped
+    tty: true
+    environment:
+      SERVICE_NAME: app
+      SERVICE_TAGS: dev
+#      XDEBUG_CONFIG:
+    volumes:
+      - ./:/var/www
+      - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - proj
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: cargo_postgres
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "5433:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=${POSTGRES_DB}
+    networks:
+      - proj
+
+
+#Docker Networks
+networks:
+  proj:
+    driver: bridge
+
+
+
