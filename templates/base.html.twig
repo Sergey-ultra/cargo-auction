@@ -12,13 +12,54 @@
         {% block javascripts %}
             {{ encore_entry_script_tags('app') }}
         {% endblock %}
+        <link href="{{ asset('assets/notify.css') }}" rel="stylesheet" />
+        <script type="text/javascript" src="{{ asset('assets/notify.js') }}"></script>
     </head>
-    <body style="background-color: #E5EAEF;">
-        <div class="container" style="margin: 0 auto;width: 100%;max-width: 1280px;">
+    <body>
+    <nav class="nav">
+        <div class="container">
+            <div class="nav__wrapper">
+                <a href="{{  path('cargo.index') }}">Cargo</a>
+
+                {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                    <div class="right">
+                        <span>{{ app.user.email }}</span>
+                        <a href="{{ path('app_sign_out') }}">Выйти</a>
+                    </div>
+                {% else %}
+                    <a class="right" href="{{ path('app_sign_in') }}">Вход</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+        <div class="container">
              {% block body %}{% endblock %}
         </div>
     </body>
     <style>
+        body {
+            background-color: #E5EAEF;
+            margin: 0;
+        }
+        .nav {
+            background-color: #fff;
+            height: 40px;
+        }
+        .nav__wrapper {
+            height: 100%;
+            align-items: center;
+            display: flex;
+            justify-content: space-between;
+        }
+        .right {
+            margin-left: auto;
+        }
+        .container {
+            height: 100%;
+            margin: 0 auto;width: 100%;
+            max-width: 1280px;
+            min-width: 0;
+        }
         input,
         select {
             border: 1px solid #ccc;
@@ -50,4 +91,18 @@
             background-color: #2286BE;
         }
     </style>
+    <script>
+        if (!window["WebSocket"]) {
+            alert("Error: Your browser does not support web sockets.")
+        } else {
+            socket = new WebSocket("ws://localhost:4000");
+
+            socket.onclose = function() {
+                console.log("Connection has been closed.");
+            }
+            socket.onmessage = function(e) {
+                let notification = new Notify('Notification Title', e.data);
+            }
+        }
+    </script>
 </html>

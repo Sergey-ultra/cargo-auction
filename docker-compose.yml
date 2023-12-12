@@ -31,9 +31,15 @@ services:
     container_name: cargo_php
     restart: unless-stopped
     tty: true
+#    на этом порту должен запускаться websocket server
+    ports:
+      - "4000:4000"
     environment:
       SERVICE_NAME: app
       SERVICE_TAGS: dev
+      DATABASE_USER: postgres
+      DATABASE_PASS: postgres
+      DATABASE_NAME: cargo
 #      XDEBUG_CONFIG:
     volumes:
       - ./:/var/www
@@ -51,10 +57,14 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_DB=cargo
+    volumes:
+      - db_data:/var/lib/postgresql/data:rw
     networks:
       - proj
 
+volumes:
+  db_data:
 
 #Docker Networks
 networks:

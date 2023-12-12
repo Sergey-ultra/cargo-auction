@@ -21,6 +21,11 @@ doctrine:
                 dir: '%kernel.project_dir%/src/Entity'
                 prefix: 'App\Entity'
                 alias: App
+            WebSocket:
+                dir: '%kernel.project_dir%/src/WebSocket/Entity'
+                is_bundle: false
+                prefix: App\WebSocket\Entity
+                alias: WebSocket
 
 when@test:
     doctrine:

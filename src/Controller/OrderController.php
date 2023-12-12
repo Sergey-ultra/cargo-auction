@@ -4,31 +4,31 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\DTO\OrdersFilter;
 use App\Entity\Order;
-use App\Form\OrderType;
 use App\Repository\OrderRepository;
-use App\Request\OrderRequest;
-use App\Request\OrdersFilterRequest;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpKernel\Attribute\MapQueryString;
+use Symfony\Component\Routing\Annotation\Route;
 
-class MainController extends AbstractController
+class OrderController extends AbstractController
 {
-    #[Route('/', name: 'cargo.index', methods:['get'] )]
-    public function index(#[MapQueryString] OrdersFilterRequest $request, OrderRepository $repository): Response
+    #[Route('/', name: 'cargo.index', methods:['get'])]
+    public function index(#[MapQueryString] ?OrdersFilter $filter, OrderRepository $repository): Response
     {
-        $criteria = $request->toArray();
+        $list = [];
 
+        if (null !== $filter) {
+            $criteria = $filter->toArray();
+            $list = $repository->findBy($criteria);
+        }
 
-        $list = $repository->findBy($criteria);
         return $this->render('index.html.twig', ['list' => $list]);
     }
 
-    #[Route('/edit', name: 'cargo.edit', methods:['get'] )]
+    #[Route('/edit', name: 'cargo.edit', methods:['get'])]
     public function edit(): Response
     {
         $cargoTypes = [
