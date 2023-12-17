@@ -12,11 +12,14 @@ RUN set -ex \
 
 
 # Add xdebug
-RUN apk add --no-cache --virtual .build-deps $PHPIZE_DEPS
-RUN apk add --update linux-headers
-RUN pecl install xdebug-3.2.0
-RUN docker-php-ext-enable xdebug
-RUN apk del -f .build-deps
+RUN apk add --no-cache --virtual .build-deps $PHPIZE_DEPS \
+    && apk add --update linux-headers \
+    && pecl install xdebug-3.2.0 \
+    && docker-php-ext-enable xdebug \
+    && apk del -f .build-deps
+
+RUN echo "xdebug.mode=debug" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
+    && echo "xdebug.client_host = host.docker.internal" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
 
 #RUN echo "xdebug.start_with_request=yes" >> /usr/local/etc/php/conf.d/xdebug.ini \
 #    && echo "xdebug.mode=debug" >> /usr/local/etc/php/conf.d/xdebug.ini \
@@ -30,5 +33,5 @@ RUN apk del -f .build-deps
 #      && pecl install xdebug \
 #      && docker-php-ext-enable redis xdebug
 
-
+ADD ./conf/php.ini /usr/local/etc/php/conf.d/php.ini
 WORKDIR /var/www

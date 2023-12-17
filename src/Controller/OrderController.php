@@ -6,9 +6,11 @@ namespace App\Controller;
 
 use App\DTO\OrdersFilter;
 use App\Entity\Order;
+use App\Form\OrderType;
 use App\Repository\OrderRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapQueryString;
 use Symfony\Component\Routing\Annotation\Route;
@@ -16,73 +18,48 @@ use Symfony\Component\Routing\Annotation\Route;
 class OrderController extends AbstractController
 {
     #[Route('/', name: 'cargo.index', methods:['get'])]
-    public function index(#[MapQueryString] ?OrdersFilter $filter, OrderRepository $repository): Response
+    public function index(#[MapQueryString] ?OrdersFilter $filter, Request $request, OrderRepository $repository): Response
     {
-        $list = [];
+        $page = $request->query->getInt('page', 1);
 
-        if (null !== $filter) {
-            $criteria = $filter->toArray();
-            $list = $repository->findBy($criteria);
-        }
+        $paginator = $repository->getPaginator($page, $filter);
+        $totalCount = $paginator->count();
 
-        return $this->render('index.html.twig', ['list' => $list]);
+        return $this->render('index.html.twig', [
+            'list' => $paginator,
+            'page' => $page,
+            'totalCount' => $totalCount,
+            'lastPage' => ceil($totalCount / OrderRepository::PAGINATOR_PER_PAGE)
+        ]);
     }
 
-    #[Route('/edit', name: 'cargo.edit', methods:['get'])]
+    #[Route('/create', name: 'cargo.create', methods:['get'])]
     public function edit(): Response
     {
-        $cargoTypes = [
-            'продукты питания',
-            'ТНП непродовольственные',
-            'оборудование и запчасти',
-            'строймариалы',
-            'металл',
-            'пиломатериалы',
-            'пустая тара и упаковка',
-            'картон, бумага, макулатура',
-            'химия',
-            'топливо и смазки',
-            'контейнер',
-            'транспортные средства',
-            'с/х сырье и продукция',
-            'личные вещи, переезд',
-            'сборный груз',
-            'другой',
-        ];
-
-        $packageTypes = [
-            [
-                'value' => 'упаковка',
-                'children' => [
-                    "bigbag" => 'биг бэги',
-                    "pallet" => 'паллеты',
-                    "box" => 'коробки',
-                    "case" => 'ящики',
-                    "barrel" => 'бочки',
-                    "bag" => 'мешки/сетки',
-                    "pack" => 'пачки',
-                ],
-            ],
-            [
-                'value' => "без упаковки",
-                'children' => [
-                    "in_bulk" => 'навалом/насыпью',
-                    "fill" => 'наливной груз',
-                    "other" => 'другая'
-                ],
-            ],
-        ];
-
-        return $this->render('form.html.twig', compact('cargoTypes', 'packageTypes'));
+        return $this->render('form.html.twig', [
+            'cargoTypes' => Order::CARGO_TYPES,
+            'packageTypes' => Order::PACKAGE_TYPES,
+        ]);
     }
 
-    #[Route('/edit', name: 'cargo.store', methods:['post'] )]
-    public function store(#[MapQueryString] Order $order, OrderRepository $repository): RedirectResponse
+
+    #[Route('/create', name: 'cargo.store', methods:['post'] )]
+    public function store(Request $request, OrderRepository $repository): RedirectResponse|Response
     {
-        dd($order);
+        $order = new Order();
+        $form = $this->createForm(OrderType::class, $order);
+        $form->submit($request->request->all());
 
-        $repository->save($order);
+        if ($form->isSubmitted() && $form->isValid() ) {
+            $order->setUser($this->getUser());
 
-        return $this->redirectToRoute('main-page', [], Response::HTTP_SEE_OTHER);
+            $repository->save($order);
+            return $this->redirectToRoute('cargo.index', [], Response::HTTP_SEE_OTHER);
+        }
+
+        return $this->render('form.html.twig', [
+            'cargoTypes' => Order::CARGO_TYPES,
+            'packageTypes' => Order::PACKAGE_TYPES,
+        ]);
     }
 }

@@ -1,7 +1,6 @@
 ### 1. Navigate to Server Directory and Build Docker Containers
 
 ```bash
-cd packages/server
 docker-compose up -d
 ```
 

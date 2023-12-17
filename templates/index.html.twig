@@ -5,7 +5,7 @@
 {% block body %}
     <h1>Поиск грузов</h1>
 
-    <a class="button" href="{{ path('cargo.edit') }}">Добавить</a>
+    <a class="button" href="{{ path('cargo.create') }}">Добавить</a>
 
     <form action="{{ path('cargo.index') }}" method="GET" class="filter">
         <div class="filter__row">
@@ -30,16 +30,36 @@
             <button type="submit" class="button">Найти</button>
         </div>
     </form>
-    <div class="table">
-        <div class="row">
-            <div class="table-item">Откуда</div>
-            <div class="table-item">Куда</div>
-            <div class="table-item">Груз</div>
-            <div class="table-item">Ставка</div>
-            <div class="table-item">Готов</div>
-            <div class="table-item">Транспорт</div>
+    {% if list|length > 0 %}
+        <div class="table">
+            <div class="row row__header">
+                <div class="table-item">Откуда</div>
+                <div class="table-item">Куда</div>
+                <div class="table-item">Груз</div>
+                <div class="table-item">Ставка</div>
+                <div class="table-item">Готов</div>
+                <div class="table-item">Транспорт</div>
+            </div>
+            {% for order in list %}
+                <div class="row">
+                    <div class="table-item">{{ order.from }}</div>
+                    <div class="table-item">{{ order.to }}</div>
+                    <div class="table-item">{{ order.cargoType }}</div>
+                    <div class="table-item">Ставка</div>
+                    <div class="table-item">Готов</div>
+                    <div class="table-item">Транспорт</div>
+                </div>
+            {% endfor %}
         </div>
-    </div>
+        {% if page > 1 %}
+            <a class="button" href="{{ path('cargo.index', {  page: page - 1 }) }}">Previous</a>
+        {% endif %}
+        {% if page < lastPage %}
+            <a class="button" href="{{ path('cargo.index', {  page: page + 1 }) }}">Next</a>
+        {% endif %}
+    {% else %}
+        <div>No orders have been posted yet.</div>
+    {% endif %}
     <style>
         .filter {
             padding: 20px;
@@ -52,14 +72,18 @@
         }
         .table {
             background-color: #fff;
+            margin-bottom: 20px;
         }
         .row {
             display: flex;
             justify-content: space-between;
         }
-        .table-item {
-            padding: 6px 15px;
+        .row__header {
+            background-color: #B5C3CC;
         }
-
+        .table-item {
+            width: calc(100% / 6);
+            padding: 9px 15px;
+        }
     </style>
 {% endblock %}

@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Repository;
 
+use App\DTO\OrdersFilter;
 use App\Entity\Order;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -18,9 +20,34 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class OrderRepository extends ServiceEntityRepository
 {
+    public const PAGINATOR_PER_PAGE = 10;
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Order::class);
+    }
+
+    public function getPaginator(int $page, ?OrdersFilter $filter): Paginator
+    {
+        $query = $this->createQueryBuilder('c');
+
+        if (null !== $filter) {
+            foreach($filter->toArray() as $filterKey => $filterParam) {
+                $query
+                    ->andWhere("c.$filterKey = :$filterKey")
+                    ->setParameter($filterKey, $filterParam);
+            }
+        }
+
+
+        $query->orderBy('c.createdAt', 'DESC');
+
+
+        $query
+            ->setFirstResult(($page - 1) * self::PAGINATOR_PER_PAGE)
+            ->setMaxResults(self::PAGINATOR_PER_PAGE)
+            ->getQuery();
+
+        return new Paginator($query);
     }
 
     public function save(Order $order): void

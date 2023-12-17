@@ -4,7 +4,7 @@
 
 {% block body %}
     <h1>Добавление груза</h1>
-    <form action="{{ path('cargo.store') }}" method="POST">
+    <form action="{{ path('cargo.store') }}" method="POST" name="order">
         <div class="legend">Описание груза</div>
         <div class="fieldset">
             <div class="item">
@@ -62,6 +62,21 @@
                 <div class="label">Санитарный паспорт</div>
                 <div class="input">
                     <input type="checkbox">
+                </div>
+            </div>
+        </div>
+        <div class="legend">Маршрут</div>
+        <div class="fieldset">
+            <div class="item">
+                <div class="label">Откуда</div>
+                <div class="input">
+                    <input type="text" name="from">
+                </div>
+            </div>
+            <div class="item">
+                <div class="label">Куда</div>
+                <div class="input">
+                    <input type="text" name="to">
                 </div>
             </div>
         </div>
