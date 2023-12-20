@@ -23,11 +23,44 @@
 
                 {% if is_granted('IS_AUTHENTICATED_FULLY') %}
                     <div class="right">
-                        <span>{{ app.user.email }}</span>
-                        <a href="{{ path('app_sign_out') }}">Выйти</a>
+                        <div id="user-menu" class="dropdown closed">
+                            <div id="dropdown-btn" class="dropdown-button">{{ app.user.email }}</div>
+                            <ul id="dropdown-list" class="dropdown-list">
+                                <li class="dropdown-item">
+                                    <a href="{{ path('profile') }}">Мои настройки</a>
+                                </li>
+                                <li class="dropdown-item">
+                                    <a href="#">Личные сообщения</a>
+                                </li>
+                                <li class="dropdown-item">
+                                    <a href="#">Моя компания</a>
+                                </li>
+                                <li class="dropdown-item">
+                                    <a href="#">Мои объявления</a>
+                                </li>
+                                <li class="dropdown-item">
+                                    <a href="#">Мои фильтры</a>
+                                </li>
+                                <li class="dropdown-item">
+                                    <a href="#">Мои отзывы</a>
+                                </li>
+                                <li class="dropdown-item">
+                                    <a href="#">Мои рассылки</a>
+                                </li>
+                                <li class="dropdown-item">
+                                    <a href="#">Баланс</a>
+                                </li>
+                                <li class="dropdown-item">
+                                    <a href="{{ path('app_sign_out') }}">Выйти</a>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                 {% else %}
-                    <a class="right" href="{{ path('app_sign_in') }}">Вход</a>
+                    <div class="right">
+                        <a class="button button-primary button-small" href="{{ path('app_sign_in') }}">Вход</a>
+                        <a class="button button-secondary button-small" href="{{ path('register') }}">Регистрация</a>
+                    </div>
                 {% endif %}
             </div>
         </div>
@@ -37,6 +70,9 @@
         </div>
     </body>
     <style>
+        * {
+            box-sizing: border-box;
+        }
         body {
             background-color: #E5EAEF;
             margin: 0;
@@ -60,15 +96,34 @@
             max-width: 1280px;
             min-width: 0;
         }
+        .legend {
+            font-size: 1.5em;
+            padding-bottom: .5em;
+        }
+        .fieldset {
+            background-color: #fff;
+            padding: 1em 1em;
+            margin-bottom: 1.5em;
+            box-shadow: 0px 4px 5px 0px rgba(50,50,50,0.1);
+        }
+        .form-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .label {
+            width: 25%;
+        }
         input,
         select {
+            margin: 0;
             border: 1px solid #ccc;
             border-radius: 4px;
             font-size: 16px;
             font-weight: 300;
-            height: 35px;
             outline: none;
-            padding: 6px 12px;
+            padding: 8px 12px;
         }
         .button {
             cursor: pointer;
@@ -88,11 +143,132 @@
             color: #fff;
             background-color: #48b1ec;
         }
+
         .button:hover {
             background-color: #2286BE;
         }
+        .button-empty {
+            background-color: transparent;
+            padding: 7px 12px;
+            height: 28px;
+            border-radius: 14px;
+            font-size: 11px;
+            border: 1px solid #478CC8;
+            color: #478CC8;
+            letter-spacing: .8px;
+            line-height: 20px;
+            font-weight: 400;
+            text-transform: uppercase;
+            text-decoration: none;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            white-space: nowrap;
+        }
+        .button-empty:hover {
+            color: #fff;
+            background-color: #3A7BBF;
+            border-color: #3A7BBF;
+        }
+        .button-primary {
+            color: #fff;
+            background-color: #2277cc;
+            border-color: #2277cc;
+        }
+        .button-primary:hover {
+            color: #fff;
+            background-color: #1f6bb8;
+            border-color: #1f6bb8;
+        }
+        .button-secondary {
+            color: #fff;
+            background-color: #00a400;
+            border-color: #00a400;
+        }
+        .button-secondary:hover {
+            background-color: #009400;
+            border-color: #009400;
+        }
+        .button-small {
+            font-size: 13px;
+            height: 28px;
+            border-radius: 14px;
+        }
+
+        .dropdown {
+            font-size: 14px;
+            line-height: 16px;
+            position: relative;
+            height: 30px;
+        }
+        .closed .dropdown-list {
+            display:none;
+        }
+        .dropdown.closed .icon span {
+            transform: rotate(180deg);
+        }
+        .dropdown-button {
+            cursor: pointer;
+            opacity: 1;
+            display: flex;
+            align-items: center;
+            background: none;
+            border: 0;
+            padding: 0;
+            outline: none;
+            height: 100%;
+        }
+        .dropdown-svg {
+            display: inline-block;
+            position: relative;
+            width: 32px;
+            height: 30px;
+        }
+        .dropdown-list {
+            margin: 0;
+            top: calc(100% + 11px);
+            right: 0;
+            display:block;
+            position: absolute;
+            padding: 0;
+            white-space: nowrap;
+            border-radius: 4px;
+            background-color: #fff;
+            box-shadow: 0 7px 15px 0 rgba(0,0,0,.12),0 5px 46px 0 rgba(0,0,0,.06);
+            z-index: 10;
+        }
+        .dropdown-item {
+            padding: 8px 10px 8px 30px;
+            list-style: none;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        .dropdown-item:hover {
+            background-color: #f4f4f4;
+        }
     </style>
     <script>
+        let dropdown = document.getElementById('user-menu');
+
+        function outsideClick(event) {
+            if (!document.getElementById('dropdown-list').contains(event.target)) {
+                event.stopPropagation();
+            }
+            document.removeEventListener('click', outsideClick, { capture: true });
+            dropdown.classList.add('closed');
+        }
+
+        document.getElementById('dropdown-btn').addEventListener('click', (e) => {
+            if (dropdown.classList.contains('closed')) {
+                dropdown.classList.remove('closed');
+                document.addEventListener('click', outsideClick, {capture: true, once: true});
+            } else {
+                dropdown.classList.add('closed');
+            }
+        })
+
+
         if (!window["WebSocket"]) {
             alert("Error: Your browser does not support web sockets.")
         } else {

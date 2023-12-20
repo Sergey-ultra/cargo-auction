@@ -8,6 +8,7 @@ use App\DTO\OrdersFilter;
 use App\Entity\Order;
 use App\Form\OrderType;
 use App\Repository\OrderRepository;
+use App\Services\OrderService\OrderService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -26,10 +27,11 @@ class OrderController extends AbstractController
         $totalCount = $paginator->count();
 
         return $this->render('index.html.twig', [
+            'filter' => $filter,
             'list' => $paginator,
             'page' => $page,
             'totalCount' => $totalCount,
-            'lastPage' => ceil($totalCount / OrderRepository::PAGINATOR_PER_PAGE)
+            'lastPage' => ceil($totalCount / OrderRepository::PAGINATOR_PER_PAGE),
         ]);
     }
 
@@ -39,27 +41,31 @@ class OrderController extends AbstractController
         return $this->render('form.html.twig', [
             'cargoTypes' => Order::CARGO_TYPES,
             'packageTypes' => Order::PACKAGE_TYPES,
+            'errors' => [],
         ]);
     }
 
 
     #[Route('/create', name: 'cargo.store', methods:['post'] )]
-    public function store(Request $request, OrderRepository $repository): RedirectResponse|Response
+    public function store(Request $request, OrderService $service): RedirectResponse|Response
     {
         $order = new Order();
         $form = $this->createForm(OrderType::class, $order);
         $form->submit($request->request->all());
 
         if ($form->isSubmitted() && $form->isValid() ) {
+
             $order->setUser($this->getUser());
 
-            $repository->save($order);
+            $service->save($order);
             return $this->redirectToRoute('cargo.index', [], Response::HTTP_SEE_OTHER);
         }
+        $errors = $form->getErrors();
 
         return $this->render('form.html.twig', [
             'cargoTypes' => Order::CARGO_TYPES,
             'packageTypes' => Order::PACKAGE_TYPES,
+            'errors' => $errors,
         ]);
     }
 }

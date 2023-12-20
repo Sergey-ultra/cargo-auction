@@ -22,8 +22,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 180, unique: true)]
     private ?string $email = null;
 
-    #[ORM\Column(length: 20, nullable: true)]
-    private ?string $phone = null;
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Phone::class,)]
+    private Collection $phones;
 
     #[ORM\Column]
     private array $roles = [];
@@ -146,6 +146,35 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
             if ($order->getUser() === $this) {
                 $order->setUser(null);
+            }
+        }
+        return $this;
+    }
+
+    /**
+     * @return Collection|Phone[]
+     */
+    public function getPhones(): Collection
+    {
+        return $this->phones;
+    }
+
+    public function addPhone(Phone $phone): self
+    {
+        if (!$this->phones->contains($phone)) {
+            $this->phones[] = $phone;
+            $phone->setUser($this);
+        }
+        return $this;
+    }
+
+    public function removePhone(Phone $phone): self
+    {
+        if ($this->phones->contains($phone)) {
+            $this->phones->removeElement($phone);
+
+            if ($phone->getUser() === $this) {
+                $phone->setUser(null);
             }
         }
         return $this;

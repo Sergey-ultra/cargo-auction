@@ -1,0 +1,24 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Главная{% endblock %}
+
+{% block body %}
+    <h1>Мой профиль</h1>
+    <form>
+        <div class="fieldset">
+            <div class="form-item">
+                <div class="label">Имя<sup>*</sup></div>
+                <div class="input">
+                    <input type="text" name="name">
+                </div>
+            </div>
+            <div class="form-item">
+                <div class="label">Телефоны</div>
+                <a href="{{ path('profile.phones') }}">Изменить</a>
+            </div>
+        </div>
+        <div class="buttons">
+            <button type="submit" class="button" {% if not is_granted('IS_AUTHENTICATED_FULLY') %}disabled{% endif %}>Сохранить</button>
+        </div>
+    </form>
+{% endblock %}

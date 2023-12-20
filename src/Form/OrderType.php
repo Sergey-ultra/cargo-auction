@@ -17,15 +17,17 @@ class OrderType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('to')
-            ->add('from')
+            ->add('toAddress')
+            ->add('fromAddress')
             ->add('weight')
             ->add('volume')
             ->add('cargoType')
+            ->add('isAgreedPrice')
+            ->add('price')
             ->add('user', EntityType::class, [
-                'class' => User::class
+                'class' => User::class,
             ])
-
+            ->add('submit', SubmitType::class)
         ;
     }
 
@@ -33,7 +35,7 @@ class OrderType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Order::class,
-            'csrf_protection' => false,
+            'csrf_protection' => true,
             'allow_extra_fields' => true,
         ]);
     }

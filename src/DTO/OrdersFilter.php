@@ -8,10 +8,10 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class OrdersFilter
 {
-    public ?string $from;
-    public ?string $to;
-    public ?string $weight;
-    public ?string $volume;
+    public string $fromAddress;
+    public string $toAddress;
+    public string $weight;
+    public string $volume;
 
     public function toArray(): array
     {

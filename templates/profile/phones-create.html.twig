@@ -1,0 +1,24 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Главная{% endblock %}
+
+{% block body %}
+    <h1>Добавление телефона</h1>
+    <form action="{{ path('profile.phones.store') }}" method="POST">
+        <div class="fieldset">
+            <div class="form-item">
+                <div class="label">Телефон<sup>*</sup></div>
+                <div class="input">
+                    <input type="phone" name="phone">
+                </div>
+            </div>
+            <div class="form-item">
+                <div class="label">Получить код подтверждения с помощью</div>
+                <div class="input">
+                    <button type="submit" class="button">телефонного звонка</button>
+                </div>
+            </div>
+        </div>
+    </form>
+
+{% endblock %}

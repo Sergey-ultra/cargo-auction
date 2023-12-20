@@ -32,9 +32,11 @@ class OrderRepository extends ServiceEntityRepository
 
         if (null !== $filter) {
             foreach($filter->toArray() as $filterKey => $filterParam) {
-                $query
-                    ->andWhere("c.$filterKey = :$filterKey")
-                    ->setParameter($filterKey, $filterParam);
+                if ('' !== $filterParam) {
+                    $query
+                        ->andWhere("c.$filterKey = :$filterKey")
+                        ->setParameter($filterKey, $filterParam);
+                }
             }
         }
 

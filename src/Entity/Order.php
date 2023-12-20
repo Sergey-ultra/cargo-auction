@@ -33,40 +33,52 @@ class Order
         ];
 
     public const PACKAGE_TYPES = [
-            [
-                'value' => 'упаковка',
-                'children' => [
-                    "bigbag" => 'биг бэги',
-                    "pallet" => 'паллеты',
-                    "box" => 'коробки',
-                    "case" => 'ящики',
-                    "barrel" => 'бочки',
-                    "bag" => 'мешки/сетки',
-                    "pack" => 'пачки',
-                ],
+        [
+            'value' => 'упаковка',
+            'children' => [
+                "bigbag" => 'биг бэги',
+                "pallet" => 'паллеты',
+                "box" => 'коробки',
+                "case" => 'ящики',
+                "barrel" => 'бочки',
+                "bag" => 'мешки/сетки',
+                "pack" => 'пачки',
             ],
-            [
-                'value' => "без упаковки",
-                'children' => [
-                    "in_bulk" => 'навалом/насыпью',
-                    "fill" => 'наливной груз',
-                    "other" => 'другая'
-                ],
+        ],
+        [
+            'value' => "без упаковки",
+            'children' => [
+                "in_bulk" => 'навалом/насыпью',
+                "fill" => 'наливной груз',
+                "other" => 'другая'
             ],
-        ];
+        ],
+    ];
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
-    #[ORM\Column(name: 'route_to')]
-    private string $to;
-    #[ORM\Column(name: 'route_from')]
-    private string $from;
+    #[ORM\Column]
+    private string $toAddress;
+    #[ORM\Column(type: 'float', nullable: true)]
+    private float $toLatitude;
+    #[ORM\Column(type: 'float', nullable: true)]
+    private float $toLongitude;
+    #[ORM\Column]
+    private string $fromAddress;
+    #[ORM\Column(type: 'float', nullable: true)]
+    private float $fromLatitude;
+    #[ORM\Column(type: 'float', nullable: true)]
+    private float $fromLongitude;
     #[ORM\Column]
     private string $weight;
     #[ORM\Column]
     private string $volume;
+    #[ORM\Column(options: ['default' => false])]
+    private bool $isAgreedPrice;
+    #[ORM\Column(nullable: true)]
+    private ?int $price;
     #[ORM\Column]
     private int $cargoType;
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'orders')]
@@ -88,25 +100,69 @@ class Order
         return $this;
     }
 
-    public function getTo(): string
+    public function getToLongitude(): float
     {
-        return $this->to;
+        return $this->toLongitude;
     }
 
-    public function setTo(string $to): self
+    public function setToLongitude(float $toLongitude): self
     {
-        $this->to = $to;
+        $this->toLongitude = $toLongitude;
         return $this;
     }
 
-    public function getFrom(): string
+    public function getToLatitude(): float
     {
-        return $this->from;
+        return $this->toLatitude;
     }
 
-    public function setFrom(string $from): self
+    public function setToLatitude(float $toLatitude): self
     {
-        $this->from = $from;
+        $this->toLatitude = $toLatitude;
+        return $this;
+    }
+
+    public function getFromLongitude(): float
+    {
+        return $this->fromLongitude;
+    }
+
+    public function setFromLongitude(float $fromLongitude): self
+    {
+        $this->fromLongitude = $fromLongitude;
+        return $this;
+    }
+
+    public function getFromLatitude(): float
+    {
+        return $this->fromLatitude;
+    }
+
+    public function setFromLatitude(float $fromLatitude): self
+    {
+        $this->fromLatitude = $fromLatitude;
+        return $this;
+    }
+
+    public function getToAddress(): string
+    {
+        return $this->toAddress;
+    }
+
+    public function setToAddress(string $toAddress): self
+    {
+        $this->toAddress = $toAddress;
+        return $this;
+    }
+
+    public function getFromAddress(): string
+    {
+        return $this->fromAddress;
+    }
+
+    public function setFromAddress(string $fromAddress): self
+    {
+        $this->fromAddress = $fromAddress;
         return $this;
     }
 
@@ -129,6 +185,27 @@ class Order
     public function setVolume(string $volume): self
     {
         $this->volume = $volume;
+        return $this;
+    }
+    public function isAgreedPrice(): bool
+    {
+        return $this->isAgreedPrice;
+    }
+
+    public function getPrice(): ?int
+    {
+        return $this->price;
+    }
+
+    public function setPrice(?int $price): self
+    {
+        $this->price = $price;
+        return $this;
+    }
+
+    public function setIsAgreedPrice(bool $isAgreedPrice): self
+    {
+        $this->isAgreedPrice = $isAgreedPrice;
         return $this;
     }
 
@@ -176,5 +253,10 @@ class Order
     {
         $this->updatedAt = new \DateTime();
         return $this;
+    }
+
+    public function getCargoTypeName(): string
+    {
+        return self::CARGO_TYPES[$this->cargoType];
     }
 }
