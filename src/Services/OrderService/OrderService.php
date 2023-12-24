@@ -28,7 +28,9 @@ class OrderService
 
         if ($toPoint) {
             $order->setToLatitude($toPoint->getLatitude())
-                ->setToLongitude($toPoint->getLongitude());
+                ->setToLongitude($toPoint->getLongitude())
+                ->setToPoint(new Point($toPoint->getLatitude(), $toPoint->getLongitude()));
+
         }
 
         $this->repository->save($order);

@@ -10,22 +10,22 @@ use \Doctrine\DBAL\Platforms\AbstractPlatform;
 
 class PointType extends Type
 {
-    const POINT = 'point';
+    const POINT = 'to_point';
 
     public function getName(): string
     {
         return self::POINT;
     }
 
-    public function getSQLDeclaration(array $column, AbstractPlatform $platform)
+    public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
     {
-        return 'POINT';
+        return 'geography(POINT, 4326)';
     }
 
-    public function convertToPHPValue($value, AbstractPlatform $platform)
+    public function convertToPHPValue($value, AbstractPlatform $platform): Point
     {
         list($longitude, $latitude) = sscanf($value, 'POINT(%f %f)');
-
+        //dd($longitude, $latitude);
         return new Point($latitude, $longitude);
     }
 
@@ -45,11 +45,11 @@ class PointType extends Type
 
     public function convertToPHPValueSQL($sqlExpr, $platform): string
     {
-        return sprintf('AsText(%s)', $sqlExpr);
+        return sprintf('ST_AsText(%s)', $sqlExpr);
     }
 
     public function convertToDatabaseValueSQL($sqlExpr, AbstractPlatform $platform): string
     {
-        return sprintf('PointFromText(%s)', $sqlExpr);
+        return sprintf('ST_SetSRID(ST_PointFromText(%s), 4326)', $sqlExpr);
     }
 }

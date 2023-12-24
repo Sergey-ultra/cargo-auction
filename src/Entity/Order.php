@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use App\Repository\OrderRepository;
+use App\ValueObject\Point;
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\Column;
 
 #[ORM\Entity(repositoryClass: OrderRepository::class)]
 #[ORM\HasLifecycleCallbacks()]
@@ -65,6 +67,8 @@ class Order
     private float $toLatitude;
     #[ORM\Column(type: 'float', nullable: true)]
     private float $toLongitude;
+    #[Column(name: 'to_point', type: 'point')]
+    private Point $toPoint;
     #[ORM\Column]
     private string $fromAddress;
     #[ORM\Column(type: 'float', nullable: true)]
@@ -152,6 +156,16 @@ class Order
     public function setToAddress(string $toAddress): self
     {
         $this->toAddress = $toAddress;
+        return $this;
+    }
+    public function getToPoint(): Point
+    {
+        return $this->toPoint;
+    }
+
+    public function setToPoint(Point $toPoint): self
+    {
+        $this->toPoint = $toPoint;
         return $this;
     }
 

@@ -7,6 +7,8 @@ doctrine:
         #server_version: '15'
 
         profiling_collect_backtrace: '%kernel.debug%'
+        types:
+            point: App\Types\PointType
     orm:
         auto_generate_proxy_classes: true
         enable_lazy_ghost_objects: true
@@ -14,6 +16,14 @@ doctrine:
         validate_xml_mapping: true
         naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
         auto_mapping: true
+        dql:
+            string_functions:
+                ST_DWithin: 'Jsor\Doctrine\PostGIS\Functions\ST_DWithin'
+                ST_MakePoint: 'Jsor\Doctrine\PostGIS\Functions\ST_MakePoint'
+                Geography: 'Jsor\Doctrine\PostGIS\Functions\Geography'
+                ST_SetSRID: 'Jsor\Doctrine\PostGIS\Functions\ST_SetSRID'
+                ST_Point: 'Jsor\Doctrine\PostGIS\Functions\ST_Point'
+
         mappings:
             App:
                 type: attribute

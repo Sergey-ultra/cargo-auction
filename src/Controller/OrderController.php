@@ -24,9 +24,10 @@ class OrderController extends AbstractController
         $page = $request->query->getInt('page', 1);
 
         $paginator = $repository->getPaginator($page, $filter);
+
         $totalCount = $paginator->count();
 
-        return $this->render('index.html.twig', [
+        return $this->render('order/index.html.twig', [
             'filter' => $filter,
             'list' => $paginator,
             'page' => $page,
@@ -38,7 +39,7 @@ class OrderController extends AbstractController
     #[Route('/create', name: 'cargo.create', methods:['get'])]
     public function edit(): Response
     {
-        return $this->render('form.html.twig', [
+        return $this->render('order/form.html.twig', [
             'cargoTypes' => Order::CARGO_TYPES,
             'packageTypes' => Order::PACKAGE_TYPES,
             'errors' => [],
@@ -62,7 +63,7 @@ class OrderController extends AbstractController
         }
         $errors = $form->getErrors();
 
-        return $this->render('form.html.twig', [
+        return $this->render('order/form.html.twig', [
             'cargoTypes' => Order::CARGO_TYPES,
             'packageTypes' => Order::PACKAGE_TYPES,
             'errors' => $errors,

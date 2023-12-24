@@ -16,70 +16,86 @@
         <script type="text/javascript" src="{{ asset('assets/notify.js') }}"></script>
     </head>
     <body>
-    <nav class="nav">
-        <div class="container">
-            <div class="nav__wrapper">
-                <a href="{{  path('cargo.index') }}">Cargo</a>
+        <div class="app">
+            <nav class="nav">
+                <div class="container">
+                    <div class="nav__wrapper">
+                        <a href="{{  path('cargo.index') }}">Cargo</a>
 
-                {% if is_granted('IS_AUTHENTICATED_FULLY') %}
-                    <div class="right">
-                        <div id="user-menu" class="dropdown closed">
-                            <div id="dropdown-btn" class="dropdown-button">{{ app.user.email }}</div>
-                            <ul id="dropdown-list" class="dropdown-list">
-                                <li class="dropdown-item">
-                                    <a href="{{ path('profile') }}">Мои настройки</a>
-                                </li>
-                                <li class="dropdown-item">
-                                    <a href="#">Личные сообщения</a>
-                                </li>
-                                <li class="dropdown-item">
-                                    <a href="#">Моя компания</a>
-                                </li>
-                                <li class="dropdown-item">
-                                    <a href="#">Мои объявления</a>
-                                </li>
-                                <li class="dropdown-item">
-                                    <a href="#">Мои фильтры</a>
-                                </li>
-                                <li class="dropdown-item">
-                                    <a href="#">Мои отзывы</a>
-                                </li>
-                                <li class="dropdown-item">
-                                    <a href="#">Мои рассылки</a>
-                                </li>
-                                <li class="dropdown-item">
-                                    <a href="#">Баланс</a>
-                                </li>
-                                <li class="dropdown-item">
-                                    <a href="{{ path('app_sign_out') }}">Выйти</a>
-                                </li>
-                            </ul>
-                        </div>
+                        {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                            <div class="right">
+                                <div id="user-menu" class="dropdown closed">
+                                    <div id="dropdown-btn" class="dropdown-button">{{ app.user.email }}</div>
+                                    <ul id="dropdown-list" class="dropdown-list">
+                                        <li class="dropdown-item">
+                                            <a href="{{ path('profile') }}">Мои настройки</a>
+                                        </li>
+                                        <li class="dropdown-item">
+                                            <a href="#">Личные сообщения</a>
+                                        </li>
+                                        <li class="dropdown-item">
+                                            <a href="#">Моя компания</a>
+                                        </li>
+                                        <li class="dropdown-item">
+                                            <a href="#">Мои объявления</a>
+                                        </li>
+                                        <li class="dropdown-item">
+                                            <a href="#">Мои фильтры</a>
+                                        </li>
+                                        <li class="dropdown-item">
+                                            <a href="#">Мои отзывы</a>
+                                        </li>
+                                        <li class="dropdown-item">
+                                            <a href="#">Мои рассылки</a>
+                                        </li>
+                                        <li class="dropdown-item">
+                                            <a href="#">Баланс</a>
+                                        </li>
+                                        <li class="dropdown-item">
+                                            <a href="{{ path('app_sign_out') }}">Выйти</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="right">
+                                <a class="button button-primary button-small" href="{{ path('app_sign_in') }}">Вход</a>
+                                <a class="button button-secondary button-small" href="{{ path('register') }}">Регистрация</a>
+                            </div>
+                        {% endif %}
                     </div>
-                {% else %}
-                    <div class="right">
-                        <a class="button button-primary button-small" href="{{ path('app_sign_in') }}">Вход</a>
-                        <a class="button button-secondary button-small" href="{{ path('register') }}">Регистрация</a>
-                    </div>
-                {% endif %}
+                </div>
+            </nav>
+            <div class="main">
+                <div class="container">
+                    {% block body %}{% endblock %}
+                </div>
             </div>
-        </div>
-    </nav>
-        <div class="container">
-             {% block body %}{% endblock %}
+            <div class="footer">
+                <div class="container"></div>
+            </div>
         </div>
     </body>
     <style>
         * {
             box-sizing: border-box;
         }
+        html {
+            height: 100%;
+        }
         body {
-            background-color: #E5EAEF;
+            height: 100%;
             margin: 0;
+        }
+        .app {
+            display: flex;
+            flex-direction: column;
+            min-height: 100%;
         }
         .nav {
             background-color: #fff;
             height: 40px;
+            box-shadow: 0 0 6px rgba(7, 24, 41, 0.02),0 2px 4px rgba(7, 24, 41, 0.08);
         }
         .nav__wrapper {
             height: 100%;
@@ -95,6 +111,10 @@
             margin: 0 auto;width: 100%;
             max-width: 1280px;
             min-width: 0;
+        }
+        .main {
+            flex: 1 1 auto;
+            margin-bottom: 30px;
         }
         .legend {
             font-size: 1.5em;
@@ -246,6 +266,10 @@
         }
         .dropdown-item:hover {
             background-color: #f4f4f4;
+        }
+        .footer {
+            height: 150px;
+            background-color: #dddfe1;
         }
     </style>
     <script>
