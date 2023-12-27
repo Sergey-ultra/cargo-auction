@@ -9,7 +9,7 @@
             <div class="form-item">
                 <div class="label">Телефон<sup>*</sup></div>
                 <div class="input">
-                    <input type="phone" name="phone">
+                    <input type="phone" name="phone" data-js="input">
                 </div>
             </div>
             <div class="form-item">
@@ -22,3 +22,19 @@
     </form>
 
 {% endblock %}
+<script>
+    const $input = document.querySelector('[data-js="input"]')
+    $input.addEventListener('input', handleInput, false)
+
+    function handleInput (e) {
+        e.target.value = phoneMask(e.target.value)
+    }
+
+    function phoneMask (phone) {
+        return phone.replace(/\D/g, '')
+            .replace(/^(\d)/, '($1')
+            .replace(/^(\(\d{2})(\d)/, '$1) $2')
+            .replace(/(\d{4})(\d{1,5})/, '$1-$2')
+            .replace(/(-\d{5})\d+?$/, '$1');
+    }
+</script>

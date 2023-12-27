@@ -7,16 +7,9 @@
 
     <link href="{{ asset('assets/css/cargo-index.css') }}" rel="stylesheet"/>
 {% endblock %}
-{% block javascripts %}
-    {{ parent() }}
-
-     <script type="text/javascript" src="{{ asset('assets/js/address-input.js') }}"></script>
-{% endblock %}
-
 {% block body %}
-    <h1>Поиск грузов</h1>
-
+    <h1>Мои объявления</h1>
     <a class="add button" href="{{ path('cargo.create') }}">Добавить</a>
 
-   {% include('common/cargo-list.html.twig') %}
+    {% include('common/cargo-list.html.twig') %}
 {% endblock %}

@@ -20,7 +20,6 @@ doctrine:
             string_functions:
                 ST_DWithin: 'Jsor\Doctrine\PostGIS\Functions\ST_DWithin'
                 ST_MakePoint: 'Jsor\Doctrine\PostGIS\Functions\ST_MakePoint'
-                Geography: 'Jsor\Doctrine\PostGIS\Functions\Geography'
                 ST_SetSRID: 'Jsor\Doctrine\PostGIS\Functions\ST_SetSRID'
                 ST_Point: 'Jsor\Doctrine\PostGIS\Functions\ST_Point'
 

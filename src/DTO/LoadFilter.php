@@ -6,7 +6,7 @@ namespace App\DTO;
 
 use Symfony\Component\Validator\Constraints as Assert;
 
-class OrdersFilter
+class LoadFilter
 {
     public ?string $fromAddress;
     public ?int $fromAddressId;
@@ -14,8 +14,10 @@ class OrdersFilter
     public ?string $toAddress;
     public ?int $toAddressId;
     public ?string $toRadius;
-    public ?string $weight;
-    public ?string $volume;
+    public ?string $weightMin;
+    public ?string $weightMax;
+    public ?string $volumeMin;
+    public ?string $volumeMax;
 
     public function toArray(): array
     {

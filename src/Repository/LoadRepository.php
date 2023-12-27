@@ -4,22 +4,23 @@ declare(strict_types=1);
 
 namespace App\Repository;
 
-use App\DTO\OrdersFilter;
-use App\Entity\Order;
+use App\DTO\LoadFilter;
+use App\Entity\Load;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<Order>
+ * @extends ServiceEntityRepository<Load>
  *
- * @method Order|null find($id, $lockMode = null, $lockVersion = null)
- * @method Order|null findOneBy(array $criteria, array $orderBy = null)
- * @method Order[]    findAll()
- * @method Order[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method Load|null find($id, $lockMode = null, $lockVersion = null)
+ * @method Load|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Load[]    findAll()
+ * @method Load[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class OrderRepository extends ServiceEntityRepository
+class LoadRepository extends ServiceEntityRepository
 {
 
     public const PAGINATOR_PER_PAGE = 10;
@@ -27,12 +28,12 @@ class OrderRepository extends ServiceEntityRepository
     private CityRepository $cityRepository;
     public function __construct(ManagerRegistry $registry, CityRepository $cityRepository)
     {
-        parent::__construct($registry, Order::class);
+        parent::__construct($registry, Load::class);
 
         $this->cityRepository = $cityRepository;
     }
 
-    public function getPaginator(int $page, ?OrdersFilter $filter): Paginator
+    public function getPaginator(int $page, ?LoadFilter $filter, ?User $byUser = null): Paginator
     {
         $query = $this->createQueryBuilder('c');
 
@@ -42,29 +43,43 @@ class OrderRepository extends ServiceEntityRepository
 
             foreach ($filter as $filterKey => $filterParam) {
                 if ($filterKey === 'toAddress' && in_array('toRadius', $filterKeys, true)) {
-                   $this->addDistanceCondition($query, $filter, 'toAddressId', 'toAddress', $filter['toRadius']);
+                    $this->addDistanceCondition($query, $filter, 'toAddressId', 'toAddress', (int)$filter['toRadius']);
 
                 } else if ($filterKey === 'fromAddress' && in_array('fromRadius', $filterKeys, true)) {
-                    $this->addDistanceCondition($query, $filter, 'fromAddressId', 'fromAddress', $filter['fromRadius']);
+                    $this->addDistanceCondition($query, $filter, 'fromAddressId', 'fromAddress', (int)$filter['fromRadius']);
 
-                } else if (in_array($filterKey, ['weight', 'volume'], true)) {
+                } else if ($filterKey === 'weightMin') {
                     $query
-                        ->andWhere("c.$filterKey = :$filterKey")
+                        ->andWhere("c.weight >= :$filterKey")
+                        ->setParameter($filterKey, $filterParam);
+                } else if ($filterKey === 'volumeMin') {
+                    $query
+                        ->andWhere("c.volume >= :$filterKey")
+                        ->setParameter($filterKey, $filterParam);
+                } else if ($filterKey ==='weightMax') {
+                    $query
+                        ->andWhere("c.weight <= :$filterKey")
+                        ->setParameter($filterKey, $filterParam);
+                } else if ($filterKey ==='volumeMax') {
+                    $query
+                        ->andWhere("c.volume <= :$filterKey")
                         ->setParameter($filterKey, $filterParam);
                 }
             }
-
-
-            $query->orderBy('c.createdAt', 'DESC');
-
-
-            $query
-                ->setFirstResult(($page - 1) * self::PAGINATOR_PER_PAGE)
-                ->setMaxResults(self::PAGINATOR_PER_PAGE)
-                ->getQuery();
-
-            //dd($query->getDQL());
         }
+
+        if (null !== $byUser) {
+            $query
+                ->andWhere("c.user <= :user")
+                ->setParameter('user', $byUser);
+        }
+
+        $query->orderBy('c.createdAt', 'DESC');
+
+        $query
+            ->setFirstResult(($page - 1) * self::PAGINATOR_PER_PAGE)
+            ->setMaxResults(self::PAGINATOR_PER_PAGE)
+            ->getQuery();
 
         return new Paginator($query);
     }
@@ -78,6 +93,7 @@ class OrderRepository extends ServiceEntityRepository
         } else {
             $city = $this->cityRepository->findOneBy(['name' => $filter[$address]]);
         }
+        //dd($city, $cityIdKey, $filterKeys, $filter[$address]);
 
         if (null !== $city) {
             //              SELECT *, ACOS(SIN(latitude) * SIN(Lat)) + COS(latitude) * COS(Lat) * COS(longitude) - (Long)) ) * 6380 AS distance
@@ -95,7 +111,7 @@ class OrderRepository extends ServiceEntityRepository
         }
     }
 
-    public function save(Order $order): void
+    public function save(Load $order): void
     {
         $this->_em->persist($order);
         $this->_em->flush();

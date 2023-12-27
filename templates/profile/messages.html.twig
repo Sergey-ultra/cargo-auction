@@ -1,0 +1,33 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Главная{% endblock %}
+
+{% block body %}
+    <h1>Сообщение</h1>
+    <div class="messages">
+        <div class="sidebar">
+            <div></div>
+            <div class="messages__chatList"></div>
+        </div>
+    </div>
+
+    <style>
+        .messages {
+            display: flex;
+            width: 360px;
+            max-height: 903px;
+            background: #f1f1f1;
+        }
+        .sidebar {
+            border-right: 1px solid #ccc;
+            flex-basis: 360px;
+            flex-shrink: 0;
+            flex-grow: 0;
+        }
+        .messages__chatList {
+            height: 409px;
+        }
+    </style>
+{% endblock %}
+
+

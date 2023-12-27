@@ -13,6 +13,3 @@ doctrine:
             string_functions:
                 ST_AsGeoJSON: 'Jsor\Doctrine\PostGIS\Functions\ST_AsGeoJSON'
                 ST_GeomFromGeoJSON: 'Jsor\Doctrine\PostGIS\Functions\ST_GeomFromGeoJSON'
-                ST_DWithin: 'Jsor\Doctrine\PostGIS\Functions\ST_DWithin'
-                ST_MakePoint: 'Jsor\Doctrine\PostGIS\Functions\ST_MakePoint'
-                ST_PointFromText: 'Jsor\Doctrine\PostGIS\Functions\ST_PointFromText'

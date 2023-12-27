@@ -38,13 +38,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private $isVerified = false;
 
 
-     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Order::class)]
+     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Load::class)]
     private Collection $orders;
 
     public function getId(): ?int
     {
         return $this->id;
     }
+    public function setId(?int $id): self
+    {
+        $this->id = $id;
+        return $this;
+    }
+
 
     public function getEmail(): ?string
     {
@@ -124,13 +130,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * @return Collection|Order[]
+     * @return Collection|Load[]
      */
     public function getOrders(): Collection
     {
         return $this->orders;
     }
-    public function addOrder(Order $order): self
+    public function addOrder(Load $order): self
     {
         if (!$this->orders->contains($order)) {
             $this->orders[] = $order;
@@ -139,7 +145,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function removeOrder(Order $order): self
+    public function removeOrder(Load $order): self
     {
         if ($this->orders->contains($order)) {
             $this->orders->removeElement($order);

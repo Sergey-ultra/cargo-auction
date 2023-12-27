@@ -9,8 +9,14 @@ docker-compose up -d
 Create the PostgreSQL database and run the migrations to set up the required tables.
 
 ```bash
-docker-compose exec php bin/console doctrine:database:create
-docker-compose exec php bin/console doctrine:migrations:migrate
+php bin/console doctrine:database:create
+exec php bin/console doctrine:migrations:migrate
+```
+
+Run fixtures
+
+```bash
+php bin/console doctrine:fixtures:load
 ```
 
 ### 3. Start the WebSocket Server
@@ -18,5 +24,7 @@ docker-compose exec php bin/console doctrine:migrations:migrate
 Run the WebSocket server for real-time functionality. The `-vv` flag enables verbose output.
 
 ```bash
-docker-compose exec php bin/console websocket:server:run -vv
+php bin/console websocket:server:run -vv
 ```
+
+

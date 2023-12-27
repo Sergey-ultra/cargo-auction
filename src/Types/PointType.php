@@ -10,7 +10,7 @@ use \Doctrine\DBAL\Platforms\AbstractPlatform;
 
 class PointType extends Type
 {
-    const POINT = 'to_point';
+    const POINT = 'point';
 
     public function getName(): string
     {
@@ -22,11 +22,13 @@ class PointType extends Type
         return 'geography(POINT, 4326)';
     }
 
-    public function convertToPHPValue($value, AbstractPlatform $platform): Point
+    public function convertToPHPValue($value, AbstractPlatform $platform): ?Point
     {
-        list($longitude, $latitude) = sscanf($value, 'POINT(%f %f)');
-        //dd($longitude, $latitude);
-        return new Point($latitude, $longitude);
+        if ($value) {
+            list($longitude, $latitude) = sscanf($value, 'POINT(%f %f)');
+            return new Point($latitude, $longitude);
+        }
+        return null;
     }
 
     public function convertToDatabaseValue($value, AbstractPlatform $platform)

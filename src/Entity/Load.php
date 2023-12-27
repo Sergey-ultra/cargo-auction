@@ -4,87 +4,55 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
-use App\Repository\OrderRepository;
+use App\Repository\LoadRepository;
 use App\ValueObject\Point;
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 
-#[ORM\Entity(repositoryClass: OrderRepository::class)]
+#[ORM\Entity(repositoryClass: LoadRepository::class)]
 #[ORM\HasLifecycleCallbacks()]
 #[ORM\Table(name:"orders")]
-class Order
+class Load
 {
-    public const CARGO_TYPES = [
-            'продукты питания',
-            'ТНП непродовольственные',
-            'оборудование и запчасти',
-            'строймариалы',
-            'металл',
-            'пиломатериалы',
-            'пустая тара и упаковка',
-            'картон, бумага, макулатура',
-            'химия',
-            'топливо и смазки',
-            'контейнер',
-            'транспортные средства',
-            'с/х сырье и продукция',
-            'личные вещи, переезд',
-            'сборный груз',
-            'другой',
-        ];
-
-    public const PACKAGE_TYPES = [
-        [
-            'value' => 'упаковка',
-            'children' => [
-                "bigbag" => 'биг бэги',
-                "pallet" => 'паллеты',
-                "box" => 'коробки',
-                "case" => 'ящики',
-                "barrel" => 'бочки',
-                "bag" => 'мешки/сетки',
-                "pack" => 'пачки',
-            ],
-        ],
-        [
-            'value' => "без упаковки",
-            'children' => [
-                "in_bulk" => 'навалом/насыпью',
-                "fill" => 'наливной груз',
-                "other" => 'другая'
-            ],
-        ],
-    ];
-
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
-    #[ORM\Column]
-    private string $toAddress;
-    #[ORM\Column(type: 'float', nullable: true)]
-    private float $toLatitude;
-    #[ORM\Column(type: 'float', nullable: true)]
-    private float $toLongitude;
-    #[Column(name: 'to_point', type: 'point')]
-    private Point $toPoint;
     #[ORM\Column]
     private string $fromAddress;
     #[ORM\Column(type: 'float', nullable: true)]
     private float $fromLatitude;
     #[ORM\Column(type: 'float', nullable: true)]
     private float $fromLongitude;
+    #[Column(name: 'from_point', type: 'point',  nullable: true)]
+    private ?Point $fromPoint;
+    #[ORM\Column]
+    private string $toAddress;
+    #[ORM\Column(type: 'float', nullable: true)]
+    private float $toLatitude;
+    #[ORM\Column(type: 'float', nullable: true)]
+    private float $toLongitude;
+    #[Column(name: 'to_point', type: 'point',  nullable: true)]
+    private ?Point $toPoint;
     #[ORM\Column]
     private string $weight;
     #[ORM\Column]
     private string $volume;
-    #[ORM\Column(options: ['default' => false])]
-    private bool $isAgreedPrice;
+    #[ORM\Column]
+    private string $priceType;
     #[ORM\Column(nullable: true)]
-    private ?int $price;
+    private ?int $priceWithoutTax;
+    #[ORM\Column(nullable: true)]
+    private ?int $priceWithTax;
     #[ORM\Column]
     private int $cargoType;
+    #[ORM\Column]
+    private int $bodyType;
+    #[ORM\Column]
+    private int $downloadingType;
+    #[ORM\Column]
+    private int $unloadingType;
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'orders')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user;
@@ -104,25 +72,14 @@ class Order
         return $this;
     }
 
-    public function getToLongitude(): float
+    public function getFromAddress(): string
     {
-        return $this->toLongitude;
+        return $this->fromAddress;
     }
 
-    public function setToLongitude(float $toLongitude): self
+    public function setFromAddress(string $fromAddress): self
     {
-        $this->toLongitude = $toLongitude;
-        return $this;
-    }
-
-    public function getToLatitude(): float
-    {
-        return $this->toLatitude;
-    }
-
-    public function setToLatitude(float $toLatitude): self
-    {
-        $this->toLatitude = $toLatitude;
+        $this->fromAddress = $fromAddress;
         return $this;
     }
 
@@ -148,6 +105,17 @@ class Order
         return $this;
     }
 
+    public function getFromPoint(): Point
+    {
+        return $this->fromPoint;
+    }
+
+    public function setFromPoint(Point $fromPoint): self
+    {
+        $this->fromPoint = $fromPoint;
+        return $this;
+    }
+
     public function getToAddress(): string
     {
         return $this->toAddress;
@@ -158,6 +126,29 @@ class Order
         $this->toAddress = $toAddress;
         return $this;
     }
+
+    public function getToLongitude(): float
+    {
+        return $this->toLongitude;
+    }
+
+    public function setToLongitude(float $toLongitude): self
+    {
+        $this->toLongitude = $toLongitude;
+        return $this;
+    }
+
+    public function getToLatitude(): float
+    {
+        return $this->toLatitude;
+    }
+
+    public function setToLatitude(float $toLatitude): self
+    {
+        $this->toLatitude = $toLatitude;
+        return $this;
+    }
+
     public function getToPoint(): Point
     {
         return $this->toPoint;
@@ -166,17 +157,6 @@ class Order
     public function setToPoint(Point $toPoint): self
     {
         $this->toPoint = $toPoint;
-        return $this;
-    }
-
-    public function getFromAddress(): string
-    {
-        return $this->fromAddress;
-    }
-
-    public function setFromAddress(string $fromAddress): self
-    {
-        $this->fromAddress = $fromAddress;
         return $this;
     }
 
@@ -201,25 +181,37 @@ class Order
         $this->volume = $volume;
         return $this;
     }
-    public function isAgreedPrice(): bool
+
+    public function getPriceType(): string
     {
-        return $this->isAgreedPrice;
+        return $this->priceType;
     }
 
-    public function getPrice(): ?int
+    public function setPriceType(string $priceType): self
     {
-        return $this->price;
-    }
-
-    public function setPrice(?int $price): self
-    {
-        $this->price = $price;
+        $this->priceType = $priceType;
         return $this;
     }
 
-    public function setIsAgreedPrice(bool $isAgreedPrice): self
+    public function getPriceWithoutTax(): ?int
     {
-        $this->isAgreedPrice = $isAgreedPrice;
+        return $this->priceWithoutTax;
+    }
+
+    public function setPriceWithoutTax(?int $priceWithoutTax): self
+    {
+        $this->priceWithoutTax = $priceWithoutTax;
+        return $this;
+    }
+
+    public function getPriceWithTax(): ?int
+    {
+        return $this->priceWithTax;
+    }
+
+    public function setPriceWithTax(?int $priceWithTax): self
+    {
+        $this->priceWithTax = $priceWithTax;
         return $this;
     }
 
@@ -231,6 +223,39 @@ class Order
     public function setCargoType(int $cargoType): self
     {
         $this->cargoType = $cargoType;
+        return $this;
+    }
+
+    public function getBodyType(): int
+    {
+        return $this->bodyType;
+    }
+
+    public function setBodyType(int $bodyType): self
+    {
+        $this->bodyType = $bodyType;
+        return $this;
+    }
+
+    public function getDownloadingType(): int
+    {
+        return $this->downloadingType;
+    }
+
+    public function setDownloadingType(int $downloadingType): self
+    {
+        $this->downloadingType = $downloadingType;
+        return $this;
+    }
+
+    public function getUnloadingType(): int
+    {
+        return $this->unloadingType;
+    }
+
+    public function setUnloadingType(int $unloadingType): self
+    {
+        $this->unloadingType = $unloadingType;
         return $this;
     }
 
@@ -265,12 +290,17 @@ class Order
     #[ORM\PrePersist]
     public function setUpdatedAt(): self
     {
-        $this->updatedAt = new \DateTime();
+        $this->updatedAt = null;
         return $this;
     }
 
     public function getCargoTypeName(): string
     {
-        return self::CARGO_TYPES[$this->cargoType];
+        return CargoType::CARGO_TYPES[$this->cargoType];
+    }
+
+    public function getBodyTypeName(): string
+    {
+        return BodyType::BODY_TYPES[$this->bodyType];
     }
 }
