@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\DTO\LoadFilter;
+use App\DTO\LoadList;
 use App\Entity\Load;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
@@ -33,9 +35,10 @@ class LoadRepository extends ServiceEntityRepository
         $this->cityRepository = $cityRepository;
     }
 
-    public function getPaginator(int $page, ?LoadFilter $filter, ?User $byUser = null): Paginator
+    public function getList(int $page, ?LoadFilter $filter, ?User $byUser = null): LoadList
     {
-        $query = $this->createQueryBuilder('c');
+        $queryBuilder = $this->createQueryBuilder('c')
+        ->select('c, ST_Distance(c.fromPoint, c.toPoint)/1000 distance');
 
         if (null !== $filter) {
             $filter = array_filter($filter->toArray());
@@ -43,25 +46,25 @@ class LoadRepository extends ServiceEntityRepository
 
             foreach ($filter as $filterKey => $filterParam) {
                 if ($filterKey === 'toAddress' && in_array('toRadius', $filterKeys, true)) {
-                    $this->addDistanceCondition($query, $filter, 'toAddressId', 'toAddress', (int)$filter['toRadius']);
+                    $this->addDistanceCondition($queryBuilder, $filter, 'toAddressId', 'toAddress', (int)$filter['toRadius']);
 
                 } else if ($filterKey === 'fromAddress' && in_array('fromRadius', $filterKeys, true)) {
-                    $this->addDistanceCondition($query, $filter, 'fromAddressId', 'fromAddress', (int)$filter['fromRadius']);
+                    $this->addDistanceCondition($queryBuilder, $filter, 'fromAddressId', 'fromAddress', (int)$filter['fromRadius']);
 
                 } else if ($filterKey === 'weightMin') {
-                    $query
+                    $queryBuilder
                         ->andWhere("c.weight >= :$filterKey")
                         ->setParameter($filterKey, $filterParam);
                 } else if ($filterKey === 'volumeMin') {
-                    $query
+                    $queryBuilder
                         ->andWhere("c.volume >= :$filterKey")
                         ->setParameter($filterKey, $filterParam);
                 } else if ($filterKey ==='weightMax') {
-                    $query
+                    $queryBuilder
                         ->andWhere("c.weight <= :$filterKey")
                         ->setParameter($filterKey, $filterParam);
                 } else if ($filterKey ==='volumeMax') {
-                    $query
+                    $queryBuilder
                         ->andWhere("c.volume <= :$filterKey")
                         ->setParameter($filterKey, $filterParam);
                 }
@@ -69,19 +72,27 @@ class LoadRepository extends ServiceEntityRepository
         }
 
         if (null !== $byUser) {
-            $query
+            $queryBuilder
                 ->andWhere("c.user <= :user")
                 ->setParameter('user', $byUser);
         }
 
-        $query->orderBy('c.createdAt', 'DESC');
+        $queryBuilder->orderBy('c.createdAt', 'DESC');
 
-        $query
+        $query = $queryBuilder
             ->setFirstResult(($page - 1) * self::PAGINATOR_PER_PAGE)
             ->setMaxResults(self::PAGINATOR_PER_PAGE)
             ->getQuery();
 
-        return new Paginator($query);
+        $paginator = new Paginator($query);
+
+        $list = [];
+        foreach($paginator->getIterator() as $item) {
+            ($item[0])->setDistance((int)$item['distance']);
+            $list[] = $item[0];
+        }
+
+        return new LoadList($list, $paginator->count());
     }
 
     private function addDistanceCondition(QueryBuilder $query, array $filter, string $cityIdKey, string $address, int $radius): void

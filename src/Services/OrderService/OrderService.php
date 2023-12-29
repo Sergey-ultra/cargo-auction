@@ -21,7 +21,8 @@ class OrderService
 
         if ($fromPoint) {
             $order->setFromLatitude($fromPoint->getLatitude())
-                ->setFromLongitude($fromPoint->getLongitude());
+                ->setFromLongitude($fromPoint->getLongitude())
+                ->setFromPoint(new Point($fromPoint->getLatitude(), $fromPoint->getLongitude()));
         }
 
         $toPoint = $this->geoCoderService->getMapPoint($order->getToAddress());

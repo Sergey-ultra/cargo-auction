@@ -17,6 +17,7 @@ class LoadType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
+            ->add('downloadingDateStatus')
             ->add('toAddress')
             ->add('fromAddress')
             ->add('weight')
@@ -28,6 +29,7 @@ class LoadType extends AbstractType
             ->add('priceType')
             ->add('priceWithoutTax')
             ->add('priceWithTax')
+            ->add('priceCash')
             ->add('user', EntityType::class, [
                 'class' => User::class,
             ])

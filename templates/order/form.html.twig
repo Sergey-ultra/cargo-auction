@@ -10,9 +10,19 @@
 
 {% block body %}
     <h1>Добавление груза</h1>
+
+    {% if not is_granted('IS_AUTHENTICATED_FULLY') %}
+        <div class="alert">
+            <div>Для продолжения необходимо авторизоваться на сайте.</div>
+            <div>
+                <a class="button button-primary" href="{{ path('app_sign_in') }}" data-show-auth="true">Вход</a>
+            </div>
+        </div>
+    {% endif %}
     {% for error in errors %}
         {{ error.message }}
     {% endfor %}
+
     <form action="{{ path('cargo.store') }}" method="POST" name="order">
         <input type="hidden" name="_token" value="{{ csrf_token('load') }}">
         <div class="legend">Описание груза</div>
@@ -82,14 +92,13 @@
                 <div class="label">Дата загрузки</div>
                 <div class="input">
                     <div id="">
-                        <label for="">
-                            <input type="radio" name="ready" value="on" checked>
-                            Груз готов к загрузке постоянно
-                        </label>
-                        <label for="">
-                            <input type="radio" name="ready" value="date">
-                            Ввести дату готовности
-                        </label>
+                        <select name="downloadingDateStatus" id="">
+                            {% for dateStatusKey, dateStatus in downloadingDateStatuses %}
+                                <option {% if load is defined and load.downloadingDateStatus == dateStatusKey %}selected{% endif %} value="{{ dateStatusKey }}">
+                                    {{ dateStatus }}
+                                </option>
+                            {% endfor %}
+                        </select>
                     </div>
                     <div>
                         <div id="ready_date"></div>
@@ -162,31 +171,36 @@
 
                    <div id="agreedPriceBlock" class="tab">
                        <label for="">
-                           <input type="radio" name="priceType" value="negotiable" {% if load is defined and load.isAgreedPrice == 'negotiable' %}checked{% endif %}>
+                           <input type="radio" name="priceType" value="negotiable" {% if load is defined and load.priceType == 'negotiable' %}checked{% endif %}>
                          Возможен торг
                        </label>
                        <label for="">
-                           <input type="radio" name="priceType" value="fix" {% if load is defined and load.isAgreedPrice == 'fix' %}checked{% endif %}>
+                           <input type="radio" name="priceType" value="fix" {% if load is defined and load.priceType == 'fix' %}checked{% endif %}>
                            Без торга
                        </label>
                        <label for="">
-                           <input type="radio" name="priceType" value="request" {% if load is defined and load.isAgreedPrice == 'request' %}checked{% endif %}>
+                           <input type="radio" name="priceType" value="request" {% if load is defined and load.priceType == 'request' %}checked{% endif %}>
                            Запрос
                        </label>
                        <label for="">
-                           <input type="radio" name="priceType" value="auction" {% if load is defined and load.isAgreedPrice == 'auction'%}checked{% endif %}>
+                           <input type="radio" name="priceType" value="auction" {% if load is defined and load.priceType == 'auction'%}checked{% endif %}>
                            Торги
                        </label>
                    </div>
 
                     <div id="priceBlock">
                         <div>
-                            <input type="number" id="priceWithoutTax" name="priceWithoutTax" disabled {% if load is defined %}value="{{ load.price }}"{% endif %}> руб
+                            <span>С НДС, безнал</span>
+                            <input type="number" id="priceWithoutTax" name="priceWithoutTax" {% if load is defined %}value="{{ load.priceWithoutTax }}"{% endif %}> руб
                         </div>
                         <div>
-                            <input type="number" id="priceWithTax" name="priceWithTax" disabled {% if load is defined %}value="{{ load.price }}"{% endif %}> руб
+                            <span>Без НДС, безнал</span>
+                            <input type="number" id="priceWithTax" name="priceWithTax" {% if load is defined %}value="{{ load.priceWithTax }}"{% endif %}> руб
                         </div>
-
+                        <div>
+                            <span>Наличными</span>
+                            <input type="number" id="priceCash" name="priceCash" {% if load is defined %}value="{{ load.priceCash }}"{% endif %}> руб
+                        </div>
                     </div>
                 </div>
             </div>
@@ -197,6 +211,12 @@
         </div>
     </form>
     <style>
+        .alert {
+            background-color: #ffefd9;
+            font-size: 1rem;
+            margin: 0 0 20px;
+            padding: .6666rem 1rem;
+        }
         #fromAddressSuggest,
         #toAddressSuggest {
             position: absolute;

@@ -48,6 +48,8 @@ class LoadFixtures extends Fixture implements DependentFixtureInterface
 
 
             $order
+                ->setDownloadingDateStatus($this->faker->randomElement(array_filter(Load::DOWNLOADING_DATE_STATUSES, fn($el) => $el !== 'request')))
+                ->setDownloadingDate($this->faker->dateTimeBetween('now','6 days'))
                 ->setFromAddress($this->faker->streetAddress)
                 ->setFromLongitude($fromLongitude)
                 ->setFromLatitude($fromLatitude)
@@ -58,9 +60,10 @@ class LoadFixtures extends Fixture implements DependentFixtureInterface
                 ->setToPoint(new Point($toLongitude, $toLatitude))
                 ->setWeight((string)$this->faker->randomFloat('1', 1, 25))
                 ->setVolume((string)$this->faker->randomFloat('1', 1, 59))
-                ->setPriceType($this->faker->randomElement(['negotiable', 'fix', 'request', 'auction']))
+                ->setPriceType($this->faker->randomElement(load::PRICE_TYPE))
                 ->setPriceWithoutTax($this->faker->numberBetween(100, 200000))
                 ->setPriceWithTax($this->faker->numberBetween(100, 200000))
+                ->setPriceCash($this->faker->numberBetween(100, 200000))
                 ->setCargoType($this->faker->numberBetween(0, count(CargoType::CARGO_TYPES) - 1))
                 ->setBodyType($this->faker->numberBetween(0, count(BodyType::BODY_TYPES) -1))
                 ->setDownloadingType($this->faker->numberBetween(0, count(LoadingType::LOADING_TYPES) -1))

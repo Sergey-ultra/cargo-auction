@@ -20,6 +20,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapQueryString;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class LoadController extends AbstractController
 {
@@ -33,16 +34,16 @@ class LoadController extends AbstractController
     {
         $page = $request->query->getInt('page', 1);
 
-        $paginator = $repository->getPaginator($page, $filter);
+        $listDto = $repository->getList($page, $filter);
 
-        $totalCount = $paginator->count();
+        $totalCount = $listDto->totalCount;
         $lastPage = (int)ceil($totalCount / LoadRepository::PAGINATOR_PER_PAGE);
 
         $borders = $paginationService->getBorders($page, $lastPage);
 
         return $this->render('order/index.html.twig', [
             'filter' => $filter,
-            'list' => $paginator,
+            'list' => $listDto->list,
             'page' => $page,
             'totalCount' => $totalCount,
             'lastPage' => $lastPage,
@@ -58,12 +59,14 @@ class LoadController extends AbstractController
             'packageTypes' => PackageType::PACKAGE_TYPES,
             'bodyTypes' => BodyType::BODY_TYPES,
             'loadingTypes' => LoadingType::LOADING_TYPES,
+            'downloadingDateStatuses' => Load::DOWNLOADING_DATE_TITLES,
             'errors' => [],
         ]);
     }
 
 
     #[Route('/create', name: 'cargo.store', methods:['post'] )]
+    //    #[IsGranted("ROLE_ADMIN")]
     public function store(Request $request, OrderService $service): RedirectResponse|Response
     {
         $order = new Load();
@@ -84,11 +87,12 @@ class LoadController extends AbstractController
             'packageTypes' => PackageType::PACKAGE_TYPES,
             'bodyTypes' => BodyType::BODY_TYPES,
             'loadingTypes' => LoadingType::LOADING_TYPES,
+            'downloadingDateStatuses' => Load::DOWNLOADING_DATE_TITLES,
             'errors' => $errors,
         ]);
     }
 
-    #[Route('/{id}/edit', name: 'cargo.edit', methods:['get'])]
+    #[Route('/{id}/edit', name: 'cargo.edit', requirements: [ "id" => "\d+"], methods: ['get'])]
     public function edit(int $id, LoadRepository $loadRepository): Response
     {
         $load = $loadRepository->find($id);
@@ -99,6 +103,7 @@ class LoadController extends AbstractController
             'packageTypes' => PackageType::PACKAGE_TYPES,
             'bodyTypes' => BodyType::BODY_TYPES,
             'loadingTypes' => LoadingType::LOADING_TYPES,
+            'downloadingDateStatuses' => Load::DOWNLOADING_DATE_TITLES,
             'errors' => [],
         ]);
     }

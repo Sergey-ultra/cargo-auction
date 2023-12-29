@@ -7,9 +7,11 @@ doctrine:
         mapping_types:
             _text: string
         types:
-            geometry: 'Jsor\Doctrine\PostGIS\Types\GeometryType'
+#            point: App\Types\PointType
+#            geometry: 'Jsor\Doctrine\PostGIS\Types\GeometryType'
     orm:
         dql:
             string_functions:
                 ST_AsGeoJSON: 'Jsor\Doctrine\PostGIS\Functions\ST_AsGeoJSON'
                 ST_GeomFromGeoJSON: 'Jsor\Doctrine\PostGIS\Functions\ST_GeomFromGeoJSON'
+                ST_DistanceSphere: 'Jsor\Doctrine\PostGIS\Functions\ST_DistanceSphere'

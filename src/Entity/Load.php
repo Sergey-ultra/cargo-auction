@@ -15,10 +15,32 @@ use Doctrine\ORM\Mapping\Column;
 #[ORM\Table(name:"orders")]
 class Load
 {
+    public const DOWNLOADING_DATE_STATUSES = [
+        'ready',
+        'permanently',
+        'request',
+    ];
+
+    public const DOWNLOADING_DATE_TITLES = [
+        'ready' => 'Готов к загрузке',
+        'permanently' => 'Постоянно',
+        'request' => 'Груза  нет, запрос ставки',
+    ];
+
+    public const PRICE_TYPE = [
+        'negotiable',
+        'fix',
+        'request',
+        'auction',
+    ];
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
+    #[ORM\Column]
+    private string $downloadingDateStatus;
+    #[ORM\Column(type: 'datetime')]
+    private ?DateTimeInterface $downloadingDate;
     #[ORM\Column]
     private string $fromAddress;
     #[ORM\Column(type: 'float', nullable: true)]
@@ -35,6 +57,7 @@ class Load
     private float $toLongitude;
     #[Column(name: 'to_point', type: 'point',  nullable: true)]
     private ?Point $toPoint;
+    private ?int $distance;
     #[ORM\Column]
     private string $weight;
     #[ORM\Column]
@@ -45,6 +68,8 @@ class Load
     private ?int $priceWithoutTax;
     #[ORM\Column(nullable: true)]
     private ?int $priceWithTax;
+    #[ORM\Column(nullable: true)]
+    private ?int $priceCash;
     #[ORM\Column]
     private int $cargoType;
     #[ORM\Column]
@@ -69,6 +94,28 @@ class Load
     public function setId(?int $id): self
     {
         $this->id = $id;
+        return $this;
+    }
+
+    public function getDownloadingDateStatus(): string
+    {
+        return $this->downloadingDateStatus;
+    }
+
+    public function setDownloadingDateStatus(string $downloadingDateStatus): self
+    {
+        $this->downloadingDateStatus = $downloadingDateStatus;
+        return $this;
+    }
+
+    public function getDownloadingDate(): ?DateTimeInterface
+    {
+        return $this->downloadingDate;
+    }
+
+    public function setDownloadingDate(?DateTimeInterface $downloadingDate): self
+    {
+        $this->downloadingDate = $downloadingDate;
         return $this;
     }
 
@@ -160,6 +207,17 @@ class Load
         return $this;
     }
 
+    public function getDistance(): ?int
+    {
+        return $this->distance;
+    }
+
+    public function setDistance(?int $distance): self
+    {
+        $this->distance = $distance;
+        return $this;
+    }
+
     public function getWeight(): string
     {
         return $this->weight;
@@ -212,6 +270,17 @@ class Load
     public function setPriceWithTax(?int $priceWithTax): self
     {
         $this->priceWithTax = $priceWithTax;
+        return $this;
+    }
+
+    public function getPriceCash(): ?int
+    {
+        return $this->priceCash;
+    }
+
+    public function setPriceCash(?int $priceCash): self
+    {
+        $this->priceCash = $priceCash;
         return $this;
     }
 

@@ -22,6 +22,8 @@ doctrine:
                 ST_MakePoint: 'Jsor\Doctrine\PostGIS\Functions\ST_MakePoint'
                 ST_SetSRID: 'Jsor\Doctrine\PostGIS\Functions\ST_SetSRID'
                 ST_Point: 'Jsor\Doctrine\PostGIS\Functions\ST_Point'
+                ST_DistanceSphere: 'Jsor\Doctrine\PostGIS\Functions\ST_DistanceSphere'
+                ST_Distance: 'Jsor\Doctrine\PostGIS\Functions\ST_Distance'
 
         mappings:
             App:

@@ -115,10 +115,13 @@
 .row__header {
     background-color: #B5C3CC;
 }
-.table-item {
+.table__item {
     display: block;
-    width: calc(100% / 6);
+    width: calc(75% / 6);
     padding: 9px 15px;
+}
+.table__item-price {
+    width: 25%;
 }
 .table-bottom {
     width: 100%;
@@ -137,6 +140,15 @@
     align-items: center;
     gap: 4px;
     margin-left: auto;
+}
+.price__item {
+    padding: 2px 0;
+}
+.arrow-svg {
+    background-color: #478cc8;
+    margin-bottom: -2px;
+    margin-right: 5px;
+    padding: 3px;
 }
 .page {
     cursor: pointer;

@@ -86,16 +86,16 @@ class ProfileController extends AbstractController
     {
         $page = $request->query->getInt('page', 1);
 
-        $paginator = $repository->getPaginator($page, $filter, $this->getUser());
+        $listDto = $repository->getList($page, $filter, $this->getUser());
 
-        $totalCount = $paginator->count();
+        $totalCount = $listDto->totalCount;
         $lastPage = (int)ceil($totalCount / LoadRepository::PAGINATOR_PER_PAGE);
 
         $borders = $paginationService->getBorders($page, $lastPage);
 
         return $this->render('profile/my-cargos.html.twig', [
         'filter' => $filter,
-            'list' => $paginator,
+            'list' => $listDto->list,
             'page' => $page,
             'totalCount' => $totalCount,
             'lastPage' => $lastPage,
