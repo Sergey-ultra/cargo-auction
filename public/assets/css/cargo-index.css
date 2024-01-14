@@ -141,8 +141,39 @@
     gap: 4px;
     margin-left: auto;
 }
+.table__meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
 .price__item {
     padding: 2px 0;
+}
+.send-bid {
+    margin: 0;
+    color: rgb(71, 140, 200);
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: inline-block;
+    font-size: 14px;
+    outline: none;
+    padding: 0;
+    text-align: left;
+    text-decoration: underline;
+}
+.load-info {
+    align-items: center;
+    border: none;
+    border-radius: 2px;
+    box-sizing: border-box;
+    cursor: pointer;
+    display: flex;
+    height: 24px;
+    justify-content: center;
+    padding: 2px;
+    width: 24px;
+    background-color: #9b6aa7;
 }
 .arrow-svg {
     background-color: #478cc8;

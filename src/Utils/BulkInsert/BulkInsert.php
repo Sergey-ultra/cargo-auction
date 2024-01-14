@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\BulkInsert;
+namespace App\Utils\BulkInsert;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Schema\Identifier;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\Schema\Identifier;
 
 final class BulkInsert
 {

@@ -61,8 +61,11 @@
         <div class="meta-right">
             <div class="sort">
                 <label>Упорядочить по </label>
-                <select name="order_by" id="">
-                    <option value="">времени добавления</option>
+
+                <select name="orderBy" id="orderBy">
+                    {% for orderOptionKey, orderOption in orderOptions %}
+                        <option value="{{ orderOptionKey }}" {% if orderBy == orderOptionKey %}selected{% endif %}>{{ orderOption }}</option>
+                    {% endfor %}
                 </select>
             </div>
             {{ include('common/pagination.html.twig',  { borders: borders, page: page, lastPage: lastPage, url: 'cargo.index' }) }}
@@ -112,7 +115,7 @@
                             {% endif %}
                         </div>
                         {% if order.priceType == 'negotiable' %}
-                            <div>
+                            <button class="send-bid">
                                 <svg fill="#ffffff" stroke="#ffffff" stroke-width="0" data-qa="icon" viewBox="0 0 15 15" width="15" height="15" class="arrow-svg">
                                     <use xlink:href="#ic_shape" href="#ic_shape">
                                         <symbol id="ic_shape" viewBox="0 0 18 14">
@@ -120,8 +123,8 @@
                                         </symbol>
                                     </use>
                                 </svg>
-                                <a href="">Отправить ставку</a>
-                            </div>
+                                <span data-toogle="modal" data-target="#sendBid">Отправить ставку</span>
+                            </button>
                         {% else %}
                             <span class="text-gray">без торга</span>
                         {% endif %}
@@ -151,7 +154,7 @@
                             {% endif %}
 
                         {% else %}
-                            <div class="button-empty" data-show-auth="true">показать контакты и ставку</div>
+                            <div class="button-empty" data-toogle="modal" data-target="#authModal">показать контакты и ставку</div>
                             <div>
                                 Доступно <b>бесплатно</b> после быстрой регистрации
                             </div>
@@ -164,7 +167,6 @@
                                     <path fill-rule="evenodd" clip-rule="evenodd" d="M13.9687 0.281254L12.1406 2.10938L15.8906 5.85938L17.7187 4.03125C17.9063 3.84375 18 3.60938 18 3.32813C18 3.04688 17.9063 2.8125 17.7187 2.625L15.375 0.281254C15.1875 0.093752 14.9531 3.94788e-06 14.6719 3.96017e-06C14.3906 3.97247e-06 14.1563 0.0937521 13.9687 0.281254ZM3.75 18L14.8125 6.9375L11.0625 3.1875L-1.63918e-07 14.25L0 18L3.75 18Z" fill="#8C969D"/>
                                 </svg>
                             </a>
-                        {% else %}
                             <div>
                                 <svg fill="#478cc8" stroke="#478cc8" stroke-width="0" data-qa="icon" width="24" height="24" viewBox="0 0 24 24" preserveAspectRatio="none" x="3" y="3.5">
                                     <use xlink:href="#ic_star-outline" href="#ic_star-outline">
@@ -172,13 +174,37 @@
                                     </use>
                                 </svg>
                             </div>
+                        {% else %}
+
                         {% endif %}
-                        <div>доб {{ order.createdAt|date('H:i') }}</div>
+                        <a href="{{ path('cargo.show', {id: order.id}) }}" class="load-info">
+                            <svg width="24" height="24" viewBox="0 0 24 24">
+                                <svg fill="white" stroke="white" stroke-width="0" data-qa="icon" viewBox="0 0 20 20" width="20" height="20" preserveAspectRatio="none" x="2" y="2">
+                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M0 10c0-1.38.26-2.679.781-3.896A10.035 10.035 0 0 1 2.92 2.92 10.035 10.035 0 0 1 6.104.78 9.801 9.801 0 0 1 10 0c1.38 0 2.679.26 3.896.781A10.036 10.036 0 0 1 17.08 2.92a10.037 10.037 0 0 1 2.139 3.184A9.802 9.802 0 0 1 20 10c0 1.38-.26 2.679-.781 3.896a10.038 10.038 0 0 1-2.139 3.184 10.038 10.038 0 0 1-3.183 2.139A9.802 9.802 0 0 1 10 20c-1.38 0-2.679-.26-3.896-.781A10.037 10.037 0 0 1 2.92 17.08a10.036 10.036 0 0 1-2.14-3.183A9.802 9.802 0 0 1 0 10Zm1.25 0c0 1.21.228 2.347.684 3.408a8.813 8.813 0 0 0 1.875 2.783 8.811 8.811 0 0 0 2.783 1.875A8.545 8.545 0 0 0 10 18.75c1.21 0 2.347-.228 3.408-.684a8.811 8.811 0 0 0 2.783-1.875 8.811 8.811 0 0 0 1.875-2.783A8.545 8.545 0 0 0 18.75 10c0-1.21-.228-2.347-.684-3.408a8.811 8.811 0 0 0-1.875-2.783 8.813 8.813 0 0 0-2.783-1.875A8.545 8.545 0 0 0 10 1.25c-1.21 0-2.347.228-3.408.684a8.812 8.812 0 0 0-2.783 1.875 8.812 8.812 0 0 0-1.875 2.783A8.545 8.545 0 0 0 1.25 10Z"></path><path d="M11.336 8.125v8H8.72v-8h2.616Zm.27-2.839c0 .208-.043.403-.127.586-.084.183-.2.343-.346.481a1.694 1.694 0 0 1-.51.329 1.584 1.584 0 0 1-1.22 0 1.684 1.684 0 0 1-.493-.329 1.519 1.519 0 0 1-.338-.481 1.423 1.423 0 0 1-.122-.586c0-.214.04-.414.122-.6a1.58 1.58 0 0 1 .831-.818 1.634 1.634 0 0 1 1.73.33c.146.14.262.303.346.489.084.185.127.385.127.599Z"></path>
+                                </svg>
+                            </svg>
+                        </a>
+
+                        <div>доб <span>{{ order.createdAt|date('Y-m-d-H-i') != "now"|date('Y-m-d-H-i') ? order.createdAt|date('d M') : order.createdAt|date('H:i') }}</span></div>
+                        {% if order.updatedAt and order.createdAt != order.updatedAt %}
+                            <div>изм {{ order.updatedAt|date('H:i') }}</div>
+                        {% endif %}
                     </div>
 
                 </div>
             </div>
         {% endfor %}
+    </div>
+    <div class="table__meta">
+        {{ include('common/pagination.html.twig',  { borders: borders, page: page, lastPage: lastPage, url: 'cargo.index' }) }}
+        <div>
+            <span>Выводить строк</span>
+            <select name="" id="perPage">
+                {% for option in  perPageOptions %}
+                    <option value="{{ option }}" {% if perPage == option %}selected{% endif %}>{{ option }}</option>
+                {% endfor %}
+            </select>
+        </div>
     </div>
 
 {% else %}
@@ -186,27 +212,57 @@
 {% endif %}
 <script>
     window.onload = function() {
-        function prepareUrlWithQueryParams(formData) {
-            let searchParams = new URLSearchParams(window.location.search);
-            for(let [name, value] of formData) {
-                if (['null', null, ''].includes(value)) {
+        function prepareUrlWithQueryParams(form) {
+            const formData = new FormData(form);
 
+            let searchParams = new URLSearchParams(window.location.search);
+            for(let [name, value] of formData.entries()) {
+                if (['null', null, ''].includes(value)) {
+                    searchParams.delete('page');
                     searchParams.delete(name);
-                } else {
-                    searchParams.set(name, value);
+                } else if (searchParams.get(name) !== value) {
+                    searchParams.delete('page');
+                    searchParams.set(name, String(value));
                 }
             }
 
-            return searchParams.toString()
+            return searchParams;
         }
 
         const filter = document.getElementById('filter');
 
         filter.onsubmit = function(e) {
             e.preventDefault();
-            const formData = new FormData(this);
 
-            window.location.search = prepareUrlWithQueryParams(formData);
+            window.location.search = prepareUrlWithQueryParams(this).toString();
+        }
+
+        const perPage = document.getElementById('perPage');
+
+        if (perPage) {
+            perPage.onchange = function (e) {
+                e.preventDefault();
+
+                let searchParams = new URLSearchParams(window.location.search);
+                if (!['null', null, ''].includes(e.target.value)) {
+                    searchParams.delete('page');
+                    searchParams.set('per_page', e.target.value);
+
+                    window.location.search = searchParams.toString();
+                }
+            }
+        }
+
+        const orderBy = document.getElementById('orderBy');
+        orderBy.onchange = function(e) {
+            e.preventDefault();
+
+            let searchParams = new URLSearchParams(window.location.search);
+            if (!['null', null, ''].includes(e.target.value)) {
+                searchParams.set('order_by', e.target.value);
+
+                window.location.search = searchParams.toString();
+            }
         }
 
 

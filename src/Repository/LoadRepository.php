@@ -26,6 +26,17 @@ class LoadRepository extends ServiceEntityRepository
 {
 
     public const PAGINATOR_PER_PAGE = 10;
+    public const ORDER_CREATED_AT = 'created_at';
+    public const ORDER_UPDATED_AT = 'updated_at';
+    public const ORDER_DOWNLOADING_DATE = 'downloading_date';
+    public const ORDER_CARGO_TYPE = 'cargo_type';
+
+    public const ORDER_OPTIONS = [
+        self::ORDER_CREATED_AT => 'времени добавления',
+        self::ORDER_UPDATED_AT => 'времени обновления',
+        self::ORDER_DOWNLOADING_DATE => 'дате загрузки',
+        self::ORDER_CARGO_TYPE => 'типу груза',
+    ];
 
     private CityRepository $cityRepository;
     public function __construct(ManagerRegistry $registry, CityRepository $cityRepository)
@@ -35,7 +46,13 @@ class LoadRepository extends ServiceEntityRepository
         $this->cityRepository = $cityRepository;
     }
 
-    public function getList(int $page, ?LoadFilter $filter, ?User $byUser = null): LoadList
+    public function getList(
+        ?LoadFilter $filter,
+        int $page = 1,
+        int $perPage = self::PAGINATOR_PER_PAGE,
+        string $orderOption = self::ORDER_CREATED_AT,
+        ?User $byUser = null
+    ): LoadList
     {
         $queryBuilder = $this->createQueryBuilder('c')
         ->select('c, ST_Distance(c.fromPoint, c.toPoint)/1000 distance');
@@ -77,11 +94,17 @@ class LoadRepository extends ServiceEntityRepository
                 ->setParameter('user', $byUser);
         }
 
-        $queryBuilder->orderBy('c.createdAt', 'DESC');
+        if ($orderOption === self::ORDER_CREATED_AT) {
+            $queryBuilder->orderBy('c.createdAt', 'DESC');
+        } else if ($orderOption === self::ORDER_UPDATED_AT) {
+            $queryBuilder->orderBy('c.updatedAt', 'DESC');
+        } else if ($orderOption === self::ORDER_DOWNLOADING_DATE) {
+            $queryBuilder->orderBy('c.downloadingDate', 'DESC');
+        }
 
         $query = $queryBuilder
-            ->setFirstResult(($page - 1) * self::PAGINATOR_PER_PAGE)
-            ->setMaxResults(self::PAGINATOR_PER_PAGE)
+            ->setFirstResult(($page - 1) * $perPage)
+            ->setMaxResults($perPage)
             ->getQuery();
 
         $paginator = new Paginator($query);

@@ -25,7 +25,7 @@ class LoadFixtures extends Fixture implements DependentFixtureInterface
 
     public function __construct()
     {
-        $this->faker = Factory::create();
+        $this->faker = Factory::create('ru_RU');
     }
 
     public function load(ObjectManager $manager): void
@@ -41,9 +41,9 @@ class LoadFixtures extends Fixture implements DependentFixtureInterface
 
             $order = new Load();
 
-            $fromLongitude = $this->faker->longitude;
+            $fromLongitude = $this->faker->randomFloat(6, 27, 177);
             $fromLatitude = $this->faker->latitude;
-            $toLongitude = $this->faker->longitude;
+            $toLongitude = $this->faker->randomFloat(6, 41, 71);
             $toLatitude = $this->faker->latitude;
 
 

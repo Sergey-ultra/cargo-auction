@@ -19,8 +19,10 @@
             {{ encore_entry_script_tags('app') }}
         {% endblock %}
         <script type="text/javascript" src="{{ asset('assets/notify.js') }}"></script>
+        <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+        <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+{#        <script src='https://unpkg.com/babel-standalone@6.26.0/babel.js'></script>#}
 {#        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>#}
-
     </head>
     <body>
         <div class="app">
@@ -66,7 +68,7 @@
                             </div>
                         {% else %}
                             <div class="right">
-                                <a class="button button-primary button-small" href="{{ path('app_sign_in') }}" data-show-auth="true">Вход</a>
+                                <span class="button button-primary button-small" data-toogle="modal" data-target="#authModal">Вход</span>
                                 <a class="button button-secondary button-small" href="{{ path('register') }}">Регистрация</a>
                             </div>
                         {% endif %}
@@ -83,9 +85,66 @@
                     {{ include('footer.html.twig') }}
                 </div>
             </div>
+            <div class="modal__layer fade" id="authModal">
+                <div class="modal__body">
+                    <div class="modal__dialog">
+                        <div class="modal__header">
+                            <h1>Вход</h1>
+                            <button class="modal__close" data-toogle="modal" data-target="#authModal">
+                                <span >✕</span>
+                            </button>
+                        </div>
+                        <div class="modal__content">
+                            {{ include('auth/sign-in-content.html.twig') }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal__layer fade" id="sendBid">
+                <div class="modal__body">
+                    <div class="modal__dialog">
+                        <div class="modal__header">
+                            <h1>Отправить ставку</h1>
+                            <button class="modal__close" data-toogle="modal" data-target="#sendBid">
+                                <span >✕</span>
+                            </button>
+                        </div>
+                        <div class="modal__content">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="root"></div>
         </div>
     </body>
     <script>
+
+        const modalButtons = document.querySelectorAll('[data-toogle="modal"]');
+
+        modalButtons.forEach(el => {
+            el.onclick = function(e) {
+                const modalDom = document.querySelector(el.getAttribute("data-target"));
+
+                function outSideClick(e) {
+                    if (!modalDom.querySelector('.modal__body').contains(e.target)) {
+                        modalDom.classList.remove('show');
+                    }
+                }
+
+                if (!modalDom.classList.contains('show')) {
+                    modalDom.classList.add('show');
+
+                    document.addEventListener('click', outSideClick, {capture: true, once: true});
+                } else {
+                    modalDom.classList.remove('show');
+                    document.removeEventListener('click', outSideClick);
+                }
+            }
+        })
+
+
+
         let dropdown = document.getElementById('user-menu');
 
         function outsideClick(event) {
@@ -96,14 +155,18 @@
             dropdown.classList.add('closed');
         }
 
-        document.getElementById('dropdown-btn').addEventListener('click', (e) => {
-            if (dropdown.classList.contains('closed')) {
-                dropdown.classList.remove('closed');
-                document.addEventListener('click', outsideClick, {capture: true, once: true});
-            } else {
-                dropdown.classList.add('closed');
-            }
-        })
+        const dropDownBtn = document.getElementById('dropdown-btn');
+
+        if (dropDownBtn) {
+            dropDownBtn.addEventListener('click', (e) => {
+                if (dropdown.classList.contains('closed')) {
+                    dropdown.classList.remove('closed');
+                    document.addEventListener('click', outsideClick, {capture: true, once: true});
+                } else {
+                    dropdown.classList.add('closed');
+                }
+            })
+        }
 
 
         if (!window["WebSocket"]) {
@@ -118,5 +181,13 @@
                 let notification = new Notify('Notification Title', e.data);
             }
         }
+    </script>
+
+    <script>
+        function MyComponent() {
+            return <h1>Hello, React!</h1>;
+        }
+        // Render the component into the "root" element
+        ReactDOM.render(<MyComponent />, document.getElementById('root'));
     </script>
 </html>

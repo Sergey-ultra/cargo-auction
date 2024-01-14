@@ -33,23 +33,50 @@ class LoadController extends AbstractController
     ): Response
     {
         $page = $request->query->getInt('page', 1);
+        $perPage = $request->query->getInt('per_page', 10);
+        $orderBy = $request->query->getString('order_by', LoadRepository::ORDER_CREATED_AT);
 
-        $listDto = $repository->getList($page, $filter);
+        $listDto = $repository->getList($filter, $page, $perPage, $orderBy);
 
         $totalCount = $listDto->totalCount;
-        $lastPage = (int)ceil($totalCount / LoadRepository::PAGINATOR_PER_PAGE);
+        $lastPage = (int)ceil($totalCount / $perPage);
 
         $borders = $paginationService->getBorders($page, $lastPage);
+
+        $perPageOptions = [10, 20, 30, 50, 100];
 
         return $this->render('order/index.html.twig', [
             'filter' => $filter,
             'list' => $listDto->list,
             'page' => $page,
+            'perPage' => $perPage,
+            'orderBy' => $orderBy,
+            'perPageOptions' => $perPageOptions,
             'totalCount' => $totalCount,
             'lastPage' => $lastPage,
             'borders' => $borders,
+            'orderOptions' => LoadRepository::ORDER_OPTIONS,
         ]);
     }
+
+    #[Route('/load/{id}', name: 'cargo.show', methods:['get'])]
+    public function show(int $id, LoadRepository $loadRepository): Response
+    {
+        $load = $loadRepository->find($id);
+
+        return $this->render('order/show.html.twig', [
+            'load' => $load,
+            'cargoTypes' => CargoType::CARGO_TYPES,
+            'packageTypes' => PackageType::PACKAGE_TYPES,
+            'bodyTypes' => BodyType::BODY_TYPES,
+            'loadingTypes' => LoadingType::LOADING_TYPES,
+            'downloadingDateStatuses' => Load::DOWNLOADING_DATE_TITLES,
+            'errors' => [],
+        ]);
+    }
+
+
+
 
     #[Route('/create', name: 'cargo.create', methods:['get'])]
     public function create(): Response

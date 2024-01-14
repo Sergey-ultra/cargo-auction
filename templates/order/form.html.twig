@@ -22,195 +22,210 @@
     {% for error in errors %}
         {{ error.message }}
     {% endfor %}
-
-    <form action="{{ path('cargo.store') }}" method="POST" name="order">
-        <input type="hidden" name="_token" value="{{ csrf_token('load') }}">
-        <div class="legend">Описание груза</div>
-        <div class="fieldset">
-            <div class="form-item">
-                <div class="label">Тип груза</div>
-                <div class="input">
-                    <select name="cargoType" id="">
-                        {% for key, type in cargoTypes %}
-                            <option {% if load is defined and load.cargoType == key %}selected{% endif %} value="{{ key }}">{{ type }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-            </div>
-            <div class="form-item">
-                <div class="label">Упаковка</div>
-                <div class="input">
-                    <select name="packageType" id="">
-                        {% for key, type in packageTypes %}
-                            {% if type.children is not defined %}
-                                <option value="{{ key }}">{{ type }}</option>
-                            {% else %}
-                                <optgroup label="{{ type.value }}">
-                                    {% for childKey, childType in type.children %}
-                                        <option value="{{ childKey }}">{{ childType }}</option>
-                                    {% endfor %}
-                                </optgroup>
-                            {% endif %}
-
-                        {% endfor %}
-                    </select>
-                </div>
-            </div>
-            <div class="form-item">
-                <div class="label">Объём (на одну машину)</div>
-                <div class="input">
-                    <input type="number" name="volume" {% if load is defined %}value="{{ load.volume }}"{% endif %}>
-                </div>
-            </div>
-            <div class="form-item">
-                <div class="label">Вес (на одну машину)</div>
-                <div class="input">
-                    <input type="number" name="weight" {% if load is defined %}value="{{ load.weight }}"{% endif %}>
-                </div>
-            </div>
-            <div class="form-item">
-                <div class="label">Температурный режим</div>
-                <div class="input">
-                    <input type="number" name="temperatureModeFrom" placeholder="в ℃" min="-30" max="30" step="1">
-                </div>
-                -
-                <div class="input">
-                    <input type="number" name="temperatureModeTo" placeholder="в ℃" min="-30" max="30" step="1"  value="">
-                </div>
-            </div>
-            <div class="form-item">
-                <div class="label">Санитарный паспорт</div>
-                <div class="input">
-                    <input type="checkbox">
-                </div>
-            </div>
-        </div>
-
-        <div class="legend">Когда</div>
-        <div class="fieldset">
-            <div class="form-item">
-                <div class="label">Дата загрузки</div>
-                <div class="input">
-                    <div id="">
-                        <select name="downloadingDateStatus" id="">
-                            {% for dateStatusKey, dateStatus in downloadingDateStatuses %}
-                                <option {% if load is defined and load.downloadingDateStatus == dateStatusKey %}selected{% endif %} value="{{ dateStatusKey }}">
-                                    {{ dateStatus }}
-                                </option>
+    <div {% if not is_granted('IS_AUTHENTICATED_FULLY') %}class="overlay-box"{% endif %}>
+        <form action="{{ path('cargo.store') }}" method="POST" name="order">
+            <input type="hidden" name="_token" value="{{ csrf_token('load') }}">
+            <div class="legend">Описание груза</div>
+            <div class="fieldset">
+                <div class="form-item">
+                    <div class="label">Тип груза</div>
+                    <div class="input">
+                        <select name="cargoType" id="">
+                            {% for key, type in cargoTypes %}
+                                <option {% if load is defined and load.cargoType == key %}selected{% endif %} value="{{ key }}">{{ type }}</option>
                             {% endfor %}
                         </select>
                     </div>
-                    <div>
-                        <div id="ready_date"></div>
+                </div>
+                <div class="form-item">
+                    <div class="label">Упаковка</div>
+                    <div class="input">
+                        <select name="packageType" id="">
+                            {% for key, type in packageTypes %}
+                                {% if type.children is not defined %}
+                                    <option value="{{ key }}">{{ type }}</option>
+                                {% else %}
+                                    <optgroup label="{{ type.value }}">
+                                        {% for childKey, childType in type.children %}
+                                            <option value="{{ childKey }}">{{ childType }}</option>
+                                        {% endfor %}
+                                    </optgroup>
+                                {% endif %}
+
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="form-item">
+                    <div class="label">Объём (на одну машину)</div>
+                    <div class="input">
+                        <input type="number" name="volume" {% if load is defined %}value="{{ load.volume }}"{% endif %}>
+                    </div>
+                </div>
+                <div class="form-item">
+                    <div class="label">Вес (на одну машину)</div>
+                    <div class="input">
+                        <input type="number" name="weight" {% if load is defined %}value="{{ load.weight }}"{% endif %}>
+                    </div>
+                </div>
+                <div class="form-item">
+                    <div class="label">Температурный режим</div>
+                    <div class="input">
+                        <input type="number" name="temperatureModeFrom" placeholder="в ℃" min="-30" max="30" step="1">
+                    </div>
+                    -
+                    <div class="input">
+                        <input type="number" name="temperatureModeTo" placeholder="в ℃" min="-30" max="30" step="1"  value="">
+                    </div>
+                </div>
+                <div class="form-item">
+                    <div class="label">Санитарный паспорт</div>
+                    <div class="input">
+                        <input type="checkbox">
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="legend">Требования к транспортному средству</div>
-        <div class="fieldset">
-            <div class="form-item">
-                <div class="label">Кузов*</div>
-                <div class="input">
-                    <select name="bodyType" id="">
-                        {% for key, type in bodyTypes %}
-                            <option  {% if load is defined and load.bodyType == key %}selected{% endif %} value="{{ key }}">{{ type }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-            </div>
-            <div class="form-item">
-                <div class="label">Загрузка</div>
-                <div class="input">
-                    <select name="downloadingType">
-                        {% for key, type in loadingTypes %}
-                            <option {% if load is defined and load.downloadingType == key %}selected{% endif %} value="{{ key }}">{{ type }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-            </div>
-            <div class="form-item">
-                <div class="label">Выгрузка</div>
-                <div class="input">
-                    <select name="unloadingType">
-                        {% for key, type in loadingTypes %}
-                            <option {% if load is defined and load.unloadingType == key %}selected{% endif %} value="{{ key }}">{{ type }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-            </div>
-        </div>
-
-        <div class="legend">Маршрут</div>
-        <div class="fieldset">
-            <div class="form-item">
-                <div class="label">Откуда</div>
-                <div class="input">
-                    <input type="text" name="fromAddress" id="fromAddressInput" {% if load is defined %}value="{{ load.fromAddress }}"{% endif %}>
-                    <div id="fromAddressSuggest">
-                        <ul class="suggest-list"></ul>
-                    </div>
-                </div>
-            </div>
-            <div class="form-item">
-                <div class="label">Куда</div>
-                <div class="input">
-                    <input type="text" name="toAddress" id="toAddressInput" {% if load is defined %}value="{{ load.toAddress }}"{% endif %}>
-                    <div id="toAddressSuggest">
-                        <ul class="suggest-list"></ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="legend">Условия перевозки</div>
-        <div class="fieldset">
-            <div class="form-item">
-                <div class="label">Оплата</div>
-                <div class="input">
-
-                   <div id="agreedPriceBlock" class="tab">
-                       <label for="">
-                           <input type="radio" name="priceType" value="negotiable" {% if load is defined and load.priceType == 'negotiable' %}checked{% endif %}>
-                         Возможен торг
-                       </label>
-                       <label for="">
-                           <input type="radio" name="priceType" value="fix" {% if load is defined and load.priceType == 'fix' %}checked{% endif %}>
-                           Без торга
-                       </label>
-                       <label for="">
-                           <input type="radio" name="priceType" value="request" {% if load is defined and load.priceType == 'request' %}checked{% endif %}>
-                           Запрос
-                       </label>
-                       <label for="">
-                           <input type="radio" name="priceType" value="auction" {% if load is defined and load.priceType == 'auction'%}checked{% endif %}>
-                           Торги
-                       </label>
-                   </div>
-
-                    <div id="priceBlock">
-                        <div>
-                            <span>С НДС, безнал</span>
-                            <input type="number" id="priceWithoutTax" name="priceWithoutTax" {% if load is defined %}value="{{ load.priceWithoutTax }}"{% endif %}> руб
+            <div class="legend">Когда</div>
+            <div class="fieldset">
+                <div class="form-item">
+                    <div class="label">Дата загрузки</div>
+                    <div class="input">
+                        <div id="">
+                            <select name="downloadingDateStatus" id="">
+                                {% for dateStatusKey, dateStatus in downloadingDateStatuses %}
+                                    <option {% if load is defined and load.downloadingDateStatus == dateStatusKey %}selected{% endif %} value="{{ dateStatusKey }}">
+                                        {{ dateStatus }}
+                                    </option>
+                                {% endfor %}
+                            </select>
                         </div>
                         <div>
-                            <span>Без НДС, безнал</span>
-                            <input type="number" id="priceWithTax" name="priceWithTax" {% if load is defined %}value="{{ load.priceWithTax }}"{% endif %}> руб
-                        </div>
-                        <div>
-                            <span>Наличными</span>
-                            <input type="number" id="priceCash" name="priceCash" {% if load is defined %}value="{{ load.priceCash }}"{% endif %}> руб
+                            <div id="ready_date"></div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="buttons">
-            <button type="submit" class="button" {% if not is_granted('IS_AUTHENTICATED_FULLY') %}disabled{% endif %}>Добавить</button>
-        </div>
-    </form>
+            <div class="legend">Требования к транспортному средству</div>
+            <div class="fieldset">
+                <div class="form-item">
+                    <div class="label">Кузов*</div>
+                    <div class="input">
+                        <select name="bodyType" id="">
+                            {% for key, type in bodyTypes %}
+                                <option  {% if load is defined and load.bodyType == key %}selected{% endif %} value="{{ key }}">{{ type }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="form-item">
+                    <div class="label">Загрузка</div>
+                    <div class="input">
+                        <select name="downloadingType">
+                            {% for key, type in loadingTypes %}
+                                <option {% if load is defined and load.downloadingType == key %}selected{% endif %} value="{{ key }}">{{ type }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="form-item">
+                    <div class="label">Выгрузка</div>
+                    <div class="input">
+                        <select name="unloadingType">
+                            {% for key, type in loadingTypes %}
+                                <option {% if load is defined and load.unloadingType == key %}selected{% endif %} value="{{ key }}">{{ type }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="legend">Маршрут</div>
+            <div class="fieldset">
+                <div class="form-item">
+                    <div class="label">Откуда</div>
+                    <div class="input">
+                        <input type="text" name="fromAddress" id="fromAddressInput" {% if load is defined %}value="{{ load.fromAddress }}"{% endif %}>
+                        <div id="fromAddressSuggest">
+                            <ul class="suggest-list"></ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-item">
+                    <div class="label">Куда</div>
+                    <div class="input">
+                        <input type="text" name="toAddress" id="toAddressInput" {% if load is defined %}value="{{ load.toAddress }}"{% endif %}>
+                        <div id="toAddressSuggest">
+                            <ul class="suggest-list"></ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="legend">Условия перевозки</div>
+            <div class="fieldset">
+                <div class="form-item">
+                    <div class="label">Оплата</div>
+                    <div class="input">
+
+                        <div id="agreedPriceBlock" class="tab">
+                            <label for="">
+                                <input type="radio" name="priceType" value="negotiable" {% if load is defined and load.priceType == 'negotiable' %}checked{% endif %}>
+                                Возможен торг
+                            </label>
+                            <label for="">
+                                <input type="radio" name="priceType" value="fix" {% if load is defined and load.priceType == 'fix' %}checked{% endif %}>
+                                Без торга
+                            </label>
+                            <label for="">
+                                <input type="radio" name="priceType" value="request" {% if load is defined and load.priceType == 'request' %}checked{% endif %}>
+                                Запрос
+                            </label>
+                            <label for="">
+                                <input type="radio" name="priceType" value="auction" {% if load is defined and load.priceType == 'auction'%}checked{% endif %}>
+                                Торги
+                            </label>
+                        </div>
+
+                        <div id="priceBlock">
+                            <div>
+                                <span>С НДС, безнал</span>
+                                <input type="number" id="priceWithoutTax" name="priceWithoutTax" {% if load is defined %}value="{{ load.priceWithoutTax }}"{% endif %}> руб
+                            </div>
+                            <div>
+                                <span>Без НДС, безнал</span>
+                                <input type="number" id="priceWithTax" name="priceWithTax" {% if load is defined %}value="{{ load.priceWithTax }}"{% endif %}> руб
+                            </div>
+                            <div>
+                                <span>Наличными</span>
+                                <input type="number" id="priceCash" name="priceCash" {% if load is defined %}value="{{ load.priceCash }}"{% endif %}> руб
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="buttons">
+                <button type="submit" class="button" {% if not is_granted('IS_AUTHENTICATED_FULLY') %}disabled{% endif %}>Добавить</button>
+            </div>
+        </form>
+    </div>
+
     <style>
+        .overlay-box {
+            position: relative;
+        }
+        .overlay-box:after {
+            background: hsla(0,0%,100%,.4);
+            bottom: 0;
+            content: "";
+            left: 0;
+            position: absolute;
+            right: 0;
+            top: 0;
+            z-index: 900;
+        }
         .alert {
             background-color: #ffefd9;
             font-size: 1rem;

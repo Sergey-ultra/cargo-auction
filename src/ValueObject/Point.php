@@ -7,8 +7,8 @@ namespace App\ValueObject;
 class Point
 {
     public function __construct(
-        private float $latitude,
-        private float $longitude,
+        private readonly float $latitude,
+        private readonly float $longitude,
     ) {
     }
 
