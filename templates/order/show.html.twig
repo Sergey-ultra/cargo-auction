@@ -9,5 +9,7 @@
 {% endblock %}
 
 {% block body %}
-
+    {% for bid in load.bids %}
+        <span>{{ bid.bid }} руб</span>
+    {% endfor %}
 {% endblock %}

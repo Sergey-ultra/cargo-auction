@@ -48,7 +48,7 @@ class CustomIoServer extends IoServer
     {
         try {
             foreach ($this->webSocketManager->getQueuedMessages() as $message) {
-                $this->webSocketManager->sendMessage($message, $webSocketServer->getClients());
+                $this->webSocketManager->sendMessage($message, $webSocketServer->getConnections());
             }
         } catch (\Exception $e) {
             $this->logger->error('Failed to process messages', ['exception' => $e]);

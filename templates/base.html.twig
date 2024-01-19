@@ -6,7 +6,8 @@
         <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text></svg>">
         {# Run `composer require symfony/webpack-encore-bundle` to start using Symfony UX #}
 {#        {% block stylesheets %}#}
-{#            {{ encore_entry_link_tags('app') }}#}
+            {{ encore_entry_link_tags('app') }}
+{##}
 {#        {% endblock %}#}
         {% block stylesheets %}
 {#            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">#}
@@ -15,63 +16,42 @@
         {% endblock %}
 
 
-        {% block javascripts %}
-            {{ encore_entry_script_tags('app') }}
-        {% endblock %}
-        <script type="text/javascript" src="{{ asset('assets/notify.js') }}"></script>
-        <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
-        <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-{#        <script src='https://unpkg.com/babel-standalone@6.26.0/babel.js'></script>#}
+        <script type="text/javascript" src="{{ asset('assets/js/notify.js') }}"></script>
+
 {#        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>#}
     </head>
     <body>
         <div class="app">
+            <div class="modal__layer fade" id="sendBidModal">
+                <div class="modal__body">
+                    <div class="modal__dialog">
+                        <div class="modal__header">
+                            <h1>Отправить ставку</h1>
+                            <button class="modal__close" data-toogle="modal" data-target="#sendBidModal">
+                                <span >✕</span>
+                            </button>
+                        </div>
+                        <div class="modal__content">
+                            <form id="sendBidForm">
+                                <div class="form-item">
+                                    <div class="label">Ваша ставка</div>
+                                    <div class="input">
+                                        <input type="number" name="bid">
+                                    </div>
+                                </div>
+                                <button type="submit" class="button">Отправить ставку</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <nav class="nav">
                 <div class="container">
                     <div class="nav__wrapper">
                         <a href="{{  path('cargo.index') }}">Cargo</a>
-
-                        {% if is_granted('IS_AUTHENTICATED_FULLY') %}
-                            <div class="right">
-                                <div id="user-menu" class="dropdown closed">
-                                    <div id="dropdown-btn" class="dropdown-button">{{ app.user.email }}</div>
-                                    <ul id="dropdown-list" class="dropdown-list">
-                                        <li class="dropdown-item">
-                                            <a href="{{ path('profile') }}">Мои настройки</a>
-                                        </li>
-                                        <li class="dropdown-item">
-                                            <a href="{{ path('profile.messages') }}">Личные сообщения</a>
-                                        </li>
-                                        <li class="dropdown-item">
-                                            <a href="{{ path('profile.company') }}">Моя компания</a>
-                                        </li>
-                                        <li class="dropdown-item">
-                                            <a href="{{ path('profile.my-cargos') }}">Мои объявления</a>
-                                        </li>
-                                        <li class="dropdown-item">
-                                            <a href="#">Мои фильтры</a>
-                                        </li>
-                                        <li class="dropdown-item">
-                                            <a href="#">Мои отзывы</a>
-                                        </li>
-                                        <li class="dropdown-item">
-                                            <a href="#">Мои рассылки</a>
-                                        </li>
-                                        <li class="dropdown-item">
-                                            <a href="#">Баланс</a>
-                                        </li>
-                                        <li class="dropdown-item">
-                                            <a href="{{ path('app_sign_out') }}">Выйти</a>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        {% else %}
-                            <div class="right">
-                                <span class="button button-primary button-small" data-toogle="modal" data-target="#authModal">Вход</span>
-                                <a class="button button-secondary button-small" href="{{ path('register') }}">Регистрация</a>
-                            </div>
-                        {% endif %}
+                        <div class="right">
+                            <div id="nav"></div>
+                        </div>
                     </div>
                 </div>
             </nav>
@@ -85,66 +65,95 @@
                     {{ include('footer.html.twig') }}
                 </div>
             </div>
-            <div class="modal__layer fade" id="authModal">
-                <div class="modal__body">
-                    <div class="modal__dialog">
-                        <div class="modal__header">
-                            <h1>Вход</h1>
-                            <button class="modal__close" data-toogle="modal" data-target="#authModal">
-                                <span >✕</span>
-                            </button>
-                        </div>
-                        <div class="modal__content">
-                            {{ include('auth/sign-in-content.html.twig') }}
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal__layer fade" id="sendBid">
-                <div class="modal__body">
-                    <div class="modal__dialog">
-                        <div class="modal__header">
-                            <h1>Отправить ставку</h1>
-                            <button class="modal__close" data-toogle="modal" data-target="#sendBid">
-                                <span >✕</span>
-                            </button>
-                        </div>
-                        <div class="modal__content">
 
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div id="root"></div>
         </div>
+        {% block javascripts %}
+            {{ encore_entry_script_tags('app') }}
+        {% endblock %}
     </body>
     <script>
-
-        const modalButtons = document.querySelectorAll('[data-toogle="modal"]');
-
-        modalButtons.forEach(el => {
-            el.onclick = function(e) {
-                const modalDom = document.querySelector(el.getAttribute("data-target"));
-
-                function outSideClick(e) {
-                    if (!modalDom.querySelector('.modal__body').contains(e.target)) {
-                        modalDom.classList.remove('show');
-                    }
-                }
-
-                if (!modalDom.classList.contains('show')) {
-                    modalDom.classList.add('show');
-
-                    document.addEventListener('click', outSideClick, {capture: true, once: true});
-                } else {
-                    modalDom.classList.remove('show');
-                    document.removeEventListener('click', outSideClick);
+        const request = async (url, body = null) => {
+            const options = {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
                 }
             }
-        })
+
+            if (body !== null) {
+                options.body = JSON.stringify(body);
+                options.method = "POST";
+            }
+
+            const response = await fetch(url, options);
+            if (response.ok) {
+                return await response.json();
+            } else {
+                throw new Error(String(response.status));
+            }
+        }
+
+        function handleModal(e, targetString) {
+            const modalDom = document.querySelector(targetString);
+
+            function outSideClick(e) {
+                if (!modalDom.querySelector('.modal__body').contains(e.target)) {
+                    modalDom.classList.remove('show');
+                }
+            }
+
+            if (!modalDom.classList.contains('show')) {
+                modalDom.classList.add('show');
+
+                document.addEventListener('click', outSideClick, {capture: true, once: true});
+            } else {
+                modalDom.classList.remove('show');
+                document.removeEventListener('click', outSideClick);
+            }
+        }
+
+        const modalButtons = document.querySelectorAll('[data-toogle="modal"]');
+        modalButtons.forEach(el => {
+            const targetString = el.getAttribute('data-target');
+            el.onclick = e => handleModal(e, targetString);
+        }) ;
 
 
 
+        let currentOrderId;
+
+        const modalBidButtons = document.querySelectorAll('[data-toogle="modalBid"]');
+        modalBidButtons.forEach(el => {
+            const targetString = el.getAttribute('data-target');
+            const orderId = el.getAttribute('data-order-id');
+
+            el.onclick = e => {
+                currentOrderId = orderId;
+                handleModal(e, targetString);
+            }
+        });
+
+
+        const sendBidForm = document.getElementById('sendBidForm');
+        sendBidForm.addEventListener('submit', async function (e) {
+            e.preventDefault();
+            if (currentOrderId) {
+                const formData = new FormData(e.target);
+
+                const object = {};
+                for (let [name, value] of formData.entries()) {
+                    object[name] = value;
+                }
+                const { data } = await request(`/api/sendBid/${currentOrderId}`, object);
+                if (data) {
+                    document.getElementById('sendBidModal').classList.remove('show');
+                    this.reset();
+                }
+            }
+        });
+    </script>
+
+    <script>
         let dropdown = document.getElementById('user-menu');
 
         function outsideClick(event) {
@@ -167,27 +176,30 @@
                 }
             })
         }
-
-
-        if (!window["WebSocket"]) {
-            alert("Error: Your browser does not support web sockets.")
-        } else {
-            socket = new WebSocket("ws://localhost:4000");
-
-            socket.onclose = function() {
-                console.log("Connection has been closed.");
-            }
-            socket.onmessage = function(e) {
-                let notification = new Notify('Notification Title', e.data);
-            }
-        }
     </script>
 
     <script>
-        function MyComponent() {
-            return <h1>Hello, React!</h1>;
+
+        {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+            window.authData.userId = {{ app.user.id }};
+            window.authData.email = {{ app.user.email }};
+        {% endif %}
+
+        if (window["WebSocket"] && window.authData && window.authData.userId) {
+            socket = new WebSocket(`ws://localhost:4000?user_id=${window.authData.userId}`);
+
+            socket.onopen = function (e) {
+                console.log(e);
+            }
+
+            socket.onclose = function () {
+                console.log("Connection has been closed.");
+            }
+            socket.onmessage = function (e) {
+                const message = (JSON.parse(e.data)).message;
+
+                let notification = new Notify('Notification Title', message);
+            }
         }
-        // Render the component into the "root" element
-        ReactDOM.render(<MyComponent />, document.getElementById('root'));
     </script>
 </html>

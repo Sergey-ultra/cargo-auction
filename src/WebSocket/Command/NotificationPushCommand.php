@@ -32,7 +32,7 @@ class NotificationPushCommand extends Command
         $this
             ->setDescription(self::COMMAND_DESCRIPTION)
             ->addArgument('notification', InputArgument::REQUIRED, 'The notification to push.')
-            ->addOption('resource-id', null, InputOption::VALUE_OPTIONAL, 'Resource Id.')
+            ->addOption('user-id', null, InputOption::VALUE_OPTIONAL, 'User Id.')
             ->addOption('delay', null, InputOption::VALUE_OPTIONAL, 'The delay in seconds before pushing the notification', '0');
     }
 
@@ -41,7 +41,7 @@ class NotificationPushCommand extends Command
         try {
             $this->messageManager->createNotificationMessage(
                 $input->getArgument('notification'),
-                $input->getOption('resource-id'),
+                $input->getOption('user-id'),
                 (int) $input->getOption('delay'),
             );
         } catch (\RuntimeException $e) {

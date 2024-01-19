@@ -85,21 +85,31 @@ class ProfileController extends AbstractController
     ): Response
     {
         $page = $request->query->getInt('page', 1);
+        $perPage = $request->query->getInt('per_page', 10);
+        $orderBy = $request->query->getString('order_by', LoadRepository::ORDER_CREATED_AT);
 
-        $listDto = $repository->getList($page, $filter, $this->getUser());
+        $listDto = $repository->getList($filter, $page, $perPage, $orderBy, $this->getUser());
+
 
         $totalCount = $listDto->totalCount;
-        $lastPage = (int)ceil($totalCount / LoadRepository::PAGINATOR_PER_PAGE);
+        $lastPage = (int)ceil($totalCount / $perPage);
 
         $borders = $paginationService->getBorders($page, $lastPage);
 
-        return $this->render('profile/my-cargos.html.twig', [
-        'filter' => $filter,
+        $perPageOptions = [10, 20, 30, 50, 100];
+
+
+        return $this->render('order/index.html.twig', [
+            'filter' => $filter,
             'list' => $listDto->list,
             'page' => $page,
+            'perPage' => $perPage,
+            'orderBy' => $orderBy,
+            'perPageOptions' => $perPageOptions,
             'totalCount' => $totalCount,
             'lastPage' => $lastPage,
             'borders' => $borders,
+            'orderOptions' => LoadRepository::ORDER_OPTIONS,
         ]);
     }
 }

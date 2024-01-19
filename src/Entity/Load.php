@@ -7,6 +7,7 @@ namespace App\Entity;
 use App\Repository\LoadRepository;
 use App\ValueObject\Point;
 use DateTimeInterface;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 
@@ -85,6 +86,14 @@ class Load
     private DateTimeInterface $createdAt;
     #[ORM\Column(name: 'updated_at', type: "datetime", nullable: true)]
     private ?DateTimeInterface $updatedAt;
+
+    #[ORM\OneToMany(mappedBy: 'load', targetEntity: Bid::class)]
+    private Collection $bids;
+
+//    public function __toString(): string
+//    {
+//        return json_encode($this);
+//    }
 
     public function getId(): ?int
     {
@@ -371,5 +380,34 @@ class Load
     public function getBodyTypeName(): string
     {
         return BodyType::BODY_TYPES[$this->bodyType];
+    }
+
+    /**
+     * @return Collection|Bid[]
+     */
+    public function getBids(): Collection
+    {
+        return $this->bids;
+    }
+
+    public function addBid(Bid $bid): self
+    {
+        if (!$this->bids->contains($bid)) {
+            $this->bids[] = $bid;
+            $bid->setLoad($this);
+        }
+        return $this;
+    }
+
+    public function removeBid(Bid $bid): self
+    {
+        if ($this->bids->contains($bid)) {
+            $this->bids->removeElement($bid);
+
+            if ($bid->getLoad() === $this) {
+                $bid->setLoad(null);
+            }
+        }
+        return $this;
     }
 }

@@ -22,7 +22,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 180, unique: true)]
     private ?string $email = null;
 
-    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Phone::class,)]
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Phone::class)]
     private Collection $phones;
 
     #[ORM\Column]

@@ -29,8 +29,7 @@ class UserFixtures extends Fixture
             ->setEmail('maasa@list.ru')
             ->setPassword(
                 $this->userPasswordHasher->hashPassword($user, '12345678')
-            )
-        ;
+            );
 
         $this->addReference(self::USER_REFERENCE . '_0', $user);
         $manager->persist($user);

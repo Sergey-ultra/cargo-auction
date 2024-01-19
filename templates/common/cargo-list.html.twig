@@ -80,42 +80,42 @@
             <div class="table__item">Груз</div>
             <div class="table__item table__item-price">Ставка</div>
         </div>
-        {% for order in list %}
+        {% for load in list %}
             <div class="row">
-                <div class="table__item">{{ order.getBodyTypeName() }}</div>
+                <div class="table__item">{{ load.getBodyTypeName() }}</div>
                 <div class="table__item table__item-price text-bold">
-                    {{ order.fromAddress }}
-                    <span>{{ order.distance }} км</span>
-                    <span>{{ order.toAddress }}</span>
-                    {% if order.downloadingDateStatus == 'permanently' %}
+                    {{ load.fromAddress }}
+                    <span>{{ load.distance }} км</span>
+                    <span>{{ load.toAddress }}</span>
+                    {% if load.downloadingDateStatus == 'permanently' %}
                         <div>Постоянно</div>
-                    {% elseif order.downloadingDateStatus == 'ready' %}
-                        <div>готов {{ order.downloadingDate|date('d M')|lower }}.</div>
+                    {% elseif load.downloadingDateStatus == 'ready' %}
+                        <div>готов {{ load.downloadingDate|date('d M')|lower }}.</div>
                     {% endif %}
                 </div>
                 <div class="table__item">
-                    {{ order.weight }}т. {{ order.volume }}м3 {{ order.getCargoTypeName() }}
+                    {{ load.weight }}т. {{ load.volume }}м3 {{ load.getCargoTypeName() }}
                 </div>
                 <div class="table__item table__item-price">
                     {% if not is_granted('IS_AUTHENTICATED_FULLY') %}
                         <span class="text-gray">скрыто</span>
-                    {% elseif order.priceType == 'fix' or order.priceType == 'negotiable' %}
+                    {% elseif load.priceType == 'fix' or load.priceType == 'negotiable' %}
                         <div>
-                            {% if order.priceWithoutTax is defined %}
+                            {% if load.priceWithoutTax is defined %}
                                 <div class="price__item">
-                                    <span class="text-bold">{{ order.priceWithoutTax }} руб</span> <span class="text-gray">без НДС</span>
-                                    <span class="text-bold">{{ (order.priceWithoutTax / order.distance)|round }}</span> руб/км
+                                    <span class="text-bold">{{ load.priceWithoutTax }} руб</span> <span class="text-gray">без НДС</span>
+                                    <span class="text-bold">{{ (load.priceWithoutTax / load.distance)|round }}</span> руб/км
                                 </div>
                             {% endif %}
-                            {% if order.priceWithTax is defined %}
+                            {% if load.priceWithTax is defined %}
                                 <div class="price__item">
-                                    <span class="text-bold">{{ order.priceWithTax }} руб</span> <span class="text-gray">c НДС</span>
-                                    <span class="text-bold" >{{ (order.priceWithTax / order.distance)|round }}</span> руб/км
+                                    <span class="text-bold">{{ load.priceWithTax }} руб</span> <span class="text-gray">c НДС</span>
+                                    <span class="text-bold" >{{ (load.priceWithTax / load.distance)|round }}</span> руб/км
                                 </div>
                             {% endif %}
                         </div>
-                        {% if order.priceType == 'negotiable' %}
-                            <button class="send-bid">
+                        {% if load.priceType == 'negotiable' %}
+                            <button class="send-bid" id="sendBid" data-toogle="modalBid" data-target="#sendBidModal" data-order-id="{{ load.id }}">
                                 <svg fill="#ffffff" stroke="#ffffff" stroke-width="0" data-qa="icon" viewBox="0 0 15 15" width="15" height="15" class="arrow-svg">
                                     <use xlink:href="#ic_shape" href="#ic_shape">
                                         <symbol id="ic_shape" viewBox="0 0 18 14">
@@ -123,8 +123,11 @@
                                         </symbol>
                                     </use>
                                 </svg>
-                                <span data-toogle="modal" data-target="#sendBid">Отправить ставку</span>
+                                <span>Отправить ставку</span>
                             </button>
+                            {% if load.bids.count > 0 %}
+                                {{ load.bids.count }}
+                            {% endif %}
                         {% else %}
                             <span class="text-gray">без торга</span>
                         {% endif %}
@@ -136,8 +139,8 @@
                 <div class="table-bottom">
                     <div class="table__contact">
                         {% if is_granted('IS_AUTHENTICATED_FULLY') %}
-                            {% if app.user and app.user.id != order.user.id %}
-                                <a href="{{ path('profile.messages') }}/{{ order.user.id }}?load_id={{ order.id }}">
+                            {% if app.user and app.user.id != load.user.id %}
+                                <a href="{{ path('profile.messages') }}/{{ load.user.id }}?load_id={{ load.id }}">
                                     <span>
                                         <svg fill="#3a7bbf" stroke="#3a7bbf" stroke-width="0" data-qa="icon" viewBox="0 0 15 15" width="15" height="15">
                                             <use xlink:href="#ic_message" href="#ic_message">
@@ -147,8 +150,8 @@
                                     </span>
                                     <span>Написать</span>
                                 </a>
-                                <span>{{ order.user.email }}</span>
-                                {% for phone in order.user.phones %}
+                                <span>{{ load.user.email }}</span>
+                                {% for phone in load.user.phones %}
                                     <span><a href="tel:{{ phone.phone }}">{{ phone.phone }}</a></span>
                                 {% endfor %}
                             {% endif %}
@@ -161,8 +164,8 @@
                         {% endif %}
                     </div>
                     <div class="table-right">
-                        {% if app.user and app.user.id == order.user.id  %}
-                            <a href="{{ path('cargo.edit', {id: order.id}) }}">
+                        {% if app.user and app.user.id == load.user.id  %}
+                            <a href="{{ path('cargo.edit', {id: load.id}) }}">
                                 <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path fill-rule="evenodd" clip-rule="evenodd" d="M13.9687 0.281254L12.1406 2.10938L15.8906 5.85938L17.7187 4.03125C17.9063 3.84375 18 3.60938 18 3.32813C18 3.04688 17.9063 2.8125 17.7187 2.625L15.375 0.281254C15.1875 0.093752 14.9531 3.94788e-06 14.6719 3.96017e-06C14.3906 3.97247e-06 14.1563 0.0937521 13.9687 0.281254ZM3.75 18L14.8125 6.9375L11.0625 3.1875L-1.63918e-07 14.25L0 18L3.75 18Z" fill="#8C969D"/>
                                 </svg>
@@ -177,7 +180,7 @@
                         {% else %}
 
                         {% endif %}
-                        <a href="{{ path('cargo.show', {id: order.id}) }}" class="load-info">
+                        <a href="{{ path('cargo.show', {id: load.id}) }}" class="load-info">
                             <svg width="24" height="24" viewBox="0 0 24 24">
                                 <svg fill="white" stroke="white" stroke-width="0" data-qa="icon" viewBox="0 0 20 20" width="20" height="20" preserveAspectRatio="none" x="2" y="2">
                                     <path fill-rule="evenodd" clip-rule="evenodd" d="M0 10c0-1.38.26-2.679.781-3.896A10.035 10.035 0 0 1 2.92 2.92 10.035 10.035 0 0 1 6.104.78 9.801 9.801 0 0 1 10 0c1.38 0 2.679.26 3.896.781A10.036 10.036 0 0 1 17.08 2.92a10.037 10.037 0 0 1 2.139 3.184A9.802 9.802 0 0 1 20 10c0 1.38-.26 2.679-.781 3.896a10.038 10.038 0 0 1-2.139 3.184 10.038 10.038 0 0 1-3.183 2.139A9.802 9.802 0 0 1 10 20c-1.38 0-2.679-.26-3.896-.781A10.037 10.037 0 0 1 2.92 17.08a10.036 10.036 0 0 1-2.14-3.183A9.802 9.802 0 0 1 0 10Zm1.25 0c0 1.21.228 2.347.684 3.408a8.813 8.813 0 0 0 1.875 2.783 8.811 8.811 0 0 0 2.783 1.875A8.545 8.545 0 0 0 10 18.75c1.21 0 2.347-.228 3.408-.684a8.811 8.811 0 0 0 2.783-1.875 8.811 8.811 0 0 0 1.875-2.783A8.545 8.545 0 0 0 18.75 10c0-1.21-.228-2.347-.684-3.408a8.811 8.811 0 0 0-1.875-2.783 8.813 8.813 0 0 0-2.783-1.875A8.545 8.545 0 0 0 10 1.25c-1.21 0-2.347.228-3.408.684a8.812 8.812 0 0 0-2.783 1.875 8.812 8.812 0 0 0-1.875 2.783A8.545 8.545 0 0 0 1.25 10Z"></path><path d="M11.336 8.125v8H8.72v-8h2.616Zm.27-2.839c0 .208-.043.403-.127.586-.084.183-.2.343-.346.481a1.694 1.694 0 0 1-.51.329 1.584 1.584 0 0 1-1.22 0 1.684 1.684 0 0 1-.493-.329 1.519 1.519 0 0 1-.338-.481 1.423 1.423 0 0 1-.122-.586c0-.214.04-.414.122-.6a1.58 1.58 0 0 1 .831-.818 1.634 1.634 0 0 1 1.73.33c.146.14.262.303.346.489.084.185.127.385.127.599Z"></path>
@@ -185,9 +188,9 @@
                             </svg>
                         </a>
 
-                        <div>доб <span>{{ order.createdAt|date('Y-m-d-H-i') != "now"|date('Y-m-d-H-i') ? order.createdAt|date('d M') : order.createdAt|date('H:i') }}</span></div>
-                        {% if order.updatedAt and order.createdAt != order.updatedAt %}
-                            <div>изм {{ order.updatedAt|date('H:i') }}</div>
+                        <div>доб <span>{{ load.createdAt|date('Y-m-d-H-i') != "now"|date('Y-m-d-H-i') ? load.createdAt|date('d M') : load.createdAt|date('H:i') }}</span></div>
+                        {% if load.updatedAt and load.createdAt != load.updatedAt %}
+                            <div>изм {{ load.updatedAt|date('H:i') }}</div>
                         {% endif %}
                     </div>
 

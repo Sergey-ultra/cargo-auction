@@ -17,7 +17,7 @@ class MessageManager
     ) {
     }
 
-    public function sendMessage(Messages $message, ?\SplObjectStorage $clients): void
+    public function sendMessage(Messages $message, array $clients): void
     {
         try {
             $data = $message->getData();
@@ -27,16 +27,10 @@ class MessageManager
                 throw new \Exception('Malformed JSON Message');
             }
 
-            foreach ($clients as $client) {
-                if (false === isset($data['resourceId'])) {
-                    $client->send($jsonData);
-                    continue;
-                }
+            $userId = (int)$data['userId'];
 
-                if ($client->resourceId === (int) $data['resourceId']) {
-                    $client->send($jsonData);
-                    break;
-                }
+            if (isset($clients[$userId])) {
+                $clients[$userId]->send($jsonData);
             }
         } catch (\Exception $e) {
             $this->logger->error('Failed to send the message', ['exception' => $e]);
@@ -58,12 +52,12 @@ class MessageManager
         $this->messageRepository->save($webSocketMessage);
     }
 
-    public function createNotificationMessage(string $message, string $resourceId = null, int $delayInSeconds = 0): void
+    public function createNotificationMessage(string $message, string $userId = null, int $delayInSeconds = 0): void
     {
         $data = [
             'type' => MessageTypeEnum::EVENT_NOTIFICATION,
             'message' => $message,
-            'resourceId' => $resourceId,
+            'userId' => $userId,
         ];
 
         $webSocketMessage = new Messages();

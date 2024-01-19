@@ -37,7 +37,10 @@ class LoadFixtures extends Fixture implements DependentFixtureInterface
     private function loadOrders(): void
     {
         for ($i = 1; $i < 1000; $i++) {
-            $user = $this->getReference(UserFixtures::USER_REFERENCE .'_'.$this->faker->numberBetween(0, 99));
+
+            $user = $i < 15
+                ? $this->getReference(UserFixtures::USER_REFERENCE .'_0')
+                : $this->getReference(UserFixtures::USER_REFERENCE .'_'.$this->faker->numberBetween(0, 99));
 
             $order = new Load();
 

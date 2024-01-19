@@ -1,18 +1,1 @@
-<form action="{{ path('app_sign_in') }}" method="post">
-    <div class="form-item">
-        <label for="username" class="control-label">Email:</label>
-        <input type="text" id="username" name="_username"/>
-    </div>
-    <div class="form-item">
-        <label for="password" class="control-label">Password:</label>
-        <input type="password" id="password" name="_password"/>
-    </div>
-    {# If you want to control the URL the user is redirected to on success
-     <input type="hidden" name="_target_path" value="/account"/> #}
 
-    <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
-
-    <button type="submit" class="button">Войти</button>
-
-    <a class="login" href="{{ path('register') }}">Регистрация</a>
-</form>
