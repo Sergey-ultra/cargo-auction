@@ -41,6 +41,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      #[ORM\OneToMany(mappedBy: 'user', targetEntity: Load::class)]
     private Collection $orders;
 
+//    public function toArray(): array
+//    {
+//        return (array)$this;
+//    }
+
     public function getId(): ?int
     {
         return $this->id;

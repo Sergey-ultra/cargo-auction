@@ -1,16 +1,14 @@
-import React, {useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import DialogTitle from '@mui/material/DialogTitle';
 import Dialog from '@mui/material/Dialog';
-import {DialogContent} from "@mui/material";
-
-
-import { blue } from '@mui/material/colors';
+import {Button, DialogContent} from "@mui/material";
 import {useHttp} from "../hooks/api";
+import {NotificationContext} from "../context/notification.context";
 
 
-export default function SimpleDialog({ onClose, selectedValue, open }) {
+export default function AuthModal({ onClose, selectedValue, open }) {
     const [form,setForm] = useState({
-        email: '',
+        username: '',
         password:''
     })
     const handleClose = () => {
@@ -21,11 +19,28 @@ export default function SimpleDialog({ onClose, selectedValue, open }) {
         setForm({...form, [event.target.name]: event.target. value})
     }
 
-    const { request, isLoading }  = useHttp();
+    const {notify} = useContext(NotificationContext)
+    const { request, isLoading, error, clearError } = useHttp();
+
+    useEffect(() => {
+        if (error) {
+            notify(error);
+            clearError();
+        }
+    },[error])
 
     const login = async e => {
         e.preventDefault();
-        const data = await request('/sign-in', 'POST', {...form})
+        try {
+            const { data } = await request('/sign-in', 'POST', {...form});
+
+            if (data && data.userId) {
+                window.location.reload();
+            }
+        } catch (e) {
+            console.log(e.message)
+        }
+
     }
 
     return (
@@ -35,7 +50,7 @@ export default function SimpleDialog({ onClose, selectedValue, open }) {
                 <form action="" method="post" onSubmit={login}>
                     <div className="form-item">
                         <label htmlFor="username" className="control-label">Email:</label>
-                        <input type="text" id="username" name="email" value={form.email} onChange={changeHandler}/>
+                        <input type="text" id="username" name="username" value={form.username} onChange={changeHandler}/>
                     </div>
                     <div className="form-item">
                         <label htmlFor="password" className="control-label">Password:</label>
@@ -43,7 +58,7 @@ export default function SimpleDialog({ onClose, selectedValue, open }) {
                     </div>
 
 
-                    <button type="submit" className="button" disabled={isLoading}>Войти</button>
+                    <Button variant="outlined" type="submit" className="button button-primary button-small" sx={{ marginRight: 2 }}  disabled={isLoading}>Войти</Button>
 
                     <a className="login" href="/register">Регистрация</a>
                 </form>

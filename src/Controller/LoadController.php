@@ -51,10 +51,10 @@ class LoadController extends AbstractController
             'page' => $page,
             'perPage' => $perPage,
             'orderBy' => $orderBy,
-            'perPageOptions' => $perPageOptions,
             'totalCount' => $totalCount,
             'lastPage' => $lastPage,
             'borders' => $borders,
+            'perPageOptions' => $perPageOptions,
             'orderOptions' => LoadRepository::ORDER_OPTIONS,
         ]);
     }

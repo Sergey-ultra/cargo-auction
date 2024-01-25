@@ -7,7 +7,7 @@
     box-shadow: 0 0 6px rgba(7, 24, 41, 0.02),0 2px 4px rgba(7, 24, 41, 0.08);
     padding: 20px;
     margin-bottom: 20px;
-    background-color: #f1f1f1;
+    background-color: #fff;
 }
 .filter__row {
     display: flex;

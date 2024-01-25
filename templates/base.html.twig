@@ -14,6 +14,14 @@
             <link href="{{ asset('assets/css/notify.css') }}" rel="stylesheet"/>
             <link href="{{ asset('assets/css/app.css') }}" rel="stylesheet"/>
         {% endblock %}
+        <script>
+            {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                window.authData = {
+                    userId: '{{ app.user.id }}',
+                    email: '{{ app.user.email }}'
+                };
+            {% endif %}
+        </script>
 
 
         <script type="text/javascript" src="{{ asset('assets/js/notify.js') }}"></script>
@@ -48,10 +56,8 @@
             <nav class="nav">
                 <div class="container">
                     <div class="nav__wrapper">
-                        <a href="{{  path('cargo.index') }}">Cargo</a>
-                        <div class="right">
-                            <div id="nav"></div>
-                        </div>
+                        <a href="{{ path('cargo.index') }}">Cargo</a>
+                        <div id="nav"></div>
                     </div>
                 </div>
             </nav>
@@ -65,8 +71,8 @@
                     {{ include('footer.html.twig') }}
                 </div>
             </div>
-
         </div>
+
         {% block javascripts %}
             {{ encore_entry_script_tags('app') }}
         {% endblock %}
@@ -154,36 +160,6 @@
     </script>
 
     <script>
-        let dropdown = document.getElementById('user-menu');
-
-        function outsideClick(event) {
-            if (!document.getElementById('dropdown-list').contains(event.target)) {
-                event.stopPropagation();
-            }
-            document.removeEventListener('click', outsideClick, { capture: true });
-            dropdown.classList.add('closed');
-        }
-
-        const dropDownBtn = document.getElementById('dropdown-btn');
-
-        if (dropDownBtn) {
-            dropDownBtn.addEventListener('click', (e) => {
-                if (dropdown.classList.contains('closed')) {
-                    dropdown.classList.remove('closed');
-                    document.addEventListener('click', outsideClick, {capture: true, once: true});
-                } else {
-                    dropdown.classList.add('closed');
-                }
-            })
-        }
-    </script>
-
-    <script>
-
-        {% if is_granted('IS_AUTHENTICATED_FULLY') %}
-            window.authData.userId = {{ app.user.id }};
-            window.authData.email = {{ app.user.email }};
-        {% endif %}
 
         if (window["WebSocket"] && window.authData && window.authData.userId) {
             socket = new WebSocket(`ws://localhost:4000?user_id=${window.authData.userId}`);

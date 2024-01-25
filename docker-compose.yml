@@ -40,7 +40,7 @@ services:
       DATABASE_USER: postgres
       DATABASE_PASS: postgres
       DATABASE_NAME: cargo
-      PHP_IDE_CONFIG: "serverName=cargoAuctionServer"
+#      PHP_IDE_CONFIG: "serverName=cargoAuctionServer"
     networks:
       - proj
 

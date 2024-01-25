@@ -10,6 +10,7 @@ use DateTimeInterface;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: LoadRepository::class)]
 #[ORM\HasLifecycleCallbacks()]
@@ -37,54 +38,79 @@ class Load
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['load'])]
     private ?int $id = null;
     #[ORM\Column]
+    #[Groups(['load'])]
     private string $downloadingDateStatus;
     #[ORM\Column(type: 'datetime')]
+    #[Groups(['load'])]
     private ?DateTimeInterface $downloadingDate;
     #[ORM\Column]
+    #[Groups(['load'])]
     private string $fromAddress;
     #[ORM\Column(type: 'float', nullable: true)]
+    #[Groups(['load'])]
     private float $fromLatitude;
     #[ORM\Column(type: 'float', nullable: true)]
+    #[Groups(['load'])]
     private float $fromLongitude;
     #[Column(name: 'from_point', type: 'point',  nullable: true)]
+    #[Groups(['load'])]
     private ?Point $fromPoint;
     #[ORM\Column]
+    #[Groups(['load'])]
     private string $toAddress;
     #[ORM\Column(type: 'float', nullable: true)]
+    #[Groups(['load'])]
     private float $toLatitude;
     #[ORM\Column(type: 'float', nullable: true)]
+    #[Groups(['load'])]
     private float $toLongitude;
     #[Column(name: 'to_point', type: 'point',  nullable: true)]
+    #[Groups(['load'])]
     private ?Point $toPoint;
+    #[Groups(['load'])]
     private ?int $distance;
     #[ORM\Column]
+    #[Groups(['load'])]
     private string $weight;
     #[ORM\Column]
+    #[Groups(['load'])]
     private string $volume;
     #[ORM\Column]
+    #[Groups(['load'])]
     private string $priceType;
     #[ORM\Column(nullable: true)]
+    #[Groups(['load'])]
     private ?int $priceWithoutTax;
     #[ORM\Column(nullable: true)]
+    #[Groups(['load'])]
     private ?int $priceWithTax;
     #[ORM\Column(nullable: true)]
+    #[Groups(['load'])]
     private ?int $priceCash;
     #[ORM\Column]
+    #[Groups(['load'])]
     private int $cargoType;
     #[ORM\Column]
+    #[Groups(['load'])]
     private int $bodyType;
     #[ORM\Column]
+    #[Groups(['load'])]
     private int $downloadingType;
     #[ORM\Column]
+    #[Groups(['load'])]
     private int $unloadingType;
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'orders')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['load'])]
     private ?User $user;
     #[ORM\Column(name: 'created_at', type: 'datetime', options: ['default' => "CURRENT_TIMESTAMP"])]
+    #[Groups(['load'])]
     private DateTimeInterface $createdAt;
     #[ORM\Column(name: 'updated_at', type: "datetime", nullable: true)]
+    #[Groups(['load'])]
     private ?DateTimeInterface $updatedAt;
 
     #[ORM\OneToMany(mappedBy: 'load', targetEntity: Bid::class)]

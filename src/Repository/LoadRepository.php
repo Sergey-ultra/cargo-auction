@@ -110,7 +110,9 @@ class LoadRepository extends ServiceEntityRepository
         $paginator = new Paginator($query);
 
         $list = [];
+       // dd($paginator->getIterator());
         foreach($paginator->getIterator() as $item) {
+            //dd($item[0]->getUser());
             ($item[0])->setDistance((int)$item['distance']);
             $list[] = $item[0];
         }
