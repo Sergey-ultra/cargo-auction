@@ -7,7 +7,7 @@ export default function RightNav() {
     const isAuth = window.authData && window.authData.userId;
     const email = window?.authData?.email;
 
-    const [open, setOpen] = useState(false);
+    const [isOpen, setOpen] = useState(false);
     const [selectedValue, setSelectedValue] = useState([]);
 
     const handleClickOpen = () => {
@@ -19,6 +19,7 @@ export default function RightNav() {
         setSelectedValue(value);
     };
 
+
     if (isAuth) {
         return (
             <div className="right">
@@ -26,7 +27,6 @@ export default function RightNav() {
             </div>
         );
     }
-
 
     return (
         <div className="right">
@@ -36,7 +36,7 @@ export default function RightNav() {
             <a className="button button-secondary button-small" href="/register">Регистрация</a>
             <AuthModal
                 selectedValue={selectedValue}
-                open={open}
+                isOpen={isOpen}
                 onClose={handleClose}
             />
         </div>

@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\DTO;
 
-class LoadList
+readonly class LoadList
 {
     public function __construct(
-        public readonly array $list,
-        public readonly int $totalCount
+        public array $list,
+        public int   $totalCount
     ){}
 }

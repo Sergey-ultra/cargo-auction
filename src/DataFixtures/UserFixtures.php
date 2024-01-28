@@ -27,6 +27,7 @@ class UserFixtures extends Fixture
 
         $user
             ->setEmail('maasa@list.ru')
+            ->setName('Morozov Sergey')
             ->setPassword(
                 $this->userPasswordHasher->hashPassword($user, '12345678')
             );
@@ -38,6 +39,7 @@ class UserFixtures extends Fixture
             $user = (new User());
             $user
                 ->setEmail($this->faker->email)
+                ->setName($this->faker->name)
                 ->setPassword($this->userPasswordHasher->hashPassword($user, '12345678'));
 
             $this->addReference(self::USER_REFERENCE .'_'. $i, $user);

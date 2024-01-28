@@ -4,14 +4,15 @@ declare(strict_types=1);
 
 namespace App\Controller\Api;
 
+use App\DTO\BidCreateDTO;
 use App\Entity\Bid;
 use App\Repository\BidRepository;
 use App\Repository\LoadRepository;
 use App\WebSocket\Manager\MessageManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Route('/api', name: 'api_')]
@@ -20,31 +21,29 @@ class BidController extends AbstractController
     #[Route('/sendBid/{id}', name: 'cargo.showBidForm', methods:['post'])]
     public function showBidForm(
         int $id,
-        Request $request,
+        #[MapRequestPayload] BidCreateDTO $payload,
         BidRepository $bidRepository,
         LoadRepository $loadRepository,
         MessageManager $messageManager,
     ): JsonResponse
     {
-        $request = json_decode($request->getContent());
-        $bid = new Bid();
-
         $load = $loadRepository->find($id);
+        dd($payload);
 
-        $loadUser = $load->getUser();
-
+        $bid = new Bid();
         $bid->setLoad($load);
-        $bid->setBid((int)$request->bid);
+        $bid->setBid($payload->bid);
 
         try {
             $bidRepository->save($bid);
-            $message = 'На вашу заявку поставили ставку';
 
+            $message = 'На вашу заявку поставили ставку';
+            $loadUser = $load->getUser();
             $messageManager->createNotificationMessage($message, (string)$loadUser->getId());
 
             return $this->json(
                 [
-                    'data' => $request->bid,
+                    'data' => $payload->get('bid'),
                 ],
                 Response::HTTP_CREATED
             );

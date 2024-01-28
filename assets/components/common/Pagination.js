@@ -2,7 +2,7 @@ import React, {useContext, useEffect, useState} from 'react';
 
 export default function Pagination({ page, lastPage, setPage }) {
 
-    const first = Math.max(page - 4 ,1);
+    const first = Math.max(page - 4 , 1);
     const end = Math.min(page + 4, lastPage);
     const pages= [];
 

@@ -7,10 +7,10 @@
 
     <link href="{{ asset('assets/css/cargo-index.css') }}" rel="stylesheet"/>
 {% endblock %}
+
 {% block javascripts %}
     {{ parent() }}
-
-     <script type="text/javascript" src="{{ asset('assets/js/address-input.js') }}"></script>
+    {{ encore_entry_script_tags('loadList') }}
 {% endblock %}
 
 {% block body %}

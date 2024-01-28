@@ -25,39 +25,45 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class LoadController extends AbstractController
 {
     #[Route('/', name: 'cargo.index', methods:['get'])]
-    public function index(
-        #[MapQueryString] ?LoadFilter $filter,
-        Request                       $request,
-        LoadRepository                $repository,
-        PaginationService             $paginationService
-    ): Response
+    public function index(): Response
     {
-        $page = $request->query->getInt('page', 1);
-        $perPage = $request->query->getInt('per_page', 10);
-        $orderBy = $request->query->getString('order_by', LoadRepository::ORDER_CREATED_AT);
-
-        $listDto = $repository->getList($filter, $page, $perPage, $orderBy);
-
-        $totalCount = $listDto->totalCount;
-        $lastPage = (int)ceil($totalCount / $perPage);
-
-        $borders = $paginationService->getBorders($page, $lastPage);
-
-        $perPageOptions = [10, 20, 30, 50, 100];
-
-        return $this->render('order/index.html.twig', [
-            'filter' => $filter,
-            'list' => $listDto->list,
-            'page' => $page,
-            'perPage' => $perPage,
-            'orderBy' => $orderBy,
-            'totalCount' => $totalCount,
-            'lastPage' => $lastPage,
-            'borders' => $borders,
-            'perPageOptions' => $perPageOptions,
-            'orderOptions' => LoadRepository::ORDER_OPTIONS,
-        ]);
+        return $this->render('order/index.html.twig');
     }
+
+//    #[Route('/', name: 'cargo.index', methods:['get'])]
+//    public function index(
+//        #[MapQueryString] ?LoadFilter $filter,
+//        Request                       $request,
+//        LoadRepository                $repository,
+//        PaginationService             $paginationService
+//    ): Response
+//    {
+//        $page = $request->query->getInt('page', 1);
+//        $perPage = $request->query->getInt('per_page', 10);
+//        $orderBy = $request->query->getString('order_by', LoadRepository::ORDER_CREATED_AT);
+//
+//        $listDto = $repository->getList($filter, $page, $perPage, $orderBy);
+//
+//        $totalCount = $listDto->totalCount;
+//        $lastPage = (int)ceil($totalCount / $perPage);
+//
+//        $borders = $paginationService->getBorders($page, $lastPage);
+//
+//        $perPageOptions = [10, 20, 30, 50, 100];
+//
+//        return $this->render('order/index.html.twig', [
+//            'filter' => $filter,
+//            'list' => $listDto->list,
+//            'page' => $page,
+//            'perPage' => $perPage,
+//            'orderBy' => $orderBy,
+//            'totalCount' => $totalCount,
+//            'lastPage' => $lastPage,
+//            'borders' => $borders,
+//            'perPageOptions' => $perPageOptions,
+//            'orderOptions' => LoadRepository::ORDER_OPTIONS,
+//        ]);
+//    }
 
     #[Route('/load/{id}', name: 'cargo.show', methods:['get'])]
     public function show(int $id, LoadRepository $loadRepository): Response

@@ -6,7 +6,7 @@ import {useHttp} from "../hooks/api";
 import {NotificationContext} from "../context/notification.context";
 
 
-export default function AuthModal({ onClose, selectedValue, open }) {
+export default function AuthModal({ onClose, selectedValue, isOpen }) {
     const [form,setForm] = useState({
         username: '',
         password:''
@@ -31,8 +31,9 @@ export default function AuthModal({ onClose, selectedValue, open }) {
 
     const login = async e => {
         e.preventDefault();
+
         try {
-            const { data } = await request('/sign-in', 'POST', {...form});
+            const { data } = await request('/sign-in', 'POST', {body: {...form}});
 
             if (data && data.userId) {
                 window.location.reload();
@@ -44,7 +45,7 @@ export default function AuthModal({ onClose, selectedValue, open }) {
     }
 
     return (
-        <Dialog onClose={handleClose} open={open}>
+        <Dialog onClose={handleClose} open={isOpen}>
             <DialogTitle>Вход</DialogTitle>
             <DialogContent>
                 <form action="" method="post" onSubmit={login}>
