@@ -8,7 +8,7 @@ import {useHttp} from "../hooks/api";
 export default function SendBidModal({ handleClose, isOpen, currentLoadId }) {
     const [bid, setBid] = useState(0);
 
-    const changeHandler = event => setBid(event.target. value);
+    const changeHandler = event => setBid(Number(event.target.value));
 
 
     const { request, isLoading, error, clearError } = useHttp();

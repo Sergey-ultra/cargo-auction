@@ -4,7 +4,6 @@
 
 {% block stylesheets %}
     {{ parent() }}
-
     <link href="{{ asset('assets/css/message.css') }}" rel="stylesheet"/>
 {% endblock %}
 
@@ -14,7 +13,7 @@
 {% endblock %}
 
 {% block body %}
-    <h1>Сообщение</h1>
+    <h1>Сообщения</h1>
     <div class="messages" id="messages"></div>
 {% endblock %}
 

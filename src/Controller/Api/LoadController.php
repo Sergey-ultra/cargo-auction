@@ -25,8 +25,11 @@ class LoadController extends AbstractController
         $page = $request->query->getInt('page', 1);
         $perPage = $request->query->getInt('per_page', 10);
         $orderBy = $request->query->getString('order_by', LoadRepository::ORDER_CREATED_AT);
+        $isMy = $request->query->getBoolean('isMy');
 
-        $listDto = $repository->getList($filter, $page, $perPage, $orderBy);
+        $user = $isMy ? $this->getUser() : null;
+
+        $listDto = $repository->getList($filter, $page, $perPage, $orderBy, $user);
 
         $totalCount = $listDto->totalCount;
         $lastPage = (int)ceil($totalCount / $perPage);

@@ -7,6 +7,7 @@ namespace App\Controller;
 use App\DTO\LoadFilter;
 use App\DTO\PhoneDTO;
 use App\Entity\Phone;
+use App\Repository\ChatRepository;
 use App\Repository\LoadRepository;
 use App\Repository\UserRepository;
 use App\Services\PaginationService\PaginationService;
@@ -55,18 +56,34 @@ class ProfileController extends AbstractController
         return $this->redirectToRoute('profile.phones.create', [], Response::HTTP_SEE_OTHER);
     }
 
-    #[Route('profile/messages', name: 'profile.messages', methods:['get'])]
-    public function messagesList(): Response
+
+    #[Route('profile/messages/{id}', name: 'profile.messages.main', methods:['get'])]
+    public function getChat(
+        int $id,
+        Request $request,
+        UserRepository $userRepository,
+        LoadRepository $loadRepository,
+        ChatRepository $chatRepository
+    ): RedirectResponse
+    {
+        $loadId = $request->query->getInt('load_id');
+        $load = $loadRepository->find($loadId);
+        $user = $userRepository->find($id);
+
+        $chat = $chatRepository->getByUserId($this->getUser(), $user, $load);
+
+        return $this->redirectToRoute('profile.chat', ['id' => $chat->getId()]);
+    }
+
+    #[Route('profile/chat/{id}', name: 'profile.chat', methods:['get'])]
+    public function getChatById(): Response
     {
         return $this->render('profile/messages.html.twig');
     }
 
-    #[Route('profile/messages/{id}', name: 'profile.messages.show', methods:['get'])]
-    public function showMessage(int $id, Request $request, UserRepository $userRepository, LoadRepository $orderRepository): Response
+    #[Route('profile/messages', name: 'profile.messages.show', methods:['get'])]
+    public function showMessage(): Response
     {
-        $loadId = $request->query->getInt('load_id');
-        $user = $userRepository->find($id);
-
         return $this->render('profile/messages.html.twig');
     }
 
@@ -76,40 +93,9 @@ class ProfileController extends AbstractController
         return $this->render('profile/company.html.twig');
     }
 
-    #[Route('profile/my-cargos', name: 'profile.my-cargos', methods:['get'])]
-    public function showMyCargos(
-        #[MapQueryString] ?LoadFilter $filter,
-        Request                       $request,
-        LoadRepository                $repository,
-        PaginationService             $paginationService
-    ): Response
+    #[Route('profile/load-list', name: 'profile.my-cargos', methods:['get'])]
+    public function showMyCargos(): Response
     {
-        $page = $request->query->getInt('page', 1);
-        $perPage = $request->query->getInt('per_page', 10);
-        $orderBy = $request->query->getString('order_by', LoadRepository::ORDER_CREATED_AT);
-
-        $listDto = $repository->getList($filter, $page, $perPage, $orderBy, $this->getUser());
-
-
-        $totalCount = $listDto->totalCount;
-        $lastPage = (int)ceil($totalCount / $perPage);
-
-        $borders = $paginationService->getBorders($page, $lastPage);
-
-        $perPageOptions = [10, 20, 30, 50, 100];
-
-
-        return $this->render('order/index.html.twig', [
-            'filter' => $filter,
-            'list' => $listDto->list,
-            'page' => $page,
-            'perPage' => $perPage,
-            'orderBy' => $orderBy,
-            'perPageOptions' => $perPageOptions,
-            'totalCount' => $totalCount,
-            'lastPage' => $lastPage,
-            'borders' => $borders,
-            'orderOptions' => LoadRepository::ORDER_OPTIONS,
-        ]);
+        return $this->render('order/index.html.twig');
     }
 }

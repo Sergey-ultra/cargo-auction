@@ -28,7 +28,6 @@ class BidController extends AbstractController
     ): JsonResponse
     {
         $load = $loadRepository->find($id);
-        dd($payload);
 
         $bid = new Bid();
         $bid->setLoad($load);
@@ -41,11 +40,10 @@ class BidController extends AbstractController
             $loadUser = $load->getUser();
             $messageManager->createNotificationMessage($message, (string)$loadUser->getId());
 
-            return $this->json(
-                [
-                    'data' => $payload->get('bid'),
-                ],
-                Response::HTTP_CREATED
+            return $this->json(['data' => $bid], Response::HTTP_CREATED, [], [
+                    'circular_reference_handler' => function ($object) {
+                        return $object->getId();
+                    }]
             );
         } catch (\Throwable $e) {
             return $this->json(

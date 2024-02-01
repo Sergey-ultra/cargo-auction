@@ -7,7 +7,8 @@ html {
 body {
     height: 100%;
     margin: 0;
-    background-color: #f4f5f8;
+    /*background-color: #f4f5f8;*/
+    background-color: #f1f4fb;
 }
 .app {
     display: flex;
@@ -25,7 +26,46 @@ body {
     display: flex;
     justify-content: space-between;
 }
+.logo {
+    display: flex;
+    height: 50px;
+    width: 50px;
+}
+.nav__button {
+    height: 100%;
+    display: inline-flex;
+    align-items: center;
+    font-family: Verdana,"Dejavu Sans",Geneva,Tahoma,sans-serif;
+    color: rgb(7, 24, 41);
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 20px;
+    cursor: pointer;
+    text-decoration: none !important;
+    padding: 16px 12px;
+    border: none;
+    background-color: rgb(255, 255, 255);
+    text-align: left;
+}
+.notification__button {
+    margin: 0;
+    box-sizing: border-box;
+    outline: none;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    transition: all .2s ease;
+}
 .notification-icon {
+    box-sizing: border-box;
+    outline: none;
     fill: rgb(131, 139, 148);
 }
 .right {

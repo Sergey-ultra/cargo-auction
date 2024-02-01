@@ -23,7 +23,7 @@ export const useHttp = () => {
                 for (let [key, value] of Object.entries(params.params)) {
                     if (Array.isArray(value) && value.length) {
                         value.forEach(el => queryArray.push(`${key}[]=${el}`))
-                    } else if (("string" === typeof value && value !== '') || "number" === typeof value) {
+                    } else if (("string" === typeof value && value !== '') || ["number", "boolean"].includes(typeof value)) {
                         queryArray.push(`${key}=${value}`);
                     }
                 }

@@ -1,5 +1,5 @@
 import ReactDOM from "react-dom/client";
-import Messages from "./Messages";
+import Messages from "./pages/messages/Messages";
 import React from "react";
 
 const messages = ReactDOM.createRoot(document.getElementById('messages'));

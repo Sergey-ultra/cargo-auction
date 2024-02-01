@@ -8,8 +8,8 @@ use App\Entity\Chat;
 use App\Entity\Load;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * @extends ServiceEntityRepository<Chat>
@@ -27,14 +27,14 @@ class ChatRepository extends ServiceEntityRepository
         parent::__construct($registry, Chat::class);
     }
 
-    public function getMyChats(?User $owner, int $perPage)
+    public function getMyChats(UserInterface $owner, int $perPage)
     {
         return $this->findBy(['owner' => $owner], null, $perPage);
     }
 
-    public function getByUserId(?User $owner, ?User $partner, Load $load): Chat
+    public function getByUserId(UserInterface $owner, UserInterface $partner, Load $load): Chat
     {
-        if (! ($existing = $this->findOneBy(['owner' => $owner]))) {
+        if (! ($existing = $this->findOneBy(['owner' => $owner, 'partner' => $partner]))) {
             $existing = new Chat();
             $existing
                 ->setName($partner->getName())

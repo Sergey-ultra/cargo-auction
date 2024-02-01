@@ -4,33 +4,24 @@ declare(strict_types=1);
 
 namespace App\Controller\Api;
 
-use App\DTO\ChatFilterDTO;
+use App\DTO\MessageCreateDTO;
+use App\Entity\Message;
 use App\Repository\ChatRepository;
-use App\Repository\LoadRepository;
-use App\Repository\UserRepository;
+use App\Repository\MessageRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Attribute\MapQueryString;
+use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 
 #[Route('/api', name: 'api_')]
 class MessageController extends AbstractController
 {
-    #[Route('/messages/{id}', name: 'api.messages.show', methods:['get'])]
-    public function showMessage(
-        int $id,
-        Request $request,
-        UserRepository $userRepository,
-        LoadRepository $loadRepository,
-        ChatRepository $chatRepository
-    ): Response
+    #[Route('/chat/{id}', name: 'api.chat.show', methods:['get'])]
+    public function showChat(int $id, ChatRepository $chatRepository): Response
     {
-        $loadId = $request->query->getInt('load_id');
-        $load = $loadRepository->find($loadId);
-        $user = $userRepository->find($id);
-
-        $chat = $chatRepository->getByUserId($this->getUser(), $user, $load);
+        $chat = $chatRepository->find($id);
 
         $result = ['data' =>  $chat];
 
@@ -41,19 +32,63 @@ class MessageController extends AbstractController
         );
     }
 
+    #[Route('/chat/{id}/messages', name: 'api.chat.messages', methods:['get'])]
+    public function getMessages(int $id, MessageRepository $messageRepository): Response
+    {
+        $messages = $messageRepository->findByBrandId($id);
+
+        $result = ['data' =>  $messages];
+
+        return $this->json($result, Response::HTTP_OK, [],
+            [
+                'circular_reference_handler' => function ($object) {
+                    return $object->getId();
+                },
+                DateTimeNormalizer::FORMAT_KEY => 'Y-m-d H:i:s',
+            ]
+        );
+    }
+
+    #[Route('/chat/{id}/messages', name: 'api.chat.messages.create', methods:['post'])]
+    public function createMessages(
+        int $id,
+        #[MapRequestPayload]MessageCreateDTO $createMessage,
+        MessageRepository $messageRepository,
+        ChatRepository $chatRepository
+    ): Response
+    {
+        $chat = $chatRepository->find($id);
+        $message = new Message();
+
+        $message
+            ->setMessage($createMessage->message)
+            ->setChat($chat)
+            ->setFromUser($chat->getOwner())
+            ->setToUser($chat->getPartner());
+
+
+        $messageRepository->save($message);
+
+        return $this->json(['data' =>  ['status' => 'ok']], Response::HTTP_CREATED);
+    }
+
     #[Route('/chats', name: 'api.chats.index', methods:['get'])]
     public function chats(Request $request, ChatRepository $chatRepository): Response
     {
-        $perPage = $request->query->getInt('perPage', 20);
+        if ($user = $this->getUser()) {
 
-        $list = $chatRepository->getMyChats($this->getUser(), $perPage);
+            $perPage = $request->query->getInt('perPage', 20);
+            $list = $chatRepository->getMyChats($user, $perPage);
 
-        $result = ['data' => $list];
+            $result = ['data' => $list];
 
-        return $this->json($result, Response::HTTP_OK, [], [
-                'circular_reference_handler' => function ($object) {
-                    return $object->getId();
-                }]
-        );
+            return $this->json($result, Response::HTTP_OK, [], [
+                    'circular_reference_handler' => function ($object) {
+                        return $object->getId();
+                    }]
+            );
+        }
+
+        return $this->json(['data' => []]);
     }
 }
