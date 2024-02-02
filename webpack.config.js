@@ -22,6 +22,7 @@ Encore
      */
     .addEntry('app', './assets/index.js')
     .addEntry('loadList', './assets/load-list.js')
+    .addEntry('truckList', './assets/truck-list.js')
     .addEntry('messages', './assets/messages.js')
 
     // When enabled, Webpack "splits" your files into smaller pieces for greater optimization.

@@ -22,7 +22,6 @@ export default function SendBidModal({ handleClose, isOpen, currentLoadId }) {
         } catch (e) {
             console.log(e.message)
         }
-
     }
 
     return (

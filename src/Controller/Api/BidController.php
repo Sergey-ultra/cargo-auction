@@ -36,7 +36,7 @@ class BidController extends AbstractController
         try {
             $bidRepository->save($bid);
 
-            $message = 'На вашу заявку поставили ставку';
+            $message = sprintf("На вашу заявку поставили ставку в размере %d %s", $payload->bid, 'руб');
             $loadUser = $load->getUser();
             $messageManager->createNotificationMessage($message, (string)$loadUser->getId());
 

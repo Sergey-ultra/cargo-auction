@@ -1,11 +1,11 @@
 import React, {Fragment} from "react";
 
-function LoadItem({load, openLoadBidModal}) {
+function LoadItem({load, openSendBidModal, openAuthModal}) {
     const userId = window?.authData?.userId;
 
 
     return (
-        <div className="row" key={load.id}>
+        <div className="table__row" key={load.id}>
             <div className="table__item">{load.bodyTypeName}</div>
             <div className="table__item table__item-price text-bold">
                 {load.fromAddress}
@@ -38,7 +38,7 @@ function LoadItem({load, openLoadBidModal}) {
                             </div>
                             {load.priceType === 'negotiable'
                                 ?   <Fragment>
-                                        <button className="send-bid" id="sendBid" onClick={() => openLoadBidModal(load.id)}>
+                                        <button className="send-bid" id="sendBid" onClick={() => openSendBidModal(load.id)}>
                                             <svg fill="#ffffff" stroke="#ffffff" strokeWidth="0"
                                                  data-qa="icon" viewBox="0 0 15 15" width="15" height="15"
                                                  className="arrow-svg">
@@ -82,9 +82,7 @@ function LoadItem({load, openLoadBidModal}) {
 
                         ) ||
                         <Fragment>
-                            <div className="button-empty" data-toogle="modal"
-                                 data-target="#authModal">показать контакты и ставку
-                            </div>
+                            <div className="button-empty" onClick={openAuthModal}>показать контакты и ставку</div>
                             <div>Доступно <b>бесплатно</b> после быстрой регистрации</div>
                         </Fragment>
                     }

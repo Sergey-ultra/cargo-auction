@@ -14,9 +14,9 @@
     {% if not is_granted('IS_AUTHENTICATED_FULLY') %}
         <div class="alert">
             <div>Для продолжения необходимо авторизоваться на сайте.</div>
-            <div>
-                <a class="button button-primary" href="{{ path('app_sign_in') }}" data-show-auth="true">Вход</a>
-            </div>
+{#            <div>#}
+{#                <a class="button button-primary" href="{{ path('app_sign_in') }}" data-show-auth="true">Вход</a>#}
+{#            </div>#}
         </div>
     {% endif %}
     {% for error in errors %}

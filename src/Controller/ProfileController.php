@@ -96,6 +96,6 @@ class ProfileController extends AbstractController
     #[Route('profile/load-list', name: 'profile.my-cargos', methods:['get'])]
     public function showMyCargos(): Response
     {
-        return $this->render('order/index.html.twig');
+        return $this->render('cargo/index.html.twig');
     }
 }

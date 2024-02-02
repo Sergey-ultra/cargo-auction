@@ -1,6 +1,6 @@
 import ReactDOM from "react-dom/client";
-import LoadList from "./pages/load-list/LoadList";
+import Load from "./pages/load-list/Load";
 import React from "react";
 
 const loadList = ReactDOM.createRoot(document.getElementById('loadList'));
-loadList.render(<LoadList />);
+loadList.render(<Load />);

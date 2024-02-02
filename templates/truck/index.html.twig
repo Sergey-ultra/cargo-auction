@@ -1,0 +1,15 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Поиск транспорта для грузоперевозки{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {{ encore_entry_script_tags('truckList') }}
+{% endblock %}
+
+{% block body %}
+    <h1>Поиск транспорта для грузоперевозки</h1>
+
+    <a class="add button" href="{{ path('truck.create') }}">Добавить</a>
+    <div id="truckList"></div>
+{% endblock %}

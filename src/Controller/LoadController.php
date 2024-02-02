@@ -27,7 +27,7 @@ class LoadController extends AbstractController
     #[Route('/', name: 'cargo.index', methods:['get'])]
     public function index(): Response
     {
-        return $this->render('order/index.html.twig');
+        return $this->render('cargo/index.html.twig');
     }
 
 //    #[Route('/', name: 'cargo.index', methods:['get'])]
@@ -51,7 +51,7 @@ class LoadController extends AbstractController
 //
 //        $perPageOptions = [10, 20, 30, 50, 100];
 //
-//        return $this->render('order/index.html.twig', [
+//        return $this->render('cargo/index.html.twig', [
 //            'filter' => $filter,
 //            'list' => $listDto->list,
 //            'page' => $page,
@@ -70,7 +70,7 @@ class LoadController extends AbstractController
     {
         $load = $loadRepository->find($id);
 
-        return $this->render('order/show.html.twig', [
+        return $this->render('cargo/show.html.twig', [
             'load' => $load,
             'cargoTypes' => CargoType::CARGO_TYPES,
             'packageTypes' => PackageType::PACKAGE_TYPES,
@@ -87,7 +87,7 @@ class LoadController extends AbstractController
     #[Route('/create', name: 'cargo.create', methods:['get'])]
     public function create(): Response
     {
-        return $this->render('order/form.html.twig', [
+        return $this->render('cargo/form.html.twig', [
             'cargoTypes' => CargoType::CARGO_TYPES,
             'packageTypes' => PackageType::PACKAGE_TYPES,
             'bodyTypes' => BodyType::BODY_TYPES,
@@ -115,7 +115,7 @@ class LoadController extends AbstractController
         }
         $errors = $form->getErrors();
 
-        return $this->render('order/form.html.twig', [
+        return $this->render('cargo/form.html.twig', [
             'cargoTypes' => CargoType::CARGO_TYPES,
             'packageTypes' => PackageType::PACKAGE_TYPES,
             'bodyTypes' => BodyType::BODY_TYPES,
@@ -130,7 +130,7 @@ class LoadController extends AbstractController
     {
         $load = $loadRepository->find($id);
 
-        return $this->render('order/form.html.twig', [
+        return $this->render('cargo/form.html.twig', [
             'load' => $load,
             'cargoTypes' => CargoType::CARGO_TYPES,
             'packageTypes' => PackageType::PACKAGE_TYPES,

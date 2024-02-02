@@ -6,14 +6,12 @@ import {useHttp} from "../hooks/api";
 import {NotificationContext} from "../context/notification.context";
 
 
-export default function AuthModal({ onClose, selectedValue, isOpen }) {
+export default function AuthModal({ onClose, isOpen }) {
     const [form,setForm] = useState({
         username: '',
         password:''
     })
-    const handleClose = () => {
-        onClose(selectedValue);
-    };
+
 
     const changeHandler = event => {
         setForm({...form, [event.target.name]: event.target. value})
@@ -45,7 +43,7 @@ export default function AuthModal({ onClose, selectedValue, isOpen }) {
     }
 
     return (
-        <Dialog onClose={handleClose} open={isOpen}>
+        <Dialog onClose={onClose} open={isOpen}>
             <DialogTitle>Вход</DialogTitle>
             <DialogContent>
                 <form action="" method="post" onSubmit={login}>

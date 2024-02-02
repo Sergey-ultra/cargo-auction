@@ -6,21 +6,18 @@ namespace App\Controller\Api;
 
 use App\DTO\LoadFilter;
 use App\Repository\LoadRepository;
-use App\Services\PaginationService\PaginationService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapQueryString;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Serializer\Encoder\JsonEncoder;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
-use Symfony\Component\Serializer\Serializer;
 
 #[Route('/api', name: 'api_')]
 class LoadController extends AbstractController
 {
     #[Route('/load-list', name: 'api.cargo.index', methods:['get'])]
-    public function index(#[MapQueryString] ?LoadFilter $filter, Request $request, LoadRepository $repository): Response
+    public function index(#[MapQueryString] ?LoadFilter $filter, Request $request, LoadRepository $repository): JsonResponse
     {
         $page = $request->query->getInt('page', 1);
         $perPage = $request->query->getInt('per_page', 10);

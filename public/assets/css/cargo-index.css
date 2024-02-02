@@ -3,12 +3,7 @@
     font-size: 18px;
     padding: 10px 20px;
 }
-.filter {
-    box-shadow: 0 0 6px rgba(7, 24, 41, 0.02),0 2px 4px rgba(7, 24, 41, 0.08);
-    padding: 20px;
-    margin-bottom: 20px;
-    background-color: #fff;
-}
+
 .filter__row {
     display: flex;
     justify-content: space-between;
@@ -27,6 +22,7 @@
     flex-direction: column;
 }
 .filter__swap {
+    cursor: pointer;
     display: flex;
     margin: 28px 10px 0;
 }
@@ -102,17 +98,17 @@
 .text-gray {
     color: #b8b8b8;
 }
-.row {
+.table__row {
     border-top: 1px solid #EEF2F7;
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
 }
-.row:nth-child(even) {
+.table__row:nth-child(even) {
     background-color: #F1F1F1;
 }
 
-.row__header {
+.table__row-header {
     background-color: #B5C3CC;
 }
 .table__item {
