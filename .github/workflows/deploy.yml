@@ -20,5 +20,6 @@ jobs:
             cd /var/www/html/cargo-auction/
             git pull origin main
             git status
+            composer install
             npm install --only=prod
             npm run build
