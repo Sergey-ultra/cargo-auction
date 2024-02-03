@@ -14,14 +14,14 @@ use Symfony\Component\HttpKernel\Attribute\MapQueryString;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Route('/api', name: 'api_')]
-class LoadController extends AbstractController
+class LoadController extends ApiController
 {
     #[Route('/load-list', name: 'api.cargo.index', methods:['get'])]
     public function index(#[MapQueryString] ?LoadFilter $filter, Request $request, LoadRepository $repository): JsonResponse
     {
         $page = $request->query->getInt('page', 1);
-        $perPage = $request->query->getInt('per_page', 10);
-        $orderBy = $request->query->getString('order_by', LoadRepository::ORDER_CREATED_AT);
+        $perPage = $request->query->getInt('perPage', 10);
+        $orderBy = $request->query->getString('orderBy', LoadRepository::ORDER_CREATED_AT);
         $isMy = $request->query->getBoolean('isMy');
 
         $user = $isMy ? $this->getUser() : null;
@@ -41,10 +41,6 @@ class LoadController extends AbstractController
                 'lastPage' => $lastPage,
             ]];
 
-        return $this->json($result, Response::HTTP_OK, [], [
-                'circular_reference_handler' => function ($object) {
-                    return $object->getId();
-                }]
-        );
+        return $this->apiJson($result);
     }
 }

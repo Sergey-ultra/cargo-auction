@@ -1,5 +1,5 @@
 import React, {Fragment, useEffect, useState} from 'react';
-import {Button, MenuItem, Select, Tab, Tabs} from "@mui/material";
+import {Button, FormControl, MenuItem, Select, Tab, Tabs} from "@mui/material";
 import {useHttp} from "../../hooks/api";
 import {setQuery} from "../../hooks/queryParams";
 import Pagination from "../../components/common/Pagination";
@@ -14,8 +14,6 @@ function LoadList({ filter, setFilter, clearFilter,changeFilterAddresses }) {
 
     const isMy = window.location.pathname.match(/\/profile\/load-list/);
 
-
-
     const changeFilter = event => {
         setFilter({...filter, [event.target.name]: event.target. value})
     }
@@ -27,7 +25,7 @@ function LoadList({ filter, setFilter, clearFilter,changeFilterAddresses }) {
 
     const [list, setList] = useState([]);
     const [totalCount, setTotalCount] = useState(0);
-    const [orderBy, setOrderBy] = useState('');
+    const [orderBy, setOrderBy] = useState('created_at');
     const [perPage, setPerPage] = useState(10);
     const [page, setPage] = useState(1);
     const [lastPage, setLastPage] = useState(1);
@@ -82,7 +80,15 @@ function LoadList({ filter, setFilter, clearFilter,changeFilterAddresses }) {
     useEffect(() => {
         const fetchLists = async() => {
             const { data } = await request('/api/list');
-            setOrderOptions(data.orderOptions);
+
+            let orderParams = [];
+            for (let [name, value] of Object.entries(data.orderOptions)) {
+                orderParams.push({
+                    title: value,
+                    value: name,
+                })
+            }
+            setOrderOptions(orderParams);
             setPerPageOptions(data.perPageOptions);
         }
         fetchLists();
@@ -172,17 +178,18 @@ function LoadList({ filter, setFilter, clearFilter,changeFilterAddresses }) {
                         <div className="meta-right">
                             <div className="sort">
                                 <label>Упорядочить по </label>
-                                {/*<Select*/}
-                                {/*    name="orderBy"*/}
-                                {/*    id="orderBy"*/}
-                                {/*    value={orderBy}*/}
-                                {/*    label="orderBy"*/}
-                                {/*    onChange={e => setOrderBy(e.target.value)}*/}
-                                {/*>*/}
-                                {/*    {orderOptions.map((orderOption, orderOptionKey) =>*/}
-                                {/*       <MenuItem key={orderOptionKey} value={orderOptionKey} selected={orderBy === orderOptionKey}>{orderOption}</MenuItem>*/}
-                                {/*    )}*/}
-                                {/*</Select>*/}
+                                <FormControl sx={{ m: 1 }} variant="standard">
+                                    <Select
+                                        name="orderBy"
+                                        id="orderBy"
+                                        value={orderBy}
+                                        label="orderBy"
+                                        onChange={e => setOrderBy(e.target.value)}>
+                                        {orderOptions.map((orderOption) =>
+                                            <MenuItem key={orderOption.value} value={orderOption.value} selected={orderBy === orderOption.value}>{orderOption.title}</MenuItem>
+                                        )}
+                                    </Select>
+                                </FormControl>
                             </div>
                             <Pagination page={page} lastPage={lastPage} setPage={setPage}/>
                         </div>
@@ -217,7 +224,7 @@ function LoadList({ filter, setFilter, clearFilter,changeFilterAddresses }) {
                                 onChange={e => setPerPage(e.target.value)}
                             >
                                 {perPageOptions.map((option, key) =>
-                                    <MenuItem key={key} value={key} selected={perPage === option}>{option}</MenuItem>
+                                    <MenuItem key={key} value={option} selected={perPage === option}>{option}</MenuItem>
                                 )}
                             </Select>
                         </div>

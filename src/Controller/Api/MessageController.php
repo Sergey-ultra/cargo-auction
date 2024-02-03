@@ -16,7 +16,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 
 #[Route('/api', name: 'api_')]
-class MessageController extends AbstractController
+class MessageController extends ApiController
 {
     #[Route('/chat/{id}', name: 'api.chat.show', methods:['get'])]
     public function showChat(int $id, ChatRepository $chatRepository): Response
@@ -25,11 +25,7 @@ class MessageController extends AbstractController
 
         $result = ['data' =>  $chat];
 
-        return $this->json($result, Response::HTTP_OK, [], [
-                'circular_reference_handler' => function ($object) {
-                    return $object->getId();
-                }]
-        );
+        return $this->apiJson($result);
     }
 
     #[Route('/chat/{id}/messages', name: 'api.chat.messages', methods:['get'])]
@@ -39,13 +35,7 @@ class MessageController extends AbstractController
 
         $result = ['data' =>  $messages];
 
-        return $this->json($result, Response::HTTP_OK, [],
-            [
-                'circular_reference_handler' => function ($object) {
-                    return $object->getId();
-                },
-                DateTimeNormalizer::FORMAT_KEY => 'Y-m-d H:i:s',
-            ]
+        return $this->apiJson($result, Response::HTTP_OK, [], [DateTimeNormalizer::FORMAT_KEY => 'Y-m-d H:i:s']
         );
     }
 
@@ -82,11 +72,7 @@ class MessageController extends AbstractController
 
             $result = ['data' => $list];
 
-            return $this->json($result, Response::HTTP_OK, [], [
-                    'circular_reference_handler' => function ($object) {
-                        return $object->getId();
-                    }]
-            );
+            return $this->apiJson($result);
         }
 
         return $this->json(['data' => []]);

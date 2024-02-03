@@ -16,7 +16,7 @@ use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Route('/api', name: 'api_')]
-class BidController extends AbstractController
+class BidController extends ApiController
 {
     #[Route('/sendBid/{id}', name: 'cargo.showBidForm', methods:['post'])]
     public function showBidForm(
@@ -40,18 +40,9 @@ class BidController extends AbstractController
             $loadUser = $load->getUser();
             $messageManager->createNotificationMessage($message, (string)$loadUser->getId());
 
-            return $this->json(['data' => $bid], Response::HTTP_CREATED, [], [
-                    'circular_reference_handler' => function ($object) {
-                        return $object->getId();
-                    }]
-            );
+            return $this->apiJson(['data' => $bid]);
         } catch (\Throwable $e) {
-            return $this->json(
-                [
-                    'error' => $e,
-                ],
-                Response::HTTP_INTERNAL_SERVER_ERROR
-            );
+            return $this->json(['error' => $e], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }

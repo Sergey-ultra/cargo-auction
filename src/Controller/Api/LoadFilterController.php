@@ -14,7 +14,7 @@ use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Route('/api', name: 'api_')]
-class LoadFilterController extends AbstractController
+class LoadFilterController extends ApiController
 {
     #[Route('/load-filter', name: 'api.filter.index', methods:['get'])]
     public function index(FilterRepository $filterRepository): JsonResponse
@@ -22,11 +22,7 @@ class LoadFilterController extends AbstractController
         $list = $filterRepository->findBy(['user' => $this->getUser()]);
 
 
-        return $this->json(['data' => $list], Response::HTTP_OK, [], [
-            'circular_reference_handler' => function ($object) {
-                return $object->getId();
-            }]
-        );
+        return $this->apiJson(['data' => $list]);
     }
 
     #[Route('/load-filter', name: 'api.filter.save', methods:['post'])]
@@ -42,7 +38,7 @@ class LoadFilterController extends AbstractController
 
         $filterRepository->save($filter);
 
-        return $this->json(['data' => ['status' => 'ok']], Response::HTTP_CREATED);
+        return $this->apiJson(['data' => ['status' => 'ok']], Response::HTTP_CREATED);
 
     }
 }
