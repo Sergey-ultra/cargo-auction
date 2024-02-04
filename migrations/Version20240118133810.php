@@ -23,7 +23,7 @@ final class Version20240118133810 extends AbstractMigration
         $this->addSql('CREATE SEQUENCE bids_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
         $this->addSql('CREATE TABLE bids (id INT NOT NULL, bid INT NOT NULL,  load_id INT NOT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE INDEX IDX_E52FFDEEA56ED395 ON bids (load_id)');
-        $this->addSql('ALTER TABLE bids ADD CONSTRAINT FK_E52FFDEEA56ED395 FOREIGN KEY (load_id) REFERENCES "orders" (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
+        $this->addSql('ALTER TABLE bids ADD CONSTRAINT FK_E52FFDEEA56ED395 FOREIGN KEY (load_id) REFERENCES "loads" (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
     }
 
     public function down(Schema $schema): void

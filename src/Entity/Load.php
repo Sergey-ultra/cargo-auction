@@ -14,7 +14,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: LoadRepository::class)]
 #[ORM\HasLifecycleCallbacks()]
-#[ORM\Table(name:"orders")]
+#[ORM\Table(name:"loads")]
 class Load
 {
     public const DOWNLOADING_DATE_STATUSES = [
