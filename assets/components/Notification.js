@@ -1,6 +1,5 @@
 import React, {Fragment, useContext, useEffect, useState} from "react";
 import {Button, IconButton, Snackbar} from "@mui/material";
-import {useNotification} from "../hooks/notification";
 import {NotificationContext} from "../context/notification.context";
 
 export default function Notification() {

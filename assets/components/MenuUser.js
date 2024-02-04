@@ -14,9 +14,7 @@ export default function MenuUser({ email }) {
         setNotificationAnchorEl(event.currentTarget)
     }
 
-    const closeDrop = () => {
-        setDropAnchorEl(null);
-    };
+    const closeDrop = () => setDropAnchorEl(null);
 
     const closeNotification = () => setNotificationAnchorEl(null);
 
@@ -36,7 +34,7 @@ export default function MenuUser({ email }) {
                 MenuListProps={{
                     'aria-labelledby': 'basic-button',
                 }}>
-                <MenuItem onClick={closeDrop}>
+                <MenuItem onClick={closeNotification}>
                     <div className="notificationsList__read">
                         <svg width="16" height="16" viewBox="0 0 16 16">
                             <svg strokeWidth="0" data-qa="icon" viewBox="0 0 14 10" width="14" height="10"

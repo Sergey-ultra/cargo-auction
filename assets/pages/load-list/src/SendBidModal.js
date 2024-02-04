@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import DialogTitle from '@mui/material/DialogTitle';
 import Dialog from '@mui/material/Dialog';
 import {Button, DialogContent} from "@mui/material";
-import {useHttp} from "../hooks/api";
+import {useHttp} from "../../../hooks/api";
 
 
 export default function SendBidModal({ handleClose, isOpen, currentLoadId }) {

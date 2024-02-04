@@ -1,23 +1,21 @@
-import React, {Fragment, useEffect, useState} from 'react';
-import {Button, FormControl, MenuItem, Select, Tab, Tabs} from "@mui/material";
-import {useHttp} from "../../hooks/api";
-import {setQuery} from "../../hooks/queryParams";
-import Pagination from "../../components/common/Pagination";
-import LoadItem from "../../components/LoadItem";
-import SendBidModal from "../../components/SendBidModal";
-import SaveFilterModal from "../../components/SaveFilterModal";
-import AuthModal from "../../components/AuthModal";
+import React, {Fragment, useContext, useEffect, useState} from 'react';
+import {Button, FormControl, Menu, MenuItem, Select, Tab, Tabs} from "@mui/material";
+import {useHttp} from "../../../hooks/api";
+import {setQuery} from "../../../hooks/queryParams";
+import Pagination from "../../../components/common/Pagination";
+import LoadItem from "./LoadItem";
+import SendBidModal from "./SendBidModal";
+import SaveFilterModal from "./SaveFilterModal";
+import AuthModal from "../../../components/AuthModal";
+import Filter from "./Filter";
+import {FilterContext} from "../../../context/filter.context";
 
-function LoadList({ filter, setFilter, clearFilter,changeFilterAddresses }) {
+function LoadList() {
+    const { filter, setFilter, clearFilter, changeFilterAddresses } = useContext(FilterContext);
     const { request, isLoading, error, clearError } = useHttp();
     const userId = window?.authData?.userId;
 
     const isMy = window.location.pathname.match(/\/profile\/load-list/);
-
-    const changeFilter = event => {
-        setFilter({...filter, [event.target.name]: event.target. value})
-    }
-
 
     const [orderOptions, setOrderOptions] = useState([]);
     const [perPageOptions, setPerPageOptions] = useState([]);
@@ -99,78 +97,22 @@ function LoadList({ filter, setFilter, clearFilter,changeFilterAddresses }) {
     },[filter, page, perPage]);
 
 
+
+
     return (
         <Fragment>
             <SendBidModal handleClose={closeSendBidModal} isOpen={isOpenSendBidModal} currentLoadId={currentLoadId}/>
             <SaveFilterModal handleClose={closeSaveFilterModal} isOpen={isOpenSaveFilterModal} saveFilter={saveFilter}/>
             <AuthModal isOpen={isOpenAuthModal} onClose={closeAuthModal}/>
 
-            <form className="box" id="filter">
-                <div className="filter__row">
-                    <div className="filter__block">
-                        <div className="filter__element">
-                            <label className="filter__label">Откуда</label>
-                            <input type="text" className="filter__input" id="fromAddressInput" name="fromAddress"
-                                   value={filter.fromAddress} onChange={changeFilter}/>
-                            <div id="fromAddressSuggest">
-                                <ul className="suggest-list"></ul>
-                            </div>
-                        </div>
-                        <div className="filter__element filter__element-radius">
-                            <label className="filter__label">Радиус</label>
-                            <input type="text" className="filter__input" id="fromRadius" name="fromRadius"
-                                   placeholder="км"
-                                   disabled={filter.fromAddress === ''} value={filter.fromRadius}
-                                   onChange={changeFilter}/>
-                        </div>
-                        <div className="filter__swap" onClick={changeFilterAddresses}>
-                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path
-                                    d="M6.99 11L3 15l3.99 4v-3H14v-2H6.99v-3zM21 9l-3.99-4v3H10v2h7.01v3L21 9z"></path>
-                                <path d="M0 0h24v24H0z" fill="none"></path>
-                            </svg>
-                        </div>
-                        <div className="filter__element">
-                            <label className="filter__label">Куда</label>
-                            <input type="text" className="filter__input" id="toAddressInput" name="toAddress"
-                                   value={filter.toAddress} onChange={changeFilter}/>
-                            <div id="toAddressSuggest">
-                                <ul className="suggest-list"></ul>
-                            </div>
-                        </div>
-                        <div className="filter__element filter__element-radius">
-                            <label className="filter__label">Радиус</label>
-                            <input type="text" className="filter__input" id="toRadius" name="toRadius" placeholder="км"
-                                   disabled={filter.toAddress === ''} value={filter.toRadius} onChange={changeFilter}/>
-                        </div>
-                    </div>
-                    <div className="filter__block filter__block-right">
-                        <div className="filter__element filter__minMax">
-                            <label className="filter__label">Вес, т</label>
-                            <div className="filter__block">
-                                <input type="text" className="filter__input" name="weightMin" value={filter.weightMin}
-                                       onChange={changeFilter}/>
-                                <input type="text" className="filter__input" name="weightMax" value={filter.weightMax}
-                                       onChange={changeFilter}/>
-                            </div>
-                        </div>
-                        <div className="filter__element filter__minMax">
-                            <label className="filter__label">Объем, м<sup>3</sup></label>
-                            <div className="filter__block">
-                                <input type="text" className="filter__input" name="volumeMin" value={filter.volumeMin}
-                                       onChange={changeFilter}/>
-                                <input type="text" className="filter__input" name="volumeMax" value={filter.volumeMax}
-                                       onChange={changeFilter}/>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </form>
+            <Filter/>
+
             <div className="row row-end">
                 <Button onClick={clearFilter}>Очистить</Button>
                 {isShowSaveFilter && <Button onClick={openSaveFilterModal}>Сохранить как фильтр</Button>}
                 <Button variant="contained" className="button button-primary button-small" onClick={updateLoadList}>Найти</Button>
             </div>
+
             {list.length > 0
                 ? <Fragment>
                     <div className="meta">

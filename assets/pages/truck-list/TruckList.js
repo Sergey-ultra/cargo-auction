@@ -3,7 +3,7 @@ import {Button, MenuItem, Select} from "@mui/material";
 import {useHttp} from "../../hooks/api";
 import {setQuery} from "../../hooks/queryParams";
 import Pagination from "../../components/common/Pagination";
-import LoadItem from "../../components/LoadItem";
+import LoadItem from "../load-list/src/LoadItem";
 
 
 function TruckList() {

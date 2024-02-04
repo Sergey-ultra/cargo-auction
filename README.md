@@ -19,6 +19,11 @@ Run fixtures
 php bin/console doctrine:fixtures:load
 ```
 
+Load cities to DB
+```bash
+php bin/console load:cities
+```
+
 ### 3. Start the WebSocket Server
 
 Run the WebSocket server for real-time functionality. The `-vv` flag enables verbose output.

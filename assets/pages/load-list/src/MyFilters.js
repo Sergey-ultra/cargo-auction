@@ -1,12 +1,14 @@
-import React, {Fragment, useEffect, useState} from "react";
-import {useHttp} from "../../hooks/api";
+import React, {useContext, useEffect, useState} from "react";
+import {useHttp} from "../../../hooks/api";
 import {Card, CardActionArea, CardHeader, IconButton} from "@mui/material";
+import {FilterContext} from "../../../context/filter.context";
 
 
-
-function LoadFilter({ setFilter, setLoadListTab }) {
+function MyFilters({ setLoadListTab }) {
+    const { setFilter } = useContext(FilterContext);
     const { request, isLoading, error, clearError } = useHttp();
     const [filterList, setFilterList] = useState([]);
+
     const fetchFilters = async() => {
         const { data } = await request('/api/load-filter');
         if (data && Array.isArray(data)) {
@@ -61,4 +63,4 @@ function LoadFilter({ setFilter, setLoadListTab }) {
     );
 }
 
-export default LoadFilter;
+export default MyFilters;
