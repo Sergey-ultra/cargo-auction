@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\WebSocket\Entity;
+namespace App\WebSocket\Manager\NotificationManagerUsingDB\Entity;
 
-use App\WebSocket\Repository\MessagesRepository;
+use App\WebSocket\Manager\NotificationManagerUsingDB\Repository\MessagesRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: MessagesRepository::class)]

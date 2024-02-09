@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\WebSocket\Server;
 
-use App\WebSocket\Manager\MessageManager;
+use App\WebSocket\Manager\NotificationManagerInterface;
 use Psr\Log\LoggerInterface;
 use Ratchet\Server\IoServer;
 
@@ -12,12 +12,12 @@ class CustomIoServer extends IoServer
 {
     public const WATCH_INTERVAL_SECONDS = 1;
 
-    private MessageManager $webSocketManager;
+    private NotificationManagerInterface $webSocketManager;
     private LoggerInterface $logger;
 
     public function attach(
-        MessageManager $webSocketManager,
-        LoggerInterface $logger
+        NotificationManagerInterface $webSocketManager,
+        LoggerInterface              $logger
     ): self {
         $this->webSocketManager = $webSocketManager;
         $this->logger = $logger;

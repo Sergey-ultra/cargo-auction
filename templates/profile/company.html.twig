@@ -2,10 +2,13 @@
 
 {% block title %}Главная{% endblock %}
 
+{% block javascripts %}
+    {{ parent() }}
+    {{ encore_entry_script_tags('myCompany') }}
+{% endblock %}
+
 {% block body %}
     <h1>Моя компания</h1>
     <h2>Сведения о компании</h2>
-    <div class="fieldset">
-        <label>Месторасположение центрального офиса или город юридической регистрации*</label>
-    </div>
+    <div id="myCompany"></div>
 {% endblock %}

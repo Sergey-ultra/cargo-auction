@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\WebSocket\Command;
 
-use App\WebSocket\Manager\MessageManager;
+use App\WebSocket\Manager\NotificationManagerUsingDB\NotificationUsingDataBaseManager;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -21,8 +21,8 @@ class NotificationPushCommand extends Command
     private const COMMAND_DESCRIPTION = 'Push a notification to WebSocket clients.';
 
     public function __construct(
-        private readonly MessageManager $messageManager,
-        private readonly LoggerInterface $logger
+        private readonly NotificationUsingDataBaseManager $messageManager,
+        private readonly LoggerInterface                  $logger
     ) {
         parent::__construct();
     }
@@ -39,7 +39,7 @@ class NotificationPushCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         try {
-            $this->messageManager->createNotificationMessage(
+            $this->messageManager->sendNotificationMessage(
                 $input->getArgument('notification'),
                 $input->getOption('user-id'),
                 (int) $input->getOption('delay'),

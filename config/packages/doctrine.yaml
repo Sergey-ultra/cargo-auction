@@ -33,9 +33,9 @@ doctrine:
                 prefix: 'App\Entity'
                 alias: App
             WebSocket:
-                dir: '%kernel.project_dir%/src/WebSocket/Entity'
+                dir: '%kernel.project_dir%/src/WebSocket/Manager/NotificationManagerUsingDB/Entity'
                 is_bundle: false
-                prefix: App\WebSocket\Entity
+                prefix: App\WebSocket\Manager\NotificationManagerUsingDB\Entity
                 alias: WebSocket
 
 when@test:

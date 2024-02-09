@@ -6,10 +6,10 @@ namespace App\Controller\Api;
 
 use App\DTO\BidCreateDTO;
 use App\Entity\Bid;
+use App\Messages\WebSocketNotification;
 use App\Repository\BidRepository;
 use App\Repository\LoadRepository;
-use App\WebSocket\Manager\MessageManager;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use OldSound\RabbitMqBundle\RabbitMq\Producer;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
@@ -19,12 +19,12 @@ use Symfony\Component\Routing\Annotation\Route;
 class BidController extends ApiController
 {
     #[Route('/sendBid/{id}', name: 'cargo.showBidForm', methods:['post'])]
-    public function showBidForm(
-        int $id,
+    public function createBid(
+        int                               $id,
         #[MapRequestPayload] BidCreateDTO $payload,
-        BidRepository $bidRepository,
-        LoadRepository $loadRepository,
-        MessageManager $messageManager,
+        BidRepository                     $bidRepository,
+        LoadRepository                    $loadRepository,
+        Producer                 $taskProducer
     ): JsonResponse
     {
         $load = $loadRepository->find($id);
@@ -38,9 +38,11 @@ class BidController extends ApiController
 
             $message = sprintf("На вашу заявку поставили ставку в размере %d %s", $payload->bid, 'руб');
             $loadUser = $load->getUser();
-            $messageManager->createNotificationMessage($message, (string)$loadUser->getId());
 
-            return $this->apiJson(['data' => $bid]);
+            $notification = new WebSocketNotification($message, $loadUser->getId());
+            $taskProducer->publish($notification->toJson());
+
+            return $this->apiJson(['data' => $bid->getId()], Response::HTTP_CREATED);
         } catch (\Throwable $e) {
             return $this->json(['error' => $e], Response::HTTP_INTERNAL_SERVER_ERROR);
         }

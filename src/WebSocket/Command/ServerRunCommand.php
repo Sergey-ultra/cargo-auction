@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\WebSocket\Command;
 
-use App\WebSocket\Manager\MessageManager;
+use App\WebSocket\Manager\NotificationManagerUsingDB\NotificationUsingDataBaseManager;
 use App\WebSocket\Server\CustomIoServer;
 use App\WebSocket\Server\WebSocketServer;
 use Psr\Log\LoggerInterface;
@@ -24,9 +24,9 @@ class ServerRunCommand extends Command
     private const COMMAND_DESCRIPTION = 'Run WebSocket Server';
 
     public function __construct(
-        private readonly WebSocketServer $webSocketServer,
-        private readonly MessageManager $messageManager,
-        private readonly LoggerInterface $logger
+        private readonly WebSocketServer                  $webSocketServer,
+        private readonly NotificationUsingDataBaseManager $messageManager,
+        private readonly LoggerInterface                  $logger
     ) {
         parent::__construct();
     }

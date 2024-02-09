@@ -30,9 +30,11 @@ function AutocompleteAddress({filterValue, setAddressFilterValue}) {
         getOptionLabel={option => option.name}
         getOptionKey={option => option.id}
         onChange={(event, newValue) => {
-            setLocalValue(newValue.name);
-            setAddressFilterValue(newValue.name);
-            setCitiesList([]);
+            if (newValue && newValue.name) {
+                setLocalValue(newValue.name);
+                setAddressFilterValue(newValue.name);
+                setCitiesList([]);
+            }
         }}
         inputValue={localValue}
         size="small"

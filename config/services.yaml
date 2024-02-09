@@ -26,3 +26,5 @@ services:
     App\Services\GeoCoderService\GeoCoderService:
         arguments:
             $apiKey: '%env(YANDEX_GEOCODER_API_KEY)%'
+
+

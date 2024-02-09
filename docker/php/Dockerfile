@@ -10,6 +10,11 @@ RUN set -ex \
 
 #RUN pecl install redis && docker-php-ext-enable redis
 
+#AMQP
+RUN apk add --no-cache --update rabbitmq-c-dev  \
+    && pecl install amqp \
+    && docker-php-ext-enable amqp
+
 
 # Add xdebug
 RUN apk add --no-cache --virtual .build-deps $PHPIZE_DEPS \

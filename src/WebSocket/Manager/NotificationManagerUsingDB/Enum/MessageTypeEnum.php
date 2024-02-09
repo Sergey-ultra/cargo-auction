@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\WebSocket\Enum;
+namespace App\WebSocket\Manager\NotificationManagerUsingDB\Enum;
 
 /**
  * Defines message types for WebSocket communication.

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\WebSocket\Repository;
+namespace App\WebSocket\Manager\NotificationManagerUsingDB\Repository;
 
-use App\WebSocket\Entity\Messages;
+use App\WebSocket\Manager\NotificationManagerUsingDB\Entity\Messages;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Psr\Log\LoggerInterface;
