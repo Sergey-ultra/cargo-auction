@@ -94,7 +94,7 @@ function LoadList() {
 
     useEffect(() => {
         fetchLoadList();
-    },[filter, page, perPage]);
+    },[filter, page, perPage, orderBy]);
 
 
 
