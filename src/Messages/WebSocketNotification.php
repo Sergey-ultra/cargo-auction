@@ -11,6 +11,11 @@ readonly class WebSocketNotification
         public int $userId,
     ){}
 
+    public function toArray(): array
+    {
+        return (array)$this;
+    }
+
     public function toJson(): string
     {
         return json_encode($this);

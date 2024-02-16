@@ -106,6 +106,10 @@ body {
     flex: 1 1 auto;
     margin-bottom: 30px;
 }
+.pagination {
+    gap: 3px;
+    display: flex;
+}
 .legend {
     font-size: 1.5em;
     padding-bottom: .5em;

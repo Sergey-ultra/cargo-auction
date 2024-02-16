@@ -12,30 +12,32 @@
     {{ form_errors(registrationForm) }}
 
     {{ form_start(registrationForm) }}
-    <div class="form-item">
-        {{ form_label(registrationForm.email, 'Email', { 'label_attr': {'class': 'control-label'} }) }}
-        {{ form_widget(registrationForm.email) }}
-    </div>
+        <div class="form-item">
+            {{ form_label(registrationForm.name, 'Имя', { 'label_attr': {'class': 'control-label'} }) }}
+            {{ form_widget(registrationForm.name) }}
+        </div>
 
-    <div class="form-item">
-        {{ form_label(registrationForm.plainPassword, 'Пароль', { 'label_attr': {'class': 'control-label'} }) }}
-        {{ form_widget(registrationForm.plainPassword, {
-            label: 'Password',
-            attr: {class: 'foo'}
-        }) }}
-    </div>
+        <div class="form-item">
+            {{ form_label(registrationForm.email, 'Email', { 'label_attr': {'class': 'control-label'} }) }}
+            {{ form_widget(registrationForm.email) }}
+        </div>
 
+        <div class="form-item">
+            {{ form_label(registrationForm.plainPassword, 'Пароль', { 'label_attr': {'class': 'control-label'} }) }}
+            {{ form_widget(registrationForm.plainPassword, {
+                label: 'Password',
+                attr: {class: 'foo'}
+            }) }}
+        </div>
 
-
-
-    <div class="form-item">
-        {{ form_label(registrationForm.role, 'Роль', { 'label_attr': {'class': 'control-label'} }) }}
-        {{ form_widget(registrationForm.role) }}
-    </div>
-    <div>
-        Нажимая кнопку «Продолжить», вы принимаете условия
-        <a href="{{ path('agreement') }}">Пользовательского соглашения</a>
-    </div>
+        <div class="form-item">
+            {{ form_label(registrationForm.role, 'Роль', { 'label_attr': {'class': 'control-label'} }) }}
+            {{ form_widget(registrationForm.role) }}
+        </div>
+        <div>
+            Нажимая кнопку «Продолжить», вы принимаете условия
+            <a href="{{ path('agreement') }}">Пользовательского соглашения</a>
+        </div>
 
         <button type="submit" class="btn button">Регистрация</button>
     {{ form_end(registrationForm) }}

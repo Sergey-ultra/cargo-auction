@@ -31,9 +31,9 @@ export default function AuthModal({ onClose, isOpen }) {
         e.preventDefault();
 
         try {
-            const { data } = await request('/sign-in', 'POST', {body: {...form}});
+            const { token } = await request('/sign-in', 'POST', {body: {...form}});
 
-            if (data && data.userId) {
+            if (token) {
                 window.location.reload();
             }
         } catch (e) {

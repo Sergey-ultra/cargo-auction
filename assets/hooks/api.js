@@ -37,12 +37,17 @@ export const useHttp = () => {
             body = JSON.stringify(params.body);
         }
 
-        try {
-            const response = await fetch(url,{ method, body, headers });
-            const data = await response.json();
-            // console.log(data)
-            if (!response.ok) {
+        const fetchParams = { method, body, headers };
 
+        if (params.hasOwnProperty('credentials') && params.credentials) {
+            fetchParams.credentials = 'include';
+        }
+
+        try {
+            const response = await fetch(url, fetchParams);
+            const data = await response.json();
+
+            if (!response.ok) {
                 if (response.status !== 401) {
                     setError(data.error);
                 } else {

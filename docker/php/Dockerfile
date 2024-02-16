@@ -2,15 +2,21 @@ FROM php:8.2-fpm-alpine
 
 ENV PHP_XDEBUG_ENABLED=1
 
+WORKDIR /var/www
+
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
+COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
+RUN install-php-extensions sockets
+
 RUN set -ex \
-    	&& apk --no-cache add $PHPIZE_DEPS postgresql-dev nodejs yarn npm\
+    	&& apk --no-cache add $PHPIZE_DEPS postgresql-dev\
     	&& docker-php-ext-install pdo pdo_pgsql
 
 #RUN pecl install redis && docker-php-ext-enable redis
 
 #AMQP
+
 RUN apk add --no-cache --update rabbitmq-c-dev  \
     && pecl install amqp \
     && docker-php-ext-enable amqp
@@ -39,4 +45,4 @@ RUN echo "xdebug.mode=debug" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.
 #      && docker-php-ext-enable redis xdebug
 
 ADD ./conf/php.ini /usr/local/etc/php/conf.d/php.ini
-WORKDIR /var/www
+

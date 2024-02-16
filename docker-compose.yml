@@ -23,8 +23,8 @@ services:
     restart: unless-stopped
     tty: true
 #    на этом порту должен запускаться websocket server
-    ports:
-      - "4000:4000"
+#    ports:
+#      - "4000:4000"
     volumes:
       - ./:/var/www
       - ./docker/php/conf/php.ini:/usr/local/etc/php/conf.d/php.ini
@@ -37,6 +37,22 @@ services:
       DATABASE_PASS: postgres
       DATABASE_NAME: cargo
 #      PHP_IDE_CONFIG: "serverName=cargoAuctionServer"
+    networks:
+      - cargo
+
+  centrifugo:
+    container_name: centrifugo
+    image: centrifugo/centrifugo:v5
+    restart: always
+    volumes:
+      - ./docker/centrifugo/config.json:/centrifugo/config.json
+    command: centrifugo -c config.json
+    ports:
+      - "8002:8000"
+    ulimits:
+      nofile:
+        soft: 65535
+        hard: 65535
     networks:
       - cargo
 

@@ -1,4 +1,5 @@
 import React, {useState} from 'react';
+import { Centrifuge } from 'centrifuge';
 import RightNav from "../../components/RightNav";
 import Notification from "../../components/Notification";
 import {useNotification} from "../../hooks/notification";
@@ -13,21 +14,23 @@ function Nav() {
 
     const [isOpenWasModal, setIsOpenWasModal] = useState(false);
 
-    if (window["WebSocket"] && window.authData && window.authData.userId) {
-        const socket = new WebSocket(`ws://localhost:4000?user_id=${window.authData.userId}`);
-
-        socket.onopen = function (e) {
-            console.log(e);
-        }
-
-        socket.onclose = function () {
-            console.log("Connection has been closed.");
-        }
-        socket.onmessage = function (e) {
-            const message = (JSON.parse(e.data)).message;
-
-            let notification = new Notify('Notification Title', message);
-        }
+    if (window.authData && window.authData.userId) {
+        const centrifuge = new Centrifuge(`ws://${location.host}/connection/websocket`);
+        // const socket = new WebSocket(`ws://${location.host}/ws?user_id=${window.authData.userId}`);
+        //
+        // socket.onopen = function (e) {
+        //     console.log(e);
+        // }
+        //
+        // socket.onclose = function () {
+        //     console.log("Connection has been closed.");
+        // }
+        // socket.onmessage = function (e) {
+        //     const message = (JSON.parse(e.data)).message;
+        //
+        //     // let notification = new Notify('Notification Title', message);
+        //     notify(message);
+        // }
     }
 
 

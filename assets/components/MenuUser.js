@@ -16,6 +16,11 @@ export default function MenuUser({ email }) {
 
     const closeDrop = () => setDropAnchorEl(null);
 
+    // const logout = () => {
+    //     sessionStorage.removeItem('jwt');
+    //     closeDrop();
+    // }
+
     const closeNotification = () => setNotificationAnchorEl(null);
 
     return (

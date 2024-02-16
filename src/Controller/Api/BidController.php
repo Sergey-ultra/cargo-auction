@@ -9,7 +9,8 @@ use App\Entity\Bid;
 use App\Messages\WebSocketNotification;
 use App\Repository\BidRepository;
 use App\Repository\LoadRepository;
-use OldSound\RabbitMqBundle\RabbitMq\Producer;
+use Fresh\CentrifugoBundle\Service\CentrifugoInterface;
+use PhpAmqpLib\Exception\AMQPIOException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
@@ -24,7 +25,7 @@ class BidController extends ApiController
         #[MapRequestPayload] BidCreateDTO $payload,
         BidRepository                     $bidRepository,
         LoadRepository                    $loadRepository,
-        Producer                 $taskProducer
+        CentrifugoInterface               $centrifugo
     ): JsonResponse
     {
         $load = $loadRepository->find($id);
@@ -40,7 +41,11 @@ class BidController extends ApiController
             $loadUser = $load->getUser();
 
             $notification = new WebSocketNotification($message, $loadUser->getId());
-            $taskProducer->publish($notification->toJson());
+            try {
+                $centrifugo->publish($notification->toArray(), 'notification');
+            } catch (\Throwable $e) {
+
+            }
 
             return $this->apiJson(['data' => $bid->getId()], Response::HTTP_CREATED);
         } catch (\Throwable $e) {
