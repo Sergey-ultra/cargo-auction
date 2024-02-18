@@ -24,40 +24,41 @@ function Nav() {
             setCentrifugoToken(data.token);
         }
     }
+    if (window.authData && window.authData.userId) {
+        useEffect(() => {
+            if (!centrifugoToken) {
+                fetchCentrifugoCredentials();
+            }
 
-    useEffect(() => {
-        if (!centrifugoToken) {
-            fetchCentrifugoCredentials();
-        }
+            if (centrifugoToken) {
+                const centrifuge = new Centrifuge(`ws://${location.host}/connection/websocket`, {
+                    token: centrifugoToken
+                });
 
-        if (window.authData && window.authData.userId && centrifugoToken) {
-            const centrifuge = new Centrifuge(`ws://${location.host}/connection/websocket`, {
-                token: centrifugoToken
-            });
+                centrifuge.on('connected', function (ctx) {
+                    //console.log(ctx);
+                });
 
-            centrifuge.on('connected', function(ctx) {
-                //console.log(ctx);
-            });
+                const sub = centrifuge.newSubscription(`notification_${window.authData.userId}`);
 
-            const sub = centrifuge.newSubscription(`notification_${window.authData.userId}`);
+                sub.on('publication', function (ctx) {
+                    console.log(ctx);
+                    if (ctx.data.message) {
+                        notify(ctx.data.message);
+                    }
+                }).on('subscribing', function (ctx) {
+                    //console.log('subscribing', ctx.code, ctx.reason);
+                }).on('subscribed', function (ctx) {
+                    console.log('subscribed', ctx);
+                }).on('unsubscribed', function (ctx) {
+                    console.log('unsubscribed', ctx);
+                });
 
-            sub.on('publication', function(ctx) {
-                console.log(ctx);
-                if (ctx.data.message) {
-                    notify(ctx.data.message);
-                }
-            }).on('subscribing', function(ctx) {
-                //console.log('subscribing', ctx.code, ctx.reason);
-            }).on('subscribed', function(ctx) {
-                console.log('subscribed', ctx);
-            }).on('unsubscribed', function (ctx) {
-                console.log('unsubscribed', ctx);
-            });
-
-            sub.subscribe();
-            centrifuge.connect();
-        }
-    }, [centrifugoToken]);
+                sub.subscribe();
+                centrifuge.connect();
+            }
+        }, [centrifugoToken]);
+    }
 
 
 

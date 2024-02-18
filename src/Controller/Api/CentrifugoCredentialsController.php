@@ -15,8 +15,12 @@ class CentrifugoCredentialsController extends ApiController
     public function getJwtTokenForCurrentUserAction(CredentialsGenerator $credentialsGenerator): JsonResponse
     {
         /** @var CentrifugoUserInterface $user */
-        $user =  $this->getUser();
-        $token = $credentialsGenerator->generateJwtTokenForUser($user);
+        $user = $this->getUser();
+        $token = null;
+
+        if ($user) {
+            $token = $credentialsGenerator->generateJwtTokenForUser($user);
+        }
 
         return $this->json(['data' => ['token' => $token]]);
     }
