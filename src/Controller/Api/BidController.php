@@ -41,8 +41,9 @@ class BidController extends ApiController
             $loadUser = $load->getUser();
 
             $notification = new WebSocketNotification($message, $loadUser->getId());
+            $channel = sprintf("notification_%s", $loadUser->getId());
             try {
-                $centrifugo->publish($notification->toArray(), 'notification');
+                $centrifugo->publish($notification->toArray(), $channel);
             } catch (\Throwable $e) {
 
             }
