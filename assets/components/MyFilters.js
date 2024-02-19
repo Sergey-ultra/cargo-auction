@@ -1,7 +1,7 @@
 import React, {useContext, useEffect, useState} from "react";
-import {useHttp} from "../../../hooks/api";
+import {useHttp} from "../hooks/api";
 import {Card, CardActionArea, CardHeader, IconButton} from "@mui/material";
-import {FilterContext} from "../../../context/filter.context";
+import {FilterContext} from "../context/filter.context";
 
 
 function MyFilters({ setLoadListTab }) {

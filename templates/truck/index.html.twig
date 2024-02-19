@@ -2,6 +2,12 @@
 
 {% block title %}Поиск транспорта для грузоперевозки{% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+
+    <link href="{{ asset('assets/css/cargo-index.css') }}" rel="stylesheet"/>
+{% endblock %}
+
 {% block javascripts %}
     {{ parent() }}
     {{ encore_entry_script_tags('truckList') }}

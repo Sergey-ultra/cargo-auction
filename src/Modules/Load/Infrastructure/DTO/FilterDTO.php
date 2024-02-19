@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Load\Infrastructure\DTO;
 
-final readonly class LoadFilterDTO
+final readonly class FilterDTO
 {
     public function __construct(
         public ?float  $fromLongitude,

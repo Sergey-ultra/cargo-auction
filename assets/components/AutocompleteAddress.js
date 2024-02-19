@@ -1,6 +1,6 @@
-import React, {useEffect, useState} from "react";
+import React, {useState} from "react";
 import {Autocomplete, TextField} from "@mui/material";
-import {useHttp} from "../../../hooks/api";
+import {useHttp} from "../hooks/api";
 
 function AutocompleteAddress({filterValue, setAddressFilterValue}) {
     const { request, isLoading, error, clearError } = useHttp();
@@ -13,8 +13,6 @@ function AutocompleteAddress({filterValue, setAddressFilterValue}) {
             setCitiesList( [...data]);
         }
     }
-
-
 
 
     const changeAddressValue = async (e) => {

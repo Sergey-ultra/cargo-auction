@@ -4,16 +4,15 @@ declare(strict_types=1);
 
 namespace App\Modules\Load\Infrastructure\Repository;
 
-use App\Modules\City\Domain\Entity\City;
-use App\Modules\City\Infrastructure\Repository\CityRepository;
 use App\Modules\Load\Domain\Entity\Load;
-use App\Modules\Load\Infrastructure\DTO\LoadFilterDTO;
+use App\Modules\Load\Domain\Repository\LoadRepositoryInterface;
+use App\Modules\Load\Infrastructure\DTO\FilterDTO;
 use App\Modules\Load\Infrastructure\DTO\LoadListDTO;
-use App\Modules\User\Domain\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * @extends ServiceEntityRepository<Load>
@@ -23,32 +22,19 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method Load[]    findAll()
  * @method Load[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class LoadRepository extends ServiceEntityRepository
+class LoadRepository extends ServiceEntityRepository implements LoadRepositoryInterface
 {
-    public const PAGINATOR_PER_PAGE = 10;
-    public const LOAD_CREATED_AT = 'created_at';
-    public const LOAD_UPDATED_AT = 'updated_at';
-    public const LOAD_DOWNLOADING_DATE = 'downloading_date';
-    public const LOAD_CARGO_TYPE = 'cargo_type';
-
-    public const LOAD_OPTIONS = [
-        self::LOAD_CREATED_AT => 'времени добавления',
-        self::LOAD_UPDATED_AT => 'времени обновления',
-        self::LOAD_DOWNLOADING_DATE => 'дате загрузки',
-        self::LOAD_CARGO_TYPE => 'типу груза',
-    ];
-
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Load::class);
     }
 
     public function getList(
-        ?LoadFilterDTO $filter,
-        int $page = 1,
-        int $perPage = self::PAGINATOR_PER_PAGE,
-        string $orderOption = self::LOAD_CREATED_AT,
-        ?User $byUser = null
+        ?FilterDTO     $filter,
+        int            $page = 1,
+        int            $perPage = self::PAGINATOR_PER_PAGE,
+        string         $orderOption = self::CREATED_AT,
+        ?UserInterface $byUser = null
     ): LoadListDTO
     {
         $queryBuilder = $this->createQueryBuilder('c')
@@ -104,11 +90,11 @@ class LoadRepository extends ServiceEntityRepository
                 ->setParameter('user', $byUser);
         }
 
-        if ($orderOption === self::LOAD_CREATED_AT) {
+        if ($orderOption === self::CREATED_AT) {
             $queryBuilder->orderBy('c.createdAt', 'DESC');
-        } else if ($orderOption === self::LOAD_UPDATED_AT) {
+        } else if ($orderOption === self::UPDATED_AT) {
             $queryBuilder->orderBy('c.updatedAt', 'DESC');
-        } else if ($orderOption === self::LOAD_DOWNLOADING_DATE) {
+        } else if ($orderOption === self::DOWNLOADING_DATE) {
             $queryBuilder->orderBy('c.downloadingDate', 'DESC');
         }
 

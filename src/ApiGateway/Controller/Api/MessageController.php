@@ -32,7 +32,11 @@ class MessageController extends ApiController
 
         $result = ['data' =>  $messages];
 
-        return $this->apiJson($result, Response::HTTP_OK, [], [DateTimeNormalizer::FORMAT_KEY => 'Y-m-d H:i:s']
+        return $this->apiJson(
+            $result,
+            Response::HTTP_OK,
+            [],
+            [DateTimeNormalizer::FORMAT_KEY => 'Y-m-d H:i:s']
         );
     }
 

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\Load\Infrastructure\Repository;
 
+use App\Modules\Load\Domain\Entity\Filter;
+use App\Modules\Load\Domain\Repository\FilterRepositoryInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -15,7 +17,7 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method Filter[]    findAll()
  * @method Filter[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class FilterRepository extends ServiceEntityRepository
+class FilterRepository extends ServiceEntityRepository implements FilterRepositoryInterface
 {
     public function __construct(ManagerRegistry $registry)
     {

@@ -5,8 +5,7 @@ declare(strict_types=1);
 namespace App\ApiGateway\Controller\Api;
 
 use App\ApiGateway\DTO\FilterSaveDTO;
-use App\Modules\Load\Domain\Entity\Filter;
-use App\Modules\Load\Infrastructure\Repository\FilterRepository;
+use App\Modules\Load\Infrastructure\Api\FilterApi;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
@@ -16,28 +15,24 @@ use Symfony\Component\Routing\Annotation\Route;
 class LoadFilterController extends ApiController
 {
     #[Route('/load-filter', name: 'api.filter.index', methods:['get'])]
-    public function index(FilterRepository $filterRepository): JsonResponse
+    public function index(FilterApi $filterApi): JsonResponse
     {
-        $list = $filterRepository->findBy(['user' => $this->getUser()]);
-
+        $list = [];
+        $user = $this->getUser();
+        if ($user) {
+            $list = $filterApi->getFiltersByUser($user);
+        }
 
         return $this->apiJson(['data' => $list]);
     }
 
     #[Route('/load-filter', name: 'api.filter.save', methods:['post'])]
-    public function saveFilter(#[MapRequestPayload] FilterSaveDTO $filterDto, FilterRepository $filterRepository): JsonResponse
+    public function saveFilter(#[MapRequestPayload] FilterSaveDTO $filterDto, FilterApi $filterApi): JsonResponse
     {
         $user = $this->getUser();
 
-        $filter = new Filter();
-        $filter
-            ->setName($filterDto->name)
-            ->setFilter($filterDto->filter->toArray())
-            ->setUser($user);
-
-        $filterRepository->save($filter);
+        $filterApi->save($filterDto, $user);
 
         return $this->apiJson(['data' => ['status' => 'ok']], Response::HTTP_CREATED);
-
     }
 }

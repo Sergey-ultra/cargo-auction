@@ -3,16 +3,17 @@ import {Button, FormControl, Menu, MenuItem, Select, Tab, Tabs} from "@mui/mater
 import {useHttp} from "../../../hooks/api";
 import {setQuery} from "../../../hooks/queryParams";
 import Pagination from "../../../components/common/Pagination";
-import LoadItem from "./LoadItem";
+import TruckItem from "./TruckItem";
 import SendBidModal from "../../../components/SendBidModal";
 import SaveFilterModal from "../../../components/SaveFilterModal";
 import AuthModal from "../../../components/AuthModal";
 import Filter from "../../../components/Filter";
 import {FilterContext} from "../../../context/filter.context";
 
-function LoadList() {
+function TruckList() {
     const { filter, setFilter, clearFilter, changeFilterAddresses } = useContext(FilterContext);
     const { request, isLoading, error, clearError } = useHttp();
+    const userId = window?.authData?.userId;
 
     const isMy = window.location.pathname.match(/\/profile\/load-list/);
 
@@ -62,7 +63,7 @@ function LoadList() {
 
         setQuery(params);
 
-        const { data } = await request('/api/load-list', 'GET', {params});
+        const { data } = await request('/api/transport', 'GET', {params});
         setList(data.list);
         setTotalCount(data.totalCount);
         setLastPage(data.lastPage);
@@ -144,10 +145,10 @@ function LoadList() {
                             <div className="table__item">Груз</div>
                             <div className="table__item table__item-price">Ставка</div>
                         </div>
-                        {list.map(load =>
-                            <LoadItem
-                                key={load.id}
-                                load={load}
+                        {list.map(truck =>
+                            <TruckItem
+                                key={truck.id}
+                                truck={truck}
                                 openSendBidModal={openSendBidModal}
                                 openAuthModal={openAuthModal}/>
                         )}
@@ -176,5 +177,5 @@ function LoadList() {
     );
 }
 
-export default LoadList;
+export default TruckList;
 

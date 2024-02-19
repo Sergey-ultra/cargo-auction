@@ -6,15 +6,16 @@ namespace App\Modules\Load\Infrastructure\Api;
 
 use App\ApiGateway\DTO\LoadFilter;
 use App\ApiGateway\DTO\LoadList;
+use App\Modules\City\Infrastructure\DTO\CityCoordinatesDTO;
 use App\Modules\Load\Application\LoadService\LoadService;
 use App\Modules\Load\Domain\Entity\BodyType;
 use App\Modules\Load\Domain\Entity\CargoType;
 use App\Modules\Load\Domain\Entity\Load;
 use App\Modules\Load\Domain\Entity\LoadingType;
 use App\Modules\Load\Domain\Entity\PackageType;
+use App\Modules\Load\Domain\Repository\LoadRepositoryInterface;
 use App\Modules\Load\Infrastructure\Adapter\CityAdapter;
-use App\Modules\Load\Infrastructure\DTO\CityCoordinatesDTO;
-use App\Modules\Load\Infrastructure\DTO\LoadFilterDTO;
+use App\Modules\Load\Infrastructure\DTO\FilterDTO;
 use App\Modules\Load\Infrastructure\Repository\LoadRepository;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -40,7 +41,7 @@ final readonly class LoadApi
 
     public function getLoadOption(): array
     {
-        return LoadRepository::LOAD_OPTIONS;
+        return LoadRepositoryInterface::OPTIONS;
     }
 
     public function getBodyTypes(): array
@@ -60,7 +61,7 @@ final readonly class LoadApi
 
     public function getDefaultOrderByOption(): string
     {
-        return LoadRepository::LOAD_CREATED_AT;
+        return LoadRepositoryInterface::CREATED_AT;
     }
 
 
@@ -68,8 +69,8 @@ final readonly class LoadApi
     public function getList(
         ?LoadFilter    $filter,
         int            $page = 1,
-        int            $perPage = LoadRepository::PAGINATOR_PER_PAGE,
-        string         $orderOption = LoadRepository::LOAD_CREATED_AT,
+        int            $perPage = LoadRepositoryInterface::PAGINATOR_PER_PAGE,
+        string         $orderOption = LoadRepositoryInterface::CREATED_AT,
         ?UserInterface $byUser = null
     ): LoadList
     {
@@ -81,7 +82,7 @@ final readonly class LoadApi
             $toCity = $this->getCityCoordinatesByCityId($filter, 'toAddressId', 'toAddress');
         }
 
-        $apiFilter = new LoadFilterDTO(
+        $apiFilter = new FilterDTO(
             isset($fromCity) ? $fromCity->longitude : null,
             isset($fromCity) ? $fromCity->latitude : null,
             $filter->fromRadius ?? null,

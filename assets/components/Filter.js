@@ -1,8 +1,6 @@
-import React, {useContext, useEffect, useState} from "react";
+import React, {useContext} from "react";
 import AutocompleteAddress from "./AutocompleteAddress";
-import {FilterContext} from "../../../context/filter.context";
-
-
+import {FilterContext} from "../context/filter.context";
 
 
 function Filter() {

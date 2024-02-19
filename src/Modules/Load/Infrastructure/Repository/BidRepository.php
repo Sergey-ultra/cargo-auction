@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Load\Infrastructure\Repository;
 
 use App\Modules\Load\Domain\Entity\Bid;
+use App\Modules\Load\Domain\Repository\BidRepositoryInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -17,7 +18,7 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method Bid[]    findAll()
  * @method Bid[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class BidRepository extends ServiceEntityRepository
+class BidRepository extends ServiceEntityRepository implements BidRepositoryInterface
 {
     public function __construct(ManagerRegistry $registry)
     {

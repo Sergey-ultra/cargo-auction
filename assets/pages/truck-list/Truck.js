@@ -1,16 +1,19 @@
+import React, {useState} from 'react';
 import {Tab, Tabs} from "@mui/material";
-import React, {useState} from "react";
-import LoadList from "./src/LoadList";
-import MyFilters from "../../components/MyFilters";
-import {useFilter} from "../../hooks/filter";
 import {FilterContext} from "../../context/filter.context";
+import {useFilter} from "../../hooks/filter";
+import MyFilters from "../../components/MyFilters";
+import TruckList from "./src/TruckList";
 
-function Load() {
+
+
+function Truck() {
     const [tab, setTab] = useState('one');
     const {filter, setFilter, clearFilter, changeFilterAddresses} = useFilter();
-
     const handleTab = (event, newValue) => setTab(newValue);
-    const setLoadListTab = () => setTab("one");
+    const setMainTab = () => setTab("one");
+
+
 
     return (
         <FilterContext.Provider value={{ filter, setFilter, clearFilter, changeFilterAddresses }}>
@@ -18,13 +21,13 @@ function Load() {
                 value={tab}
                 onChange={handleTab}
                 aria-label="">
-                <Tab value="one" label="Найти груз" wrapped/>
+                <Tab value="one" label="Найти транспорт" wrapped/>
                 <Tab value="two" label="Мои фильтры"/>
             </Tabs>
-            {tab === "one" && <LoadList/>}
-            {tab === "two" && <MyFilters setLoadListTab={setLoadListTab}/>}
+            {tab === "one" && <TruckList/>}
+            {tab === "two" && <MyFilters setLoadListTab={setMainTab}/>}
         </FilterContext.Provider>
     );
 }
 
-export default Load;
+export default Truck;
