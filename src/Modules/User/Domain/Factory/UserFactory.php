@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\User\Domain\Factory;
+namespace App\Modules\User\Domain\Factory;
 
 class UserFactory
 {
