@@ -1,5 +1,6 @@
 controllers:
     resource:
-        path: ../src/Controller/
-        namespace: App\Controller
+        path: ../src/ApiGateway/Controller/
+        namespace: App\ApiGateway\Controller
     type: attribute
+

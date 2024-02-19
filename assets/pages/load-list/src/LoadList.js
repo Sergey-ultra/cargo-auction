@@ -17,7 +17,7 @@ function LoadList() {
 
     const isMy = window.location.pathname.match(/\/profile\/load-list/);
 
-    const [orderOptions, setOrderOptions] = useState([]);
+    const [loadOptions, setLoadOptions] = useState([]);
     const [perPageOptions, setPerPageOptions] = useState([]);
 
 
@@ -79,14 +79,14 @@ function LoadList() {
         const fetchLists = async() => {
             const { data } = await request('/api/list');
 
-            let orderParams = [];
-            for (let [name, value] of Object.entries(data.orderOptions)) {
-                orderParams.push({
+            let loadParams = [];
+            for (let [name, value] of Object.entries(data.loadOptions)) {
+                loadParams.push({
                     title: value,
                     value: name,
                 })
             }
-            setOrderOptions(orderParams);
+            setLoadOptions(loadParams);
             setPerPageOptions(data.perPageOptions);
         }
         fetchLists();
@@ -127,8 +127,8 @@ function LoadList() {
                                         value={orderBy}
                                         label="orderBy"
                                         onChange={e => setOrderBy(e.target.value)}>
-                                        {orderOptions.map((orderOption) =>
-                                            <MenuItem key={orderOption.value} value={orderOption.value} selected={orderBy === orderOption.value}>{orderOption.title}</MenuItem>
+                                        {loadOptions.map((loadOption) =>
+                                            <MenuItem key={loadOption.value} value={loadOption.value} selected={orderBy === loadOption.value}>{loadOption.title}</MenuItem>
                                         )}
                                     </Select>
                                 </FormControl>

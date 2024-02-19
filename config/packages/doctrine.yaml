@@ -26,17 +26,34 @@ doctrine:
                 ST_Distance: 'Jsor\Doctrine\PostGIS\Functions\ST_Distance'
 
         mappings:
-            App:
+            Chat:
                 type: attribute
                 is_bundle: false
-                dir: '%kernel.project_dir%/src/Entity'
-                prefix: 'App\Entity'
-                alias: App
-            WebSocket:
-                dir: '%kernel.project_dir%/src/WebSocket/Manager/NotificationManagerUsingDB/Entity'
+                dir: '%kernel.project_dir%/src/Modules/Chat/Domain/Entity'
+                prefix: 'App\Modules\Chat\Domain\Entity'
+                alias: Chat
+            City:
+                type: attribute
                 is_bundle: false
-                prefix: App\WebSocket\Manager\NotificationManagerUsingDB\Entity
-                alias: WebSocket
+                dir: '%kernel.project_dir%/src/Modules/City/Domain/Entity'
+                prefix: 'App\Modules\City\Domain\Entity'
+                alias: City
+            Company:
+                type: attribute
+                is_bundle: false
+                dir: '%kernel.project_dir%/src/Modules/Company/Domain/Entity'
+                prefix: 'App\Modules\Company\Domain\Entity'
+                alias: Company
+            Load:
+                dir: '%kernel.project_dir%/src/Modules/Load/Domain/Entity'
+                is_bundle: false
+                prefix: 'App\Modules\Load\Domain\Entity'
+                alias: Load
+            User:
+                dir: '%kernel.project_dir%/src/Modules/User/Domain/Entity'
+                is_bundle: false
+                prefix: 'App\Modules\User\Domain\Entity'
+                alias: User
 
 when@test:
     doctrine:

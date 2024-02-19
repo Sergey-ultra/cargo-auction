@@ -4,17 +4,16 @@ declare(strict_types=1);
 
 namespace App\DataFixtures;
 
-use App\Entity\BodyType;
-use App\Entity\CargoType;
-use App\Entity\Load;
-use App\Entity\LoadingType;
-use App\Repository\UserRepository;
 use App\ValueObject\Point;
+use BodyType;
+use CargoType;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use Faker\Factory;
 use Faker\Generator;
+use Load;
+use LoadingType;
 
 class LoadFixtures extends Fixture implements DependentFixtureInterface
 {
