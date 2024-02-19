@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\Load\Application\OrderService;
+namespace App\Modules\Load\Application\LoadService;
 
 use App\Modules\Load\Application\GeoCoderService\GeoCoderService;
 use App\Modules\Load\Domain\Entity\Load;

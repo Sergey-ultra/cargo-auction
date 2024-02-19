@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace App\Modules\Load\Infrastructure\Repository;
 
-use App\ApiGateway\DTO\LoadFilter;
-use App\ApiGateway\DTO\LoadList;
+use App\Modules\City\Domain\Entity\City;
 use App\Modules\City\Infrastructure\Repository\CityRepository;
 use App\Modules\Load\Domain\Entity\Load;
+use App\Modules\Load\Infrastructure\DTO\LoadFilterDTO;
+use App\Modules\Load\Infrastructure\DTO\LoadListDTO;
 use App\Modules\User\Domain\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
@@ -37,53 +38,63 @@ class LoadRepository extends ServiceEntityRepository
         self::LOAD_CARGO_TYPE => 'типу груза',
     ];
 
-    private CityRepository $cityRepository;
-    public function __construct(ManagerRegistry $registry, CityRepository $cityRepository)
+    public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Load::class);
-
-        $this->cityRepository = $cityRepository;
     }
 
     public function getList(
-        ?LoadFilter $filter,
+        ?LoadFilterDTO $filter,
         int $page = 1,
         int $perPage = self::PAGINATOR_PER_PAGE,
         string $orderOption = self::LOAD_CREATED_AT,
         ?User $byUser = null
-    ): LoadList
+    ): LoadListDTO
     {
         $queryBuilder = $this->createQueryBuilder('c')
         ->select('c, ST_Distance(c.fromPoint, c.toPoint)/1000 distance');
 
         if (null !== $filter) {
-            $filter = array_filter($filter->toArray());
-            $filterKeys = array_keys($filter);
+            if (isset($filter->fromLongitude) && isset($filter->fromLangitude) && isset($filter->fromRadius)) {
+                $this->addDistanceCondition(
+                    $queryBuilder,
+                    $filter->fromLongitude,
+                    $filter->fromLangitude,
+                    (int)$filter->fromRadius
+                );
+            }
 
-            foreach ($filter as $filterKey => $filterParam) {
-                if ($filterKey === 'toAddress' && in_array('toRadius', $filterKeys, true)) {
-                    $this->addDistanceCondition($queryBuilder, $filter, 'toAddressId', 'toAddress', (int)$filter['toRadius']);
+            if (isset($filter->toLongitude) && isset($filter->toLatitude) && isset($filter->toRadius)) {
+                $this->addDistanceCondition(
+                    $queryBuilder,
+                    $filter->toLongitude,
+                    $filter->toLatitude,
+                    (int)$filter->toRadius
+                );
+            }
 
-                } else if ($filterKey === 'fromAddress' && in_array('fromRadius', $filterKeys, true)) {
-                    $this->addDistanceCondition($queryBuilder, $filter, 'fromAddressId', 'fromAddress', (int)$filter['fromRadius']);
+            if ($filter->weightMin) {
+                $queryBuilder
+                    ->andWhere("c.weight >= :weightMin")
+                    ->setParameter('weightMin', $filter->weightMin);
+            }
 
-                } else if ($filterKey === 'weightMin') {
-                    $queryBuilder
-                        ->andWhere("c.weight >= :$filterKey")
-                        ->setParameter($filterKey, $filterParam);
-                } else if ($filterKey === 'volumeMin') {
-                    $queryBuilder
-                        ->andWhere("c.volume >= :$filterKey")
-                        ->setParameter($filterKey, $filterParam);
-                } else if ($filterKey ==='weightMax') {
-                    $queryBuilder
-                        ->andWhere("c.weight <= :$filterKey")
-                        ->setParameter($filterKey, $filterParam);
-                } else if ($filterKey ==='volumeMax') {
-                    $queryBuilder
-                        ->andWhere("c.volume <= :$filterKey")
-                        ->setParameter($filterKey, $filterParam);
-                }
+            if ($filter->volumeMin) {
+                $queryBuilder
+                    ->andWhere("c.volume >= :volumeMin")
+                    ->setParameter('volumeMin', $filter->volumeMin);
+            }
+
+            if ($filter->weightMax) {
+                $queryBuilder
+                    ->andWhere("c.weight <= :weightMax")
+                    ->setParameter('weightMax', $filter->weightMax);
+            }
+
+            if ($filter->volumeMax) {
+                $queryBuilder
+                    ->andWhere("c.volume <= :volumeMax")
+                    ->setParameter('volumeMax', $filter->volumeMax);
             }
         }
 
@@ -116,34 +127,22 @@ class LoadRepository extends ServiceEntityRepository
             $list[] = $item[0];
         }
 
-        return new LoadList($list, $paginator->count());
+        return new LoadListDTO($list, $paginator->count());
     }
 
-    private function addDistanceCondition(QueryBuilder $query, array $filter, string $cityIdKey, string $address, int $radius): void
+
+
+    private function addDistanceCondition(QueryBuilder $query, float $longitude, float $latitude, int $radius): void
     {
-        $filterKeys = array_keys($filter);
-
-        if (in_array($cityIdKey, $filterKeys, true)) {
-            $city = $this->cityRepository->find($filter[$cityIdKey]);
-        } else {
-            $city = $this->cityRepository->findOneBy(['name' => $filter[$address]]);
-        }
-        //dd($city, $cityIdKey, $filterKeys, $filter[$address]);
-
-        if (null !== $city) {
-            //              SELECT *, ACOS(SIN(latitude) * SIN(Lat)) + COS(latitude) * COS(Lat) * COS(longitude) - (Long)) ) * 6380 AS distance
-//              FROM Table_tab
-//              WHERE ACOS( SIN(latitude) * SIN(Lat) + COS(latitude) * COS(Lat) * COS(longitude) - Long )) * 6380 < 10
-            $query->andWhere(
+        $query
+            ->andWhere(
                 $query->expr()->eq(
                     "ST_DWithin(ST_SetSRID(ST_MakePoint(:longitude, :latitude), 4326), c.toPoint, :distance)",
                     $query->expr()->literal(true))
             )
-                ->setParameter('longitude', $city->getLon())
-                ->setParameter('latitude', $city->getLat())
-                ->setParameter('distance', $radius * 1000);
-
-        }
+            ->setParameter('longitude', $longitude)
+            ->setParameter('latitude', $latitude)
+            ->setParameter('distance', $radius * 1000);
     }
 
     public function save(Load $order): void

@@ -18,7 +18,7 @@ class CityController extends AbstractController
     {
         $name = $request->query->getString('name');
 
-        $cities = $cityApi->searchByName($name);
+        $cities = $cityApi->searchCitiesByName($name);
 
         return $this->json(['data' => $cities]);
     }

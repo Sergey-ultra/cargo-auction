@@ -16,9 +16,4 @@ class LoadFilter
     public ?string $weightMax;
     public ?string $volumeMin;
     public ?string $volumeMax;
-
-    public function toArray(): array
-    {
-        return (array)$this;
-    }
 }
