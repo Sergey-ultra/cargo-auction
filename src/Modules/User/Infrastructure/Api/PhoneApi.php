@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\User\Infrastructure\Api;
 
-use App\Modules\User\Application\PhoneService\PhoneVerifyService;
+
+use App\Modules\User\Application\Services\PhoneVerifyService;
 use App\Modules\User\Domain\Entity\Phone;
 use App\Modules\User\Infrastructure\Repository\PhoneRepository;
 use Symfony\Component\Security\Core\User\UserInterface;

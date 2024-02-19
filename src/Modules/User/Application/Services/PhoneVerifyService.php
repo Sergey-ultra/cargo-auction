@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\User\Application\PhoneService;
+namespace App\Modules\User\Application\Services;
 
 use App\Modules\User\Domain\Entity\Phone;
 
