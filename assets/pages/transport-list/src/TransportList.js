@@ -3,14 +3,14 @@ import {Button, FormControl, Menu, MenuItem, Select, Tab, Tabs} from "@mui/mater
 import {useHttp} from "../../../hooks/api";
 import {setQuery} from "../../../hooks/queryParams";
 import Pagination from "../../../components/common/Pagination";
-import TruckItem from "./TruckItem";
+import TransportItem from "./TransportItem";
 import SendBidModal from "../../../components/SendBidModal";
 import SaveFilterModal from "../../../components/SaveFilterModal";
 import AuthModal from "../../../components/AuthModal";
 import Filter from "../../../components/Filter";
 import {FilterContext} from "../../../context/filter.context";
 
-function TruckList() {
+function TransportList() {
     const { filter, setFilter, clearFilter, changeFilterAddresses } = useContext(FilterContext);
     const { request, isLoading, error, clearError } = useHttp();
     const userId = window?.authData?.userId;
@@ -33,7 +33,7 @@ function TruckList() {
     const closeSaveFilterModal = () => setOpenSaveFilterModal(false);
 
     const saveFilter = async(name) => {
-        const { data } = await request('/api/load-filter', 'POST', { body: {name, filter}});
+        const { data } = await request('/api/load-filter', 'POST', { body: {name, filter, type: 'transport'}});
         if (data.status === 'ok') {
             closeSaveFilterModal();
         }
@@ -146,7 +146,7 @@ function TruckList() {
                             <div className="table__item table__item-price">Ставка</div>
                         </div>
                         {list.map(truck =>
-                            <TruckItem
+                            <TransportItem
                                 key={truck.id}
                                 truck={truck}
                                 openSendBidModal={openSendBidModal}
@@ -177,5 +177,5 @@ function TruckList() {
     );
 }
 
-export default TruckList;
+export default TransportList;
 

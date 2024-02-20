@@ -2,11 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\Load\Infrastructure\Api;
+namespace App\Modules\Filter\Infrastructure\Api;
 
 use App\ApiGateway\DTO\FilterSaveDTO;
-use App\Modules\Load\Domain\Entity\Filter;
-use App\Modules\Load\Infrastructure\Repository\FilterRepository;
+use App\ApiGateway\Enum\FilterType;
+use App\Modules\Filter\Domain\Enum\FilterType as ModuleFilterType;
+use App\Modules\Filter\Domain\Entity\Filter;
+use App\Modules\Filter\Infrastructure\Repository\FilterRepository;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 final readonly class FilterApi
@@ -15,9 +17,9 @@ final readonly class FilterApi
     {
     }
 
-    public function getFiltersByUser(UserInterface $user): array
+    public function getFiltersByUser(UserInterface $user, FilterType $type): array
     {
-        return $this->filterRepository->findBy(['user' => $user]);
+        return $this->filterRepository->findBy(['user' => $user, 'type' => $type->value]);
     }
 
     public function save(FilterSaveDTO $filterDto, UserInterface $user): void
@@ -25,6 +27,7 @@ final readonly class FilterApi
         $filter = new Filter();
         $filter
             ->setName($filterDto->name)
+            ->setType(ModuleFilterType::from($filterDto->type->value))
             ->setFilter($filterDto->filter->toArray())
             ->setUser($user);
 

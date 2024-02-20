@@ -44,6 +44,12 @@ doctrine:
                 dir: '%kernel.project_dir%/src/Modules/Company/Domain/Entity'
                 prefix: 'App\Modules\Company\Domain\Entity'
                 alias: Company
+            Filter:
+                type: attribute
+                is_bundle: false
+                dir: '%kernel.project_dir%/src/Modules/Filter/Domain/Entity'
+                prefix: 'App\Modules\Filter\Domain\Entity'
+                alias: Filter
             Load:
                 dir: '%kernel.project_dir%/src/Modules/Load/Domain/Entity'
                 is_bundle: false

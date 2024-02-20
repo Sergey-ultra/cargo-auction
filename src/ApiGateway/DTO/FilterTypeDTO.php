@@ -6,11 +6,9 @@ namespace App\ApiGateway\DTO;
 
 use App\ApiGateway\Enum\FilterType;
 
-final readonly class FilterSaveDTO
+final readonly class FilterTypeDTO
 {
     public function __construct(
-        public string $name,
-        public LoadFilter $filter,
         public FilterType $type,
     ){}
 }

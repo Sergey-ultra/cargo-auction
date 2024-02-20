@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Modules\Load\Domain\Repository;
+namespace App\Modules\Filter\Domain\Repository;
 
-use App\Modules\Load\Domain\Entity\Filter;
+use App\Modules\Filter\Domain\Entity\Filter;
 
 interface FilterRepositoryInterface
 {

@@ -4,13 +4,13 @@ import {Card, CardActionArea, CardHeader, IconButton} from "@mui/material";
 import {FilterContext} from "../context/filter.context";
 
 
-function MyFilters({ setLoadListTab }) {
+function MyFilters({ setLoadListTab, type }) {
     const { setFilter } = useContext(FilterContext);
     const { request, isLoading, error, clearError } = useHttp();
     const [filterList, setFilterList] = useState([]);
 
     const fetchFilters = async() => {
-        const { data } = await request('/api/load-filter');
+        const { data } = await request('/api/load-filter', 'GET', {params: {type}});
         if (data && Array.isArray(data)) {
             setFilterList(data);
         }

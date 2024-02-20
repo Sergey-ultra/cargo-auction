@@ -21,7 +21,7 @@ class LoadController extends AbstractController
         return $this->render('cargo/index.html.twig');
     }
 
-    #[Route('/load/{id}', name: 'cargo.show', methods:['get'])]
+    #[Route('/load/{id}', name: 'cargo.show', requirements: ['page' => '\d+'], methods: ['get'])]
     public function show(int $id, LoadApi $loadApi): Response
     {
         $load = $loadApi->getLoadById($id);
@@ -37,7 +37,7 @@ class LoadController extends AbstractController
         ]);
     }
 
-    #[Route('/create', name: 'cargo.create', methods:['get'])]
+    #[Route('/load/create', name: 'cargo.create', methods:['get'], priority: 1)]
     public function create(LoadApi $loadApi): Response
     {
         return $this->render('cargo/form.html.twig', [
@@ -61,9 +61,10 @@ class LoadController extends AbstractController
         if ($form->isSubmitted() && $form->isValid() ) {
 
             $load->setUser($this->getUser());
+            dd($load);
 
             $loadApi->saveLoad($load);
-            return $this->redirectToRoute('cargo.index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('cargo.show', ['id' => $load->getId()], Response::HTTP_SEE_OTHER);
         }
         $errors = $form->getErrors();
 

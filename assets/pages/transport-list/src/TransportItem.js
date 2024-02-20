@@ -1,6 +1,6 @@
 import React, {Fragment} from "react";
 
-function TruckItem({truck, openSendBidModal, openAuthModal}) {
+function TransportItem({truck, openSendBidModal, openAuthModal}) {
     const userId = window?.authData?.userId;
 
 
@@ -131,5 +131,5 @@ function TruckItem({truck, openSendBidModal, openAuthModal}) {
     )
 }
 
-export default TruckItem;
+export default TransportItem;
 

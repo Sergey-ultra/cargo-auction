@@ -23,7 +23,7 @@ final readonly class ChatApi
     {
     }
 
-    public function getMyChats(UserInterface $owner, int $perPage)
+    public function getMyChats(UserInterface $owner, int $perPage): array
     {
         return $this->chatRepository->getMyChats($owner, $perPage);
     }

@@ -22,7 +22,7 @@ function Load() {
                 <Tab value="two" label="Мои фильтры"/>
             </Tabs>
             {tab === "one" && <LoadList/>}
-            {tab === "two" && <MyFilters setLoadListTab={setLoadListTab}/>}
+            {tab === "two" && <MyFilters setLoadListTab={setLoadListTab} type="load"/>}
         </FilterContext.Provider>
     );
 }

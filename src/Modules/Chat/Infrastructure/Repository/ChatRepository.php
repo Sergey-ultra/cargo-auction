@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Chat\Infrastructure\Repository;
 
 use App\Modules\Chat\Domain\Entity\Chat;
+use App\Modules\Chat\Domain\Repository\ChatRepositoryInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -18,14 +19,14 @@ use Symfony\Component\Security\Core\User\UserInterface;
  * @method Chat[]    findAll()
  * @method Chat[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class ChatRepository extends ServiceEntityRepository
+class ChatRepository extends ServiceEntityRepository implements ChatRepositoryInterface
 {
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Chat::class);
     }
 
-    public function getMyChats(UserInterface $owner, int $perPage)
+    public function getMyChats(UserInterface $owner, int $perPage): array
     {
         return $this->findBy(['owner' => $owner], null, $perPage);
     }

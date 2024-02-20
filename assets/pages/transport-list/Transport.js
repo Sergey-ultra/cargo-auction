@@ -3,11 +3,11 @@ import {Tab, Tabs} from "@mui/material";
 import {FilterContext} from "../../context/filter.context";
 import {useFilter} from "../../hooks/filter";
 import MyFilters from "../../components/MyFilters";
-import TruckList from "./src/TruckList";
+import TransportList from "./src/TransportList";
 
 
 
-function Truck() {
+function Transport() {
     const [tab, setTab] = useState('one');
     const {filter, setFilter, clearFilter, changeFilterAddresses} = useFilter();
     const handleTab = (event, newValue) => setTab(newValue);
@@ -24,10 +24,10 @@ function Truck() {
                 <Tab value="one" label="Найти транспорт" wrapped/>
                 <Tab value="two" label="Мои фильтры"/>
             </Tabs>
-            {tab === "one" && <TruckList/>}
-            {tab === "two" && <MyFilters setLoadListTab={setMainTab}/>}
+            {tab === "one" && <TransportList/>}
+            {tab === "two" && <MyFilters setLoadListTab={setMainTab} type="transport"/>}
         </FilterContext.Provider>
     );
 }
 
-export default Truck;
+export default Transport;

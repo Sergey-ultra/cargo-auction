@@ -96,6 +96,8 @@ class LoadRepository extends ServiceEntityRepository implements LoadRepositoryIn
             $queryBuilder->orderBy('c.updatedAt', 'DESC');
         } else if ($orderOption === self::DOWNLOADING_DATE) {
             $queryBuilder->orderBy('c.downloadingDate', 'DESC');
+        } else if ($orderOption === self::CARGO_TYPE) {
+            $queryBuilder->orderBy('c.cargoType', 'DESC');
         }
 
         $query = $queryBuilder
@@ -131,9 +133,9 @@ class LoadRepository extends ServiceEntityRepository implements LoadRepositoryIn
             ->setParameter('distance', $radius * 1000);
     }
 
-    public function save(Load $order): void
+    public function save(Load $load): void
     {
-        $this->_em->persist($order);
+        $this->_em->persist($load);
         $this->_em->flush();
     }
 }

@@ -10,31 +10,33 @@ use App\Modules\Load\Infrastructure\Repository\LoadRepository;
 use App\ValueObject\Point;
 
 
-class LoadService
+final readonly class LoadService
 {
     public function __construct(
-        private readonly LoadRepository  $repository,
-        private readonly GeoCoderService $geoCoderService
-    ){}
-    public function save(Load $order): void
+        private LoadRepository  $repository,
+        private GeoCoderService $geoCoderService
+    ) {
+    }
+
+    public function save(Load $load): void
     {
-        $fromPoint = $this->geoCoderService->getMapPoint($order->getFromAddress());
+        $fromPoint = $this->geoCoderService->getMapPoint($load->getFromAddress());
 
         if ($fromPoint) {
-            $order->setFromLatitude($fromPoint->getLatitude())
+            $load->setFromLatitude($fromPoint->getLatitude())
                 ->setFromLongitude($fromPoint->getLongitude())
                 ->setFromPoint(new Point($fromPoint->getLatitude(), $fromPoint->getLongitude()));
         }
 
-        $toPoint = $this->geoCoderService->getMapPoint($order->getToAddress());
+        $toPoint = $this->geoCoderService->getMapPoint($load->getToAddress());
 
         if ($toPoint) {
-            $order->setToLatitude($toPoint->getLatitude())
+            $load->setToLatitude($toPoint->getLatitude())
                 ->setToLongitude($toPoint->getLongitude())
                 ->setToPoint(new Point($toPoint->getLatitude(), $toPoint->getLongitude()));
 
         }
 
-        $this->repository->save($order);
+        $this->repository->save($load);
     }
 }

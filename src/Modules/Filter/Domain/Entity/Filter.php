@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\Load\Domain\Entity;
+namespace App\Modules\Filter\Domain\Entity;
 
-
-use App\Modules\Load\Infrastructure\Repository\FilterRepository;
+use App\Modules\Filter\Domain\Enum\FilterType;
+use App\Modules\Filter\Infrastructure\Repository\FilterRepository;
 use App\Modules\User\Domain\Entity\User;
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
@@ -21,6 +21,8 @@ class Filter
     private ?int $id = null;
     #[ORM\Column(length: 255)]
     private string $name;
+    #[ORM\Column(name: 'type', type: 'string', nullable: false, enumType: FilterType::class)]
+    private FilterType $type;
     #[ORM\Column(type: 'json')]
     private array $filter;
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'filters')]
@@ -50,6 +52,17 @@ class Filter
     public function setName(string $name): self
     {
         $this->name = $name;
+        return $this;
+    }
+
+    public function getType(): FilterType
+    {
+        return $this->type;
+    }
+
+    public function setType(FilterType $type): self
+    {
+        $this->type = $type;
         return $this;
     }
 

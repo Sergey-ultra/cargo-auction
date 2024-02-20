@@ -32,7 +32,7 @@ function LoadList() {
     const closeSaveFilterModal = () => setOpenSaveFilterModal(false);
 
     const saveFilter = async(name) => {
-        const { data } = await request('/api/load-filter', 'POST', { body: {name, filter}});
+        const { data } = await request('/api/load-filter', 'POST', { body: {name, filter, type: 'load'}});
         if (data.status === 'ok') {
             closeSaveFilterModal();
         }

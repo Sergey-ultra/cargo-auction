@@ -10,12 +10,12 @@
 
 {% block javascripts %}
     {{ parent() }}
-    {{ encore_entry_script_tags('truckList') }}
+    {{ encore_entry_script_tags('transportList') }}
 {% endblock %}
 
 {% block body %}
     <h1>Поиск транспорта для грузоперевозки</h1>
 
-    <a class="add button" href="{{ path('truck.create') }}">Добавить</a>
-    <div id="truckList"></div>
+    <a class="add button" href="{{ path('transport.create') }}">Добавить</a>
+    <div id="transportList"></div>
 {% endblock %}

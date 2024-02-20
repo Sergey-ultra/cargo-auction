@@ -2,6 +2,7 @@
 
 namespace App\Modules\Load\Domain\Repository;
 
+use App\Modules\Load\Domain\Entity\Load;
 use App\Modules\Load\Infrastructure\DTO\FilterDTO;
 use App\Modules\Load\Infrastructure\DTO\LoadListDTO;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -27,4 +28,6 @@ interface LoadRepositoryInterface
         string         $orderOption = self::CREATED_AT,
         ?UserInterface $byUser = null
     ): LoadListDTO;
+
+    public function save(Load $load): void;
 }

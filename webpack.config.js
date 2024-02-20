@@ -22,7 +22,7 @@ Encore
      */
     .addEntry('app', './assets/index.js')
     .addEntry('loadList', './assets/load-list.js')
-    .addEntry('truckList', './assets/truck-list.js')
+    .addEntry('transportList', './assets/transport-list.js')
     .addEntry('messages', './assets/messages.js')
     .addEntry('myCompany', './assets/my-company.js')
 

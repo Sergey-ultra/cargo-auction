@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\Load\Infrastructure\Repository;
+namespace App\Modules\Filter\Infrastructure\Repository;
 
-use App\Modules\Load\Domain\Entity\Filter;
-use App\Modules\Load\Domain\Repository\FilterRepositoryInterface;
+use App\Modules\Filter\Domain\Entity\Filter;
+use App\Modules\Filter\Domain\Repository\FilterRepositoryInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 

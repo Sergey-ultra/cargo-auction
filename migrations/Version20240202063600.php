@@ -24,6 +24,7 @@ final class Version20240202063600 extends AbstractMigration
         $this->addSql('CREATE TABLE filters (
                             id INT NOT NULL, 
                             name VARCHAR(255) NOT NULL, 
+                            type VARCHAR(255) NOT NULL, 
                             filter JSON NOT NULL,
                             user_id INT NOT NULL,
                             created_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, 
