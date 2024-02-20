@@ -4,13 +4,16 @@ declare(strict_types=1);
 
 namespace App\ApiGateway\Controller;
 
+use App\ApiGateway\DTO\LoadCreateDTO;
 use App\ApiGateway\Form\LoadType;
+use App\ApiGateway\Request\CreateRequest;
 use App\Modules\Load\Domain\Entity\Load;
 use App\Modules\Load\Infrastructure\Api\LoadApi;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Annotation\Route;
 
 class LoadController extends AbstractController
@@ -50,24 +53,16 @@ class LoadController extends AbstractController
         ]);
     }
 
-    #[Route('/create', name: 'cargo.store', methods:['post'] )]
+    #[Route('load/create', name: 'cargo.store', methods:['post'] )]
     //    #[IsGranted("ROLE_ADMIN")]
-    public function store(Request $request, LoadApi $loadApi): RedirectResponse|Response
+    public function store(CreateRequest $createDto, LoadApi $loadApi): RedirectResponse|Response
     {
-        $load = new Load();
-        $form = $this->createForm(LoadType::class, $load);
-        $form->submit($request->request->all());
-
-        if ($form->isSubmitted() && $form->isValid() ) {
-
-            $load->setUser($this->getUser());
-            dd($load);
-
-            $loadApi->saveLoad($load);
+        if ($createDto->isValid()) {
+            $load = $loadApi->saveLoad($createDto, $this->getUser());
             return $this->redirectToRoute('cargo.show', ['id' => $load->getId()], Response::HTTP_SEE_OTHER);
         }
-        $errors = $form->getErrors();
 
+        $errors = $createDto->getErrors();
         return $this->render('cargo/form.html.twig', [
             'cargoTypes' => $loadApi->getCargoTypes(),
             'packageTypes' => $loadApi->getPackageType(),

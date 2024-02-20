@@ -6,6 +6,7 @@ namespace App\Modules\Load\Infrastructure\Api;
 
 use App\ApiGateway\DTO\LoadFilter;
 use App\ApiGateway\DTO\LoadList;
+use App\ApiGateway\Request\CreateRequest;
 use App\Modules\City\Infrastructure\DTO\CityCoordinatesDTO;
 use App\Modules\Load\Application\LoadService\LoadService;
 use App\Modules\Load\Domain\Entity\BodyType;
@@ -17,6 +18,8 @@ use App\Modules\Load\Domain\Repository\LoadRepositoryInterface;
 use App\Modules\Load\Infrastructure\Adapter\CityAdapter;
 use App\Modules\Load\Infrastructure\DTO\FilterDTO;
 use App\Modules\Load\Infrastructure\Repository\LoadRepository;
+use App\Modules\User\Domain\Entity\User;
+use DateTime;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 final readonly class LoadApi
@@ -129,8 +132,29 @@ final readonly class LoadApi
         );
     }
 
-    public function saveLoad(Load $load): void
+    public function saveLoad(CreateRequest $createDto, UserInterface $user): Load
     {
+        $load = new Load();
+        $load
+            ->setDownloadingDateStatus($createDto->downloadingDateStatus)
+            ->setDownloadingDate(new DateTime($createDto->downloadingDate))
+            ->setFromAddress($createDto->fromAddress)
+            ->setToAddress($createDto->toAddress)
+            ->setWeight($createDto->weight)
+            ->setVolume($createDto->volume)
+            ->setPriceType($createDto->priceType)
+            ->setPriceWithoutTax((int)$createDto->priceWithoutTax)
+            ->setPriceWithTax((int)$createDto->priceWithTax)
+            ->setPriceCash((int)$createDto->priceCash)
+            ->setCargoType((int)$createDto->cargoType)
+            ->setBodyType((int)$createDto->bodyType)
+            ->setDownloadingType((int)$createDto->downloadingType)
+            ->setUnloadingType((int)$createDto->unloadingType)
+            ->setUser($user)
+            ->setCreatedAt()
+            ->setUpdatedAt();
+
         $this->loadService->save($load);
+        return $load;
     }
 }

@@ -11,6 +11,7 @@ use DateTimeInterface;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: LoadRepository::class)]
@@ -75,10 +76,10 @@ class Load
     private ?int $distance;
     #[ORM\Column]
     #[Groups(['load'])]
-    private string $weight;
+    private float $weight;
     #[ORM\Column]
     #[Groups(['load'])]
-    private string $volume;
+    private float $volume;
     #[ORM\Column]
     #[Groups(['load'])]
     private string $priceType;
@@ -369,7 +370,7 @@ class Load
         return $this->user;
     }
 
-    public function setUser(?User $user): self
+    public function setUser(?UserInterface $user): self
     {
         $this->user = $user;
         return $this;

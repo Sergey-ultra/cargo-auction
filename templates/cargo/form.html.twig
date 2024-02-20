@@ -19,9 +19,9 @@
 {#            </div>#}
         </div>
     {% endif %}
-    {% for error in errors %}
-        {{ error.message }}
-    {% endfor %}
+{#    {% for error in errors %}#}
+{#        {{ error.message }}#}
+{#    {% endfor %}#}
     <div {% if not is_granted('IS_AUTHENTICATED_FULLY') %}class="overlay-box"{% endif %}>
         <form action="{{ path('cargo.store') }}" method="POST" name="order">
             <input type="hidden" name="_token" value="{{ csrf_token('load') }}">
@@ -30,6 +30,9 @@
                 <div class="form-item">
                     <div class="label">Тип груза</div>
                     <div class="input">
+                        {% if errors and errors['cargoType'] is defined %}
+                            <span>{{ errors['cargoType'] }}</span>
+                        {% endif %}
                         <select name="cargoType" id="">
                             {% for key, type in cargoTypes %}
                                 <option {% if load is defined and load.cargoType == key %}selected{% endif %} value="{{ key }}">{{ type }}</option>
@@ -40,6 +43,9 @@
                 <div class="form-item">
                     <div class="label">Упаковка</div>
                     <div class="input">
+                        {% if errors and errors['packageTypes'] is defined %}
+                            <span>{{ errors['packageTypes'] }}</span>
+                        {% endif %}
                         <select name="packageType" id="">
                             {% for key, type in packageTypes %}
                                 {% if type.children is not defined %}
@@ -59,29 +65,35 @@
                 <div class="form-item">
                     <div class="label">Объём (на одну машину)</div>
                     <div class="input">
+                        {% if errors and errors['volume'] is defined %}
+                            <span>{{ errors['volume'] }}</span>
+                        {% endif %}
                         <input type="number" name="volume" {% if load is defined %}value="{{ load.volume }}"{% endif %}>
                     </div>
                 </div>
                 <div class="form-item">
                     <div class="label">Вес (на одну машину)</div>
                     <div class="input">
+                        {% if errors and errors['weight'] is defined %}
+                            <span>{{ errors['weight'] }}</span>
+                        {% endif %}
                         <input type="number" name="weight" {% if load is defined %}value="{{ load.weight }}"{% endif %}>
                     </div>
                 </div>
                 <div class="form-item">
                     <div class="label">Температурный режим</div>
                     <div class="input">
+                        {% if errors and errors['temperatureModeFrom'] is defined %}
+                            <span>{{ errors['temperatureModeFrom'] }}</span>
+                        {% endif %}
                         <input type="number" name="temperatureModeFrom" placeholder="в ℃" min="-30" max="30" step="1">
                     </div>
                     -
                     <div class="input">
+                        {% if errors and errors['temperatureModeTo'] is defined %}
+                            <span>{{ errors['temperatureModeTo'] }}</span>
+                        {% endif %}
                         <input type="number" name="temperatureModeTo" placeholder="в ℃" min="-30" max="30" step="1"  value="">
-                    </div>
-                </div>
-                <div class="form-item">
-                    <div class="label">Санитарный паспорт</div>
-                    <div class="input">
-                        <input type="checkbox">
                     </div>
                 </div>
             </div>
@@ -91,15 +103,18 @@
                 <div class="form-item">
                     <div class="label">Дата загрузки</div>
                     <div class="input">
-                        <div id="">
-                            <select name="downloadingDateStatus" id="">
-                                {% for dateStatusKey, dateStatus in downloadingDateStatuses %}
-                                    <option {% if load is defined and load.downloadingDateStatus == dateStatusKey %}selected{% endif %} value="{{ dateStatusKey }}">
-                                        {{ dateStatus }}
-                                    </option>
-                                {% endfor %}
-                            </select>
-                        </div>
+                        {% if errors and errors['downloadingDateStatus'] is defined %}
+                            <span>{{ errors['downloadingDateStatus'] }}</span>
+                        {% endif %}
+                        <select name="downloadingDateStatus" id="">
+                            {% for dateStatusKey, dateStatus in downloadingDateStatuses %}
+                                <option {% if load is defined and load.downloadingDateStatus == dateStatusKey %}selected{% endif %}
+                                        value="{{ dateStatusKey }}">
+                                    {{ dateStatus }}
+                                </option>
+                            {% endfor %}
+                        </select>
+
                         <div>
                             <div id="ready_date"></div>
                         </div>
@@ -112,6 +127,9 @@
                 <div class="form-item">
                     <div class="label">Кузов*</div>
                     <div class="input">
+                        {% if errors and errors['bodyType'] is defined %}
+                            <span>{{ errors['bodyType'] }}</span>
+                        {% endif %}
                         <select name="bodyType" id="">
                             {% for key, type in bodyTypes %}
                                 <option  {% if load is defined and load.bodyType == key %}selected{% endif %} value="{{ key }}">{{ type }}</option>
@@ -122,6 +140,9 @@
                 <div class="form-item">
                     <div class="label">Загрузка</div>
                     <div class="input">
+                        {% if errors and errors['downloadingType'] is defined %}
+                            <span>{{ errors['downloadingType'] }}</span>
+                        {% endif %}
                         <select name="downloadingType">
                             {% for key, type in loadingTypes %}
                                 <option {% if load is defined and load.downloadingType == key %}selected{% endif %} value="{{ key }}">{{ type }}</option>
@@ -132,6 +153,9 @@
                 <div class="form-item">
                     <div class="label">Выгрузка</div>
                     <div class="input">
+                        {% if errors and errors['unloadingType'] is defined %}
+                            <span>{{ errors['unloadingType'] }}</span>
+                        {% endif %}
                         <select name="unloadingType">
                             {% for key, type in loadingTypes %}
                                 <option {% if load is defined and load.unloadingType == key %}selected{% endif %} value="{{ key }}">{{ type }}</option>
@@ -146,6 +170,9 @@
                 <div class="form-item">
                     <div class="label">Откуда</div>
                     <div class="input">
+                        {% if errors and errors['fromAddress'] is defined %}
+                            <span>{{ errors['fromAddress'] }}</span>
+                        {% endif %}
                         <input type="text" name="fromAddress" id="fromAddressInput" {% if load is defined %}value="{{ load.fromAddress }}"{% endif %}>
                         <div id="fromAddressSuggest">
                             <ul class="suggest-list"></ul>
@@ -155,6 +182,9 @@
                 <div class="form-item">
                     <div class="label">Куда</div>
                     <div class="input">
+                        {% if errors and errors['toAddress'] is defined %}
+                            <span>{{ errors['toAddress'] }}</span>
+                        {% endif %}
                         <input type="text" name="toAddress" id="toAddressInput" {% if load is defined %}value="{{ load.toAddress }}"{% endif %}>
                         <div id="toAddressSuggest">
                             <ul class="suggest-list"></ul>
@@ -168,7 +198,9 @@
                 <div class="form-item">
                     <div class="label">Оплата</div>
                     <div class="input">
-
+                        {% if errors and errors['priceType'] is defined %}
+                            <span>{{ errors['priceType'] }}</span>
+                        {% endif %}
                         <div id="agreedPriceBlock" class="tab">
                             <label for="">
                                 <input type="radio" name="priceType" value="negotiable" {% if load is defined and load.priceType == 'negotiable' %}checked{% endif %}>
@@ -191,14 +223,23 @@
                         <div id="priceBlock">
                             <div>
                                 <span>С НДС, безнал</span>
+                                {% if errors and errors['priceWithoutTax'] is defined %}
+                                    <span>{{ errors['priceWithoutTax'] }}</span>
+                                {% endif %}
                                 <input type="number" id="priceWithoutTax" name="priceWithoutTax" {% if load is defined %}value="{{ load.priceWithoutTax }}"{% endif %}> руб
                             </div>
                             <div>
                                 <span>Без НДС, безнал</span>
+                                {% if errors and errors['priceWithTax'] is defined %}
+                                    <span>{{ errors['priceWithTax'] }}</span>
+                                {% endif %}
                                 <input type="number" id="priceWithTax" name="priceWithTax" {% if load is defined %}value="{{ load.priceWithTax }}"{% endif %}> руб
                             </div>
                             <div>
                                 <span>Наличными</span>
+                                {% if errors and errors['priceCash'] is defined %}
+                                    <span>{{ errors['priceCash'] }}</span>
+                                {% endif %}
                                 <input type="number" id="priceCash" name="priceCash" {% if load is defined %}value="{{ load.priceCash }}"{% endif %}> руб
                             </div>
                         </div>
