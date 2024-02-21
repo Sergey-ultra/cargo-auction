@@ -29,7 +29,7 @@ final readonly class BidApi
         $bid->setBid($bidValue);
 
         $this->bidRepository->save($bid);
-        $message = sprintf("На вашу заявку поставили ставку в размере %d %s", $bid, 'руб');
+        $message = sprintf("На вашу заявку поставили ставку в размере %d %s", $bidValue, 'руб');
         $loadUser = $bid->getLoad()->getUser();
 
         $notification = new WebSocketNotification($message, $loadUser->getId());

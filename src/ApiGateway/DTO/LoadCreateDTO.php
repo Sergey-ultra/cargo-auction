@@ -24,11 +24,11 @@ final readonly class LoadCreateDTO
         #[Type('string')]
         public string $fromAddress,
         #[NotBlank(message: 'Вес не может быть пустым')]
-        #[Type('string')]
-        public string $weight,
+        #[Type('float')]
+        public float $weight,
         #[NotBlank(message: 'Объем не может быть пустым')]
-        #[Type('string')]
-        public string $volume,
+        #[Type('float')]
+        public float $volume,
         #[NotBlank(message: 'Тип груза не может быть пустым')]
         #[Type('string')]
         public string $cargoType,

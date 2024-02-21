@@ -22,6 +22,7 @@ Encore
      */
     .addEntry('app', './assets/index.js')
     .addEntry('loadList', './assets/load-list.js')
+    .addEntry('loadForm', './assets/load-form.js')
     .addEntry('transportList', './assets/transport-list.js')
     .addEntry('messages', './assets/messages.js')
     .addEntry('myCompany', './assets/my-company.js')

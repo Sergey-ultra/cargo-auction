@@ -255,23 +255,23 @@ class Load
         return $this;
     }
 
-    public function getWeight(): string
+    public function getWeight(): float
     {
         return $this->weight;
     }
 
-    public function setWeight(string $weight): self
+    public function setWeight(float $weight): self
     {
         $this->weight = $weight;
         return $this;
     }
 
-    public function getVolume(): string
+    public function getVolume(): float
     {
         return $this->volume;
     }
 
-    public function setVolume(string $volume): self
+    public function setVolume(float $volume): self
     {
         $this->volume = $volume;
         return $this;

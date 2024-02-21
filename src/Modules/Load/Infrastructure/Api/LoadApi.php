@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Load\Infrastructure\Api;
 
+use App\ApiGateway\DTO\LoadCreateDTO;
 use App\ApiGateway\DTO\LoadFilter;
 use App\ApiGateway\DTO\LoadList;
 use App\ApiGateway\Request\CreateRequest;
@@ -66,8 +67,6 @@ final readonly class LoadApi
     {
         return LoadRepositoryInterface::CREATED_AT;
     }
-
-
 
     public function getList(
         ?LoadFilter    $filter,
@@ -132,7 +131,7 @@ final readonly class LoadApi
         );
     }
 
-    public function saveLoad(CreateRequest $createDto, UserInterface $user): Load
+    public function saveLoad(LoadCreateDTO $createDto, UserInterface $user): Load
     {
         $load = new Load();
         $load

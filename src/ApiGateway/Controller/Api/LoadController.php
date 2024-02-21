@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\ApiGateway\Controller\Api;
 
 
+use App\ApiGateway\DTO\LoadCreateDTO;
 use App\ApiGateway\DTO\LoadFilter;
 use App\ApiGateway\Request\CreateRequest;
 use App\Modules\Load\Infrastructure\Api\LoadApi;
@@ -13,6 +14,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapQueryString;
+use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Route('/api', name: 'api_')]
@@ -48,21 +50,10 @@ class LoadController extends ApiController
 
     #[Route('load/create', name: 'api.cargo.store', methods:['post'] )]
     //    #[IsGranted("ROLE_ADMIN")]
-    public function store(CreateRequest $createDto, LoadApi $loadApi): RedirectResponse|Response
+    public function store(#[MapRequestPayload] LoadCreateDTO $loadCreateDto, LoadApi $loadApi): JsonResponse
     {
-        if ($createDto->isValid()) {
-            $load = $loadApi->saveLoad($createDto, $this->getUser());
-            return $this->redirectToRoute('cargo.show', ['id' => $load->getId()], Response::HTTP_SEE_OTHER);
-        }
+        $load = $loadApi->saveLoad($loadCreateDto, $this->getUser());
+        return $this->apiJson(data: $load);
 
-        $errors = $createDto->getErrors();
-        return $this->render('cargo/form.html.twig', [
-            'cargoTypes' => $loadApi->getCargoTypes(),
-            'packageTypes' => $loadApi->getPackageType(),
-            'bodyTypes' => $loadApi->getBodyTypes(),
-            'loadingTypes' => $loadApi->getLoadingTypes(),
-            'downloadingDateStatuses' => $loadApi->getDownloadingDateTitles(),
-            'errors' => $errors,
-        ]);
     }
 }

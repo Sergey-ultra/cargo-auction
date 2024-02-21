@@ -9,10 +9,12 @@ import SaveFilterModal from "../../../components/SaveFilterModal";
 import AuthModal from "../../../components/AuthModal";
 import Filter from "../../../components/Filter";
 import {FilterContext} from "../../../context/filter.context";
+import {useHandleSelectOptions} from "../../../hooks/handleSelectOptions";
 
 function LoadList() {
     const { filter, setFilter, clearFilter, changeFilterAddresses } = useContext(FilterContext);
     const { request, isLoading, error, clearError } = useHttp();
+    const { handleSelectOptions} = useHandleSelectOptions();
 
     const isMy = window.location.pathname.match(/\/profile\/load-list/);
 
@@ -73,23 +75,26 @@ function LoadList() {
         fetchLoadList();
     }
 
-
-    useEffect(() => {
-        const fetchLists = async() => {
-            const { data } = await request('/api/list');
-
-            let loadParams = [];
-            for (let [name, value] of Object.entries(data.loadOptions)) {
-                loadParams.push({
-                    title: value,
-                    value: name,
-                })
+    const fetchLoadLists = async() => {
+        const { data } = await request(
+            '/api/list',
+            'GET',
+            {
+                params: {
+                    parameters: ['load']
+                }
             }
-            setLoadOptions(loadParams);
+        );
+        if (data.loadOptions) {
+            setLoadOptions(handleSelectOptions(data.loadOptions));
+        }
+
+        if (data.perPageOptions) {
             setPerPageOptions(data.perPageOptions);
         }
-        fetchLists();
-    },[])
+    }
+
+    useEffect(() => fetchLoadLists(),[])
 
     useEffect(() => {
         fetchLoadList();
