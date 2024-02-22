@@ -1,15 +1,17 @@
 import React, {Fragment, useEffect, useState} from "react";
 import {useHttp} from "../../hooks/api";
-import {Autocomplete, FormControl, InputLabel, MenuItem, Select, TextField} from "@mui/material";
+import {Autocomplete, Button, FormControl, InputLabel, MenuItem, Select, TextField} from "@mui/material";
 import {useHandleSelectOptions} from "../../hooks/handleSelectOptions";
 import AutocompleteAddress from "../../components/AutocompleteAddress";
 import CustomTabs from "../../components/custom-tabs/CustomTabs";
 
-
 function LoadForm() {
     const isAuth = window.authData && window.authData.userId;
-    const { request, isLoading } = useHttp();
-    const { handleSelectOptions} = useHandleSelectOptions();
+    const { request, isLoading, error, status } = useHttp();
+    const { handleSelectOptions } = useHandleSelectOptions();
+
+    const [requestError, setRequestError] = useState([]);
+
 
     const [cargoTypes, setCargoTypes] = useState([]);
     const [priceTypes, setPriceTypes] = useState([]);
@@ -37,6 +39,11 @@ function LoadForm() {
     const saveLoad = async e => {
         e.preventDefault();
         const { data } = await request('/api/load/create', 'POST', {body: {load}});
+        console.log(error, status, isLoading);
+        if (error && status === 422) {
+
+            setRequestError(error);
+        }
     }
 
 
@@ -236,7 +243,7 @@ function LoadForm() {
                  </div>
 
                  <div className="buttons">
-                     <button type="submit" className="button" disabled={!isAuth}>Добавить</button>
+                     <Button variant="contained" type="submit" className="button" disabled={!isAuth || isLoading}>Добавить</Button>
                  </div>
             </form>
         </div>

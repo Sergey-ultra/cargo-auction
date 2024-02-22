@@ -4,16 +4,17 @@ declare(strict_types=1);
 
 namespace App\DataFixtures;
 
+use App\Modules\Load\Domain\Entity\BodyType;
+use App\Modules\Load\Domain\Entity\CargoType;
+use App\Modules\Load\Domain\Entity\Load;
+use App\Modules\Load\Domain\Entity\LoadingType;
 use App\ValueObject\Point;
-use BodyType;
-use CargoType;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use Faker\Factory;
 use Faker\Generator;
-use Load;
-use LoadingType;
+
 
 class LoadFixtures extends Fixture implements DependentFixtureInterface
 {
@@ -60,8 +61,8 @@ class LoadFixtures extends Fixture implements DependentFixtureInterface
                 ->setToLongitude($toLongitude)
                 ->setToLatitude($toLatitude)
                 ->setToPoint(new Point($toLongitude, $toLatitude))
-                ->setWeight((string)$this->faker->randomFloat('1', 1, 25))
-                ->setVolume((string)$this->faker->randomFloat('1', 1, 59))
+                ->setWeight($this->faker->randomFloat('1', 1, 25))
+                ->setVolume($this->faker->randomFloat('1', 1, 59))
                 ->setPriceType($this->faker->randomElement(load::PRICE_TYPE))
                 ->setPriceWithoutTax($this->faker->numberBetween(100, 200000))
                 ->setPriceWithTax($this->faker->numberBetween(100, 200000))

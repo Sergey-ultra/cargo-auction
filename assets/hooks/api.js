@@ -1,6 +1,7 @@
 import {useState,useCallback}  from'react';
 export const useHttp = () => {
     const[isLoading, setLoading] = useState(false);
+    const[status, setStatus] = useState(0);
     const[error, setError] = useState(null);
 
     const request = useCallback(async (url, method ='GET', params = {}) => {
@@ -46,24 +47,31 @@ export const useHttp = () => {
         try {
             const response = await fetch(url, fetchParams);
             const data = await response.json();
+            await setStatus(response.status);
 
             if (!response.ok) {
-                if (response.status !== 401) {
-                    setError(data.error);
+                if (response.status === 422) {
+                    await setError([...data.violations]);
+                    console.log(response)
+                } else if (response.status === 401) {
+
                 } else {
-                    setError(data.error);
+                    await setError(data.error);
                 }
             }
 
             return data
         } catch (e) {
+            console.log(error, status);
             setError(e.message);
-            throw e;
+            //throw e;
         } finally {
-            setLoading(false);
+            console.log(error, status);
+            await setLoading(false);
         }
-    },[])
+    },[]);
+
     const clearError = useCallback(() => setError(null),[]);
 
-    return {isLoading, error, clearError, request};
+    return {isLoading, error, clearError, request, status};
 }

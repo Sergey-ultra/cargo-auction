@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\DataFixtures;
 
+use App\Modules\User\Domain\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Faker\Factory;
 use Faker\Generator;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use App\User\Domain\Entity\User;
 
 class UserFixtures extends Fixture
 {
@@ -28,6 +28,7 @@ class UserFixtures extends Fixture
         $user
             ->setEmail('maasa@list.ru')
             ->setName('Morozov Sergey')
+            ->setRoles(['owner', 'expeditor'])
             ->setPassword(
                 $this->userPasswordHasher->hashPassword($user, '12345678')
             );
@@ -40,6 +41,7 @@ class UserFixtures extends Fixture
             $user
                 ->setEmail($this->faker->email)
                 ->setName($this->faker->name)
+                ->setRoles($this->faker->randomElements(['owner', 'expeditor', 'carrier'], 2))
                 ->setPassword($this->userPasswordHasher->hashPassword($user, '12345678'));
 
             $this->addReference(self::USER_REFERENCE .'_'. $i, $user);

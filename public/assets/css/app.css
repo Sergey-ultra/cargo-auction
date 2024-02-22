@@ -91,6 +91,7 @@ body {
     margin-left: auto;
 }
 .container {
+    display: block;
     height: 100%;
     margin: 0 auto;width: 100%;
     max-width: 1280px;
@@ -354,4 +355,8 @@ ul {
 .footer {
     height: 150px;
     background-color: #dddfe1;
+}
+.footer-title {
+    margin: 0;
+    padding: 15px 0;
 }

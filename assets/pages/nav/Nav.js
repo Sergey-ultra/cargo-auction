@@ -44,7 +44,7 @@ function Nav() {
                 sub.on('publication', function (ctx) {
                     console.log(ctx);
                     if (ctx.data.message) {
-                        notify(ctx.data.message);
+                        notify('publication', ctx.data.message);
                     }
                 }).on('subscribing', function (ctx) {
                     //console.log('subscribing', ctx.code, ctx.reason);
