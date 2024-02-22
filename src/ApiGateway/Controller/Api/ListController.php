@@ -35,6 +35,7 @@ class ListController extends AbstractController
                     'bodyTypes' => $loadApi->getBodyTypes(),
                     'loadingTypes' => $loadApi->getLoadingTypes(),
                     'downloadingDateStatuses' => $loadApi->getDownloadingDateTitles(),
+                    'priceTypes' => $loadApi->getPriceTypes(),
                 ];
             }
         }

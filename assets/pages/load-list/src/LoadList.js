@@ -1,5 +1,5 @@
 import React, {Fragment, useContext, useEffect, useState} from 'react';
-import {Button, FormControl, Menu, MenuItem, Select, Tab, Tabs} from "@mui/material";
+import {Button, FormControl, MenuItem, Select} from "@mui/material";
 import {useHttp} from "../../../hooks/api";
 import {setQuery} from "../../../hooks/queryParams";
 import Pagination from "../../../components/common/Pagination";
@@ -11,7 +11,7 @@ import Filter from "../../../components/Filter";
 import {FilterContext} from "../../../context/filter.context";
 import {useHandleSelectOptions} from "../../../hooks/handleSelectOptions";
 
-function LoadList() {
+function LoadList(callback, deps) {
     const { filter, setFilter, clearFilter, changeFilterAddresses } = useContext(FilterContext);
     const { request, isLoading, error, clearError } = useHttp();
     const { handleSelectOptions} = useHandleSelectOptions();
@@ -70,31 +70,31 @@ function LoadList() {
         setLastPage(data.lastPage);
     }
 
-    const updateLoadList = () => {
+
+
+
+
+    const updateLoadList = async () => {
         setPage(1);
-        fetchLoadList();
+        await fetchLoadList();
     }
 
-    const fetchLoadLists = async() => {
-        const { data } = await request(
-            '/api/list',
-            'GET',
-            {
-                params: {
-                    parameters: ['load']
-                }
+    useEffect(() => {
+        const fetchLists = async() => {
+            const params = {
+                parameters: ['load']
+            };
+            const { data } = await request('/api/list', 'GET', {params});
+            if (data.loadOptions) {
+                setLoadOptions(handleSelectOptions(data.loadOptions));
             }
-        );
-        if (data.loadOptions) {
-            setLoadOptions(handleSelectOptions(data.loadOptions));
-        }
 
-        if (data.perPageOptions) {
-            setPerPageOptions(data.perPageOptions);
-        }
-    }
-
-    useEffect(() => fetchLoadLists(),[])
+            if (data.perPageOptions) {
+                setPerPageOptions(data.perPageOptions);
+            }
+        };
+        fetchLists()
+    },[])
 
     useEffect(() => {
         fetchLoadList();
@@ -164,9 +164,8 @@ function LoadList() {
                         <div>
                             <span>Выводить строк</span>
                             <Select
-                                id="perPage"
+                                size="small"
                                 value={perPage}
-                                label="Age"
                                 onChange={e => setPerPage(e.target.value)}
                             >
                                 {perPageOptions.map((option, key) =>

@@ -2,9 +2,9 @@ import React, {useState} from "react";
 import {Autocomplete, TextField} from "@mui/material";
 import {useHttp} from "../hooks/api";
 
-function AutocompleteAddress({filterValue, setAddressFilterValue}) {
+function AutocompleteAddress({value, setAddressValue, label}) {
     const { request, isLoading, error, clearError } = useHttp();
-    const [localValue, setLocalValue] = useState(filterValue);
+    const [localValue, setLocalValue] = useState(value);
     const [citiesList, setCitiesList] = useState([]);
 
     const getSuggest = async(name) => {
@@ -24,22 +24,22 @@ function AutocompleteAddress({filterValue, setAddressFilterValue}) {
     }
 
     return  <Autocomplete
+        sx={{m: 1, minWidth: 300}}
         options={citiesList}
         getOptionLabel={option => option.name}
         getOptionKey={option => option.id}
         onChange={(event, newValue) => {
             if (newValue && newValue.name) {
                 setLocalValue(newValue.name);
-                setAddressFilterValue(newValue.name);
+                setAddressValue(newValue.name);
                 setCitiesList([]);
             }
         }}
         inputValue={localValue}
         size="small"
         disablePortal
-        sx={{ width: 300 }}
         renderInput={(params) =>
-            <TextField  {...params} className="filter__input" name="fromAddress" onChange={changeAddressValue}/>}
+            <TextField  {...params} label={label} name="fromAddress" onChange={changeAddressValue}/>}
     />
 }
 

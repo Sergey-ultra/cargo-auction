@@ -68,6 +68,11 @@ final readonly class LoadApi
         return LoadRepositoryInterface::CREATED_AT;
     }
 
+    public function getPriceTypes(): array
+    {
+        return Load::PRICE_TYPE;
+    }
+
     public function getList(
         ?LoadFilter    $filter,
         int            $page = 1,

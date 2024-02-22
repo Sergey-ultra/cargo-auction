@@ -48,7 +48,7 @@ class LoadController extends ApiController
         return $this->apiJson($result);
     }
 
-    #[Route('load/create', name: 'api.cargo.store', methods:['post'] )]
+    #[Route('/load/create', name: 'api.cargo.store', methods:['post'] )]
     //    #[IsGranted("ROLE_ADMIN")]
     public function store(#[MapRequestPayload] LoadCreateDTO $loadCreateDto, LoadApi $loadApi): JsonResponse
     {

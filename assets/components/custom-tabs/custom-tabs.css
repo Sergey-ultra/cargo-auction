@@ -1,0 +1,24 @@
+.cTabs {
+    display: inline-flex;
+    flex-wrap: nowrap;
+    margin-right:auto;
+    max-width:100%;
+    overflow-x: auto;
+    border: 1px solid rgba(0,0,0,.2);
+    border-radius: 4px;
+}
+.cItem {
+    user-select: none;
+    white-space: nowrap;
+    cursor: pointer;
+    display: inline-block;
+    line-height: 36px;
+    height: 36px;
+    padding: 0 16px;
+}
+.cItem:not(:last-child) {
+    border-right: 1px solid rgba(0,0,0,.2);
+}
+.cItem-active {
+    background: #ffeb99;
+}

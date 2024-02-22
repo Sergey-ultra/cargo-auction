@@ -4,7 +4,6 @@ import Dialog from '@mui/material/Dialog';
 import {Button, DialogContent} from "@mui/material";
 
 
-
 export default function CookieModal({ handleClose, isOpen }) {
 
     return (

@@ -18,7 +18,11 @@ function Filter() {
             <div className="filter__block">
                 <div className="filter__element">
                     <label className="filter__label">Откуда</label>
-                    <AutocompleteAddress filterValue={filter.fromAddress} setAddressFilterValue={setFromAddressFilterValue}/>
+                    <AutocompleteAddress
+                        value={filter.fromAddress}
+                        setAddressValue={setFromAddressFilterValue}
+                        label=""
+                    />
                 </div>
                 <div className="filter__element filter__element-radius">
                     <label className="filter__label">Радиус</label>
@@ -36,7 +40,11 @@ function Filter() {
                 </div>
                 <div className="filter__element">
                     <label className="filter__label">Куда</label>
-                    <AutocompleteAddress filterValue={filter.toAddress} setAddressFilterValue={setToAddressFilterValue}/>
+                    <AutocompleteAddress
+                        value={filter.toAddress}
+                        setAddressValue={setToAddressFilterValue}
+                        label=""
+                    />
                 </div>
                 <div className="filter__element filter__element-radius">
                     <label className="filter__label">Радиус</label>

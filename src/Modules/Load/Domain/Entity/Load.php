@@ -32,10 +32,10 @@ class Load
     ];
 
     public const PRICE_TYPE = [
-        'negotiable',
-        'fix',
-        'request',
-        'auction',
+        'negotiable' => 'Возможен торг',
+        'fix' => ' Без торга',
+        'request' => ' Запрос',
+        'auction' =>  'Торги',
     ];
     #[ORM\Id]
     #[ORM\GeneratedValue]

@@ -1,14 +1,14 @@
 
 export const useHandleSelectOptions = () => {
     const handleSelectOptions = (object) => {
-        let loadParams = [];
+        let params = [];
         for (let [name, value] of Object.entries(object)) {
-            loadParams.push({
+            params.push({
                 title: value,
                 value: name,
             })
         }
-        return loadParams;
+        return params;
     }
 
 
