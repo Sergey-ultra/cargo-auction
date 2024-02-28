@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace App\DataFixtures;
 
 use App\Modules\Load\Domain\Entity\BodyType;
-use App\Modules\Load\Domain\Entity\CargoType;
-use App\Modules\Load\Domain\Entity\Load;
 use App\Modules\Load\Domain\Entity\LoadingType;
+use App\Modules\Transport\Domain\Entity\Transport;
 use App\ValueObject\Point;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
@@ -15,25 +14,22 @@ use Doctrine\Persistence\ObjectManager;
 use Faker\Factory;
 use Faker\Generator;
 
-
-class LoadFixtures extends Fixture implements DependentFixtureInterface
+class TransportFixtures extends Fixture implements DependentFixtureInterface
 {
     private Generator $faker;
     private ObjectManager $manager;
-
 
     public function __construct()
     {
         $this->faker = Factory::create('ru_RU');
     }
-
     public function load(ObjectManager $manager): void
     {
         $this->manager = $manager;
-        $this->loadOrders();
+        $this->loadData();
     }
 
-    private function loadOrders(): void
+    private function loadData(): void
     {
         for ($i = 1; $i < 1000; $i++) {
 
@@ -41,7 +37,7 @@ class LoadFixtures extends Fixture implements DependentFixtureInterface
                 ? $this->getReference(UserFixtures::USER_REFERENCE .'_0')
                 : $this->getReference(UserFixtures::USER_REFERENCE .'_'.$this->faker->numberBetween(0, 99));
 
-            $order = new Load();
+            $transport = new Transport();
 
             $fromLongitude = $this->faker->randomFloat(6, 27, 177);
             $fromLatitude = $this->faker->latitude;
@@ -49,9 +45,7 @@ class LoadFixtures extends Fixture implements DependentFixtureInterface
             $toLatitude = $this->faker->latitude;
 
 
-            $order
-                ->setDownloadingDateStatus($this->faker->randomElement(array_filter(Load::DOWNLOADING_DATE_STATUSES, fn($el) => $el !== 'request')))
-                ->setDownloadingDate($this->faker->dateTimeBetween('now','6 days'))
+            $transport
                 ->setFromAddress($this->faker->streetAddress)
                 ->setFromLongitude($fromLongitude)
                 ->setFromLatitude($fromLatitude)
@@ -62,19 +56,16 @@ class LoadFixtures extends Fixture implements DependentFixtureInterface
                 ->setToPoint(new Point($toLongitude, $toLatitude))
                 ->setWeight($this->faker->randomFloat('1', 1, 25))
                 ->setVolume($this->faker->randomFloat('1', 1, 59))
-                ->setPriceType($this->faker->randomElement(Load::PRICE_TYPE))
                 ->setPriceWithoutTax($this->faker->numberBetween(100, 200000))
                 ->setPriceWithTax($this->faker->numberBetween(100, 200000))
                 ->setPriceCash($this->faker->numberBetween(100, 200000))
-                ->setCargoType($this->faker->numberBetween(0, count(CargoType::CARGO_TYPES) - 1))
                 ->setBodyType($this->faker->numberBetween(0, count(BodyType::BODY_TYPES) -1))
                 ->setDownloadingType($this->faker->numberBetween(0, count(LoadingType::LOADING_TYPES) -1))
-                ->setUnloadingType($this->faker->numberBetween(0, count(LoadingType::LOADING_TYPES) -1))
                 ->setUser($user)
                 ->setCreatedAt()
                 ->setUpdatedAt();
 
-            $this->manager->persist($order);
+            $this->manager->persist($transport);
         }
         $this->manager->flush();
     }

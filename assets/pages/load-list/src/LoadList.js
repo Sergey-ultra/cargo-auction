@@ -85,8 +85,8 @@ function LoadList(callback, deps) {
                 parameters: ['load']
             };
             const { data } = await request('/api/list', 'GET', {params});
-            if (data.loadOptions) {
-                setLoadOptions(handleSelectOptions(data.loadOptions));
+            if (data.options) {
+                setLoadOptions(handleSelectOptions(data.options));
             }
 
             if (data.perPageOptions) {

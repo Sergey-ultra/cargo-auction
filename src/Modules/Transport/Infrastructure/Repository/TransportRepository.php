@@ -9,6 +9,7 @@ use App\Modules\Transport\Domain\Repository\TransportRepositoryInterface;
 use App\Modules\Transport\Infrastructure\DTO\FilterDTO;
 use App\Modules\Transport\Infrastructure\DTO\ListDTO;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -41,6 +42,34 @@ class TransportRepository extends ServiceEntityRepository implements TransportRe
         ?UserInterface $byUser = null
     ): ListDTO
     {
-        return new ListDTO([], 0);
+        $queryBuilder = $this->createQueryBuilder('c');
+
+        if (null !== $filter) {
+
+        }
+        if (null !== $byUser) {
+            $queryBuilder
+                ->andWhere("c.user <= :user")
+                ->setParameter('user', $byUser);
+        }
+
+        if ($orderOption === self::CREATED_AT) {
+            $queryBuilder->orderBy('c.createdAt', 'DESC');
+        } else if ($orderOption === self::UPDATED_AT) {
+            $queryBuilder->orderBy('c.updatedAt', 'DESC');
+        } else if ($orderOption === self::DOWNLOADING_DATE) {
+            $queryBuilder->orderBy('c.downloadingDate', 'DESC');
+        } else if ($orderOption === self::CARGO_TYPE) {
+            $queryBuilder->orderBy('c.cargoType', 'DESC');
+        }
+
+        $query = $queryBuilder
+            ->setFirstResult(($page - 1) * $perPage)
+            ->setMaxResults($perPage)
+            ->getQuery();
+
+        $paginator = new Paginator($query);
+
+        return new ListDTO($paginator->getIterator()->getArrayCopy(), $paginator->count());
     }
 }

@@ -57,7 +57,7 @@ class Load
     #[ORM\Column(type: 'float', nullable: true)]
     #[Groups(['load'])]
     private float $fromLongitude;
-    #[Column(name: 'from_point', type: 'point',  nullable: true)]
+    #[ORM\Column(name: 'from_point', type: 'point',  nullable: true)]
     #[Groups(['load'])]
     private ?Point $fromPoint;
     #[ORM\Column]
@@ -69,7 +69,7 @@ class Load
     #[ORM\Column(type: 'float', nullable: true)]
     #[Groups(['load'])]
     private float $toLongitude;
-    #[Column(name: 'to_point', type: 'point',  nullable: true)]
+    #[ORM\Column(name: 'to_point', type: 'point',  nullable: true)]
     #[Groups(['load'])]
     private ?Point $toPoint;
     #[Groups(['load'])]

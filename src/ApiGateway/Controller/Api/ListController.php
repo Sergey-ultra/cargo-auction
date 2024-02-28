@@ -23,7 +23,14 @@ class ListController extends AbstractController
         if (null !== $listQuery) {
             if (in_array('load', $listQuery->parameters, true)) {
                 $result = [
-                    'loadOptions' => $loadApi->getLoadOption(),
+                    'options' => $loadApi->getLoadOption(),
+                    'perPageOptions' => [10, 20, 30, 50, 100]
+                ];
+            }
+
+            if (in_array('transport', $listQuery->parameters, true)) {
+                $result = [
+                    'options' => $loadApi->getLoadOption(),
                     'perPageOptions' => [10, 20, 30, 50, 100]
                 ];
             }

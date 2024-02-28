@@ -9,15 +9,17 @@ import SaveFilterModal from "../../../components/SaveFilterModal";
 import AuthModal from "../../../components/AuthModal";
 import Filter from "../../../components/Filter";
 import {FilterContext} from "../../../context/filter.context";
+import {useHandleSelectOptions} from "../../../hooks/handleSelectOptions";
 
 function TransportList() {
     const { filter, setFilter, clearFilter, changeFilterAddresses } = useContext(FilterContext);
     const { request, isLoading, error, clearError } = useHttp();
+    const { handleSelectOptions} = useHandleSelectOptions();
     const userId = window?.authData?.userId;
 
     const isMy = window.location.pathname.match(/\/profile\/load-list/);
 
-    const [loadOptions, setLoadOptions] = useState([]);
+    const [sortOptions, setSortOptions] = useState([]);
     const [perPageOptions, setPerPageOptions] = useState([]);
 
 
@@ -75,19 +77,20 @@ function TransportList() {
     }
 
 
+
     useEffect(() => {
         const fetchLists = async() => {
-            const { data } = await request('/api/list');
+            const params = {
+                parameters: ['transport']
+            };
+            const { data } = await request('/api/list', 'GET', {params});
 
-            let loadParams = [];
-            for (let [name, value] of Object.entries(data.loadOptions)) {
-                loadParams.push({
-                    title: value,
-                    value: name,
-                })
+            if (data.options) {
+                setSortOptions(handleSelectOptions(data.options));
             }
-            setLoadOptions(loadParams);
-            setPerPageOptions(data.perPageOptions);
+            if (data.perPageOptions) {
+                setPerPageOptions(data.perPageOptions);
+            }
         }
         fetchLists();
     },[])
@@ -127,8 +130,8 @@ function TransportList() {
                                         value={orderBy}
                                         label="orderBy"
                                         onChange={e => setOrderBy(e.target.value)}>
-                                        {loadOptions.map((loadOption) =>
-                                            <MenuItem key={loadOption.value} value={loadOption.value} selected={orderBy === loadOption.value}>{loadOption.title}</MenuItem>
+                                        {sortOptions.map((option) =>
+                                            <MenuItem key={option.value} value={option.value} selected={orderBy === option.value}>{option.title}</MenuItem>
                                         )}
                                     </Select>
                                 </FormControl>

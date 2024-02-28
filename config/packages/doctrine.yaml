@@ -55,6 +55,11 @@ doctrine:
                 is_bundle: false
                 prefix: 'App\Modules\Load\Domain\Entity'
                 alias: Load
+            Transport:
+                dir: '%kernel.project_dir%/src/Modules/Transport/Domain/Entity'
+                is_bundle: false
+                prefix: 'App\Modules\Transport\Domain\Entity'
+                alias: Transport
             User:
                 dir: '%kernel.project_dir%/src/Modules/User/Domain/Entity'
                 is_bundle: false
