@@ -63,21 +63,24 @@ function LoadItem({load, openSendBidModal, openAuthModal}) {
             <div className="table-bottom">
                 <div className="table__contact">
                     {userId && (
-                            userId !== load.user.id && (
-                                <Fragment>
-                                    <a href={`profile/messages/${load.user.id}?load_id=${load.id}`}>
-                                        <span>
-                                            <svg fill="#3a7bbf" stroke="#3a7bbf" strokeWidth="0" data-qa="icon" viewBox="0 0 15 15" width="15" height="15">
-                                                <symbol id="ic_message" viewBox="0 0 17 16">
-                                                    <path fillRule="evenodd" clipRule="evenodd" d="m6.5 13-4.327-.022-.242-.001-1.008-.005-.462-.003a.464.464 0 0 1-.323-.793l.329-.324.005-.005.713-.704.172-.17.226-.222A6.452 6.452 0 0 1 0 6.5C0 2.916 2.916 0 6.5 0S13 2.916 13 6.5 10.084 13 6.5 13Zm-2.31-2.012.132-.13L3.094 9.44A4.452 4.452 0 0 1 2 6.5C2 4.02 4.02 2 6.5 2S11 4.02 11 6.5 8.98 11 6.5 11l-2.31-.012ZM14 4c3 2.5 3.273 6.777.855 9.621l1.498 1.508c.304.306.092.836-.335.838L9.755 16A6.651 6.651 0 0 1 5 13.997l1.842.011H6.84C11.945 14.008 15.4 9.007 14 4Z"></path>
-                                                </symbol>
-                                            </svg>
-                                         </span>
+                            userId !== load.userId && load.company.contacts.map(contact =>
+                                <div key={contact.id}>
+                                    <a href={`profile/messages/${contact.id}?truck_id=${load.id}`}>
+                                            <span>
+                                                <svg fill="#3a7bbf" stroke="#3a7bbf" strokeWidth="0" data-qa="icon"
+                                                     viewBox="0 0 15 15" width="15" height="15">
+                                                    <symbol id="ic_message" viewBox="0 0 17 16">
+                                                        <path fillRule="evenodd" clipRule="evenodd"
+                                                              d="m6.5 13-4.327-.022-.242-.001-1.008-.005-.462-.003a.464.464 0 0 1-.323-.793l.329-.324.005-.005.713-.704.172-.17.226-.222A6.452 6.452 0 0 1 0 6.5C0 2.916 2.916 0 6.5 0S13 2.916 13 6.5 10.084 13 6.5 13Zm-2.31-2.012.132-.13L3.094 9.44A4.452 4.452 0 0 1 2 6.5C2 4.02 4.02 2 6.5 2S11 4.02 11 6.5 8.98 11 6.5 11l-2.31-.012ZM14 4c3 2.5 3.273 6.777.855 9.621l1.498 1.508c.304.306.092.836-.335.838L9.755 16A6.651 6.651 0 0 1 5 13.997l1.842.011H6.84C11.945 14.008 15.4 9.007 14 4Z"></path>
+                                                    </symbol>
+                                                </svg>
+                                             </span>
                                         <span>Написать</span>
                                     </a>
-                                    <span>{load.user.email}</span>
-                                    {load.user.phones.map(phone => <span key={phone.phone}><a href={`tel:${ phone.phone }`}>{phone.phone}</a></span>)}
-                                </Fragment>
+                                    <span><a href={`tel:${contact.phone}`}>{contact.phone}</a></span>
+                                    <span><a href={`tel:${contact.mobilePhone}`}>{contact.mobilePhone}</a></span>
+                                    <span>{contact.name}</span>
+                                </div>
                             )
 
                         ) ||
@@ -88,7 +91,7 @@ function LoadItem({load, openSendBidModal, openAuthModal}) {
                     }
                 </div>
                 <div className="table-right">
-                    {userId === load.user.id && (
+                    {userId === load.userId && (
                         <Fragment>
                             <a href={`/${load.id}/edit`}>
                                 <svg width="18" height="18" viewBox="0 0 18 18" fill="none"

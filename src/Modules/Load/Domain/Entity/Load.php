@@ -10,7 +10,6 @@ use App\ValueObject\Point;
 use DateTimeInterface;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\ORM\Mapping\Column;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 
@@ -42,6 +41,12 @@ class Load
     #[ORM\Column]
     #[Groups(['load'])]
     private ?int $id = null;
+    #[ORM\Column]
+    private int $companyId;
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'orders')]
+    #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['load'])]
+    private ?User $user;
     #[ORM\Column]
     #[Groups(['load'])]
     private string $downloadingDateStatus;
@@ -104,10 +109,6 @@ class Load
     #[ORM\Column]
     #[Groups(['load'])]
     private int $unloadingType;
-    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'orders')]
-    #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['load'])]
-    private ?User $user;
     #[ORM\Column(name: 'created_at', type: 'datetime', options: ['default' => "CURRENT_TIMESTAMP"])]
     #[Groups(['load'])]
     private DateTimeInterface $createdAt;
@@ -348,6 +349,11 @@ class Load
         return $this->downloadingType;
     }
 
+    public function getDownloadingTypeName(): string
+    {
+        return LoadingType::LOADING_TYPES[$this->downloadingType];
+    }
+
     public function setDownloadingType(int $downloadingType): self
     {
         $this->downloadingType = $downloadingType;
@@ -359,9 +365,24 @@ class Load
         return $this->unloadingType;
     }
 
+    public function getUnloadingTypeName(): string
+    {
+        return LoadingType::LOADING_TYPES[$this->unloadingType];
+    }
+
     public function setUnloadingType(int $unloadingType): self
     {
         $this->unloadingType = $unloadingType;
+        return $this;
+    }
+    public function getCompanyId(): int
+    {
+        return $this->companyId;
+    }
+
+    public function setCompanyId(int $companyId): self
+    {
+        $this->companyId = $companyId;
         return $this;
     }
 

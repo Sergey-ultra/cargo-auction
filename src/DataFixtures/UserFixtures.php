@@ -24,7 +24,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
     }
     public function load(ObjectManager $manager): void
     {
-        $company = $this->getReference(CompanyFixtures::REFERENCE .'_'.$this->faker->numberBetween(1, 5));
+        $company = $this->getReference(CompanyFixtures::REFERENCE .'_1');
         $user = (new User());
 
         $user
@@ -39,7 +39,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
         $manager->persist($user);
 
         for ($i = 2; $i <= 10; $i++) {
-            $company = $this->getReference(CompanyFixtures::REFERENCE .'_'.$this->faker->numberBetween(1, 5));
+            $company = $this->getReference(CompanyFixtures::REFERENCE .'_' . ($i % 5) + 1);
             $user = (new User())
                 ->setEmail($this->faker->email)
                 ->setName($this->faker->name)

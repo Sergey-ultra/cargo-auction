@@ -53,7 +53,7 @@ function TransportItem({transport, openSendBidModal, openAuthModal}) {
             <div className="table-bottom">
                 <div className="table__contact">
                     {(userId && (transport.company.contacts.map(contact =>
-                        <Fragment key={contact.id}>
+                                <Fragment key={contact.id}>
                                     <a href={`profile/messages/${contact.id}?truck_id=${transport.id}`}>
                                             <span>
                                                 <svg fill="#3a7bbf" stroke="#3a7bbf" strokeWidth="0" data-qa="icon"
@@ -68,8 +68,8 @@ function TransportItem({transport, openSendBidModal, openAuthModal}) {
                                     </a>
                                     <span><a href={`tel:${contact.phone}`}>{contact.phone}</a></span>
                                     <span><a href={`tel:${contact.mobilePhone}`}>{contact.mobilePhone}</a></span>
-
-                        </Fragment>)
+                                    <span>{contact.name}</span>
+                                </Fragment>)
                         ))
                         ||
                         <Fragment>

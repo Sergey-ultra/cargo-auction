@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20240205195210 extends AbstractMigration
+final class Version20231212095760 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -33,7 +33,7 @@ final class Version20240205195210 extends AbstractMigration
                             PRIMARY KEY(id))
         ');
         $this->addSql('CREATE INDEX IDX_E13FFDEED96ED395 ON companies (user_id)');
-        $this->addSql('ALTER TABLE filters ADD CONSTRAINT FK_153FFDEED96ED395 FOREIGN KEY (user_id) REFERENCES "user" (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
+        $this->addSql('ALTER TABLE companies ADD CONSTRAINT FK_153FFDEED96ED395 FOREIGN KEY (user_id) REFERENCES "user" (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
 
 
     }

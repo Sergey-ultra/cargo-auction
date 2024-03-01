@@ -48,8 +48,10 @@ class LoadFixtures extends Fixture implements DependentFixtureInterface
             $toLongitude = $this->faker->randomFloat(6, 41, 71);
             $toLatitude = $this->faker->latitude;
 
+            $company = $this->getReference(CompanyFixtures::REFERENCE .'_'.$this->faker->numberBetween(1, 5));
 
             $order
+                ->setCompanyId($company->getId())
                 ->setDownloadingDateStatus($this->faker->randomElement(array_filter(Load::DOWNLOADING_DATE_STATUSES, fn($el) => $el !== 'request')))
                 ->setDownloadingDate($this->faker->dateTimeBetween('now','6 days'))
                 ->setFromAddress($this->faker->streetAddress)
@@ -83,6 +85,7 @@ class LoadFixtures extends Fixture implements DependentFixtureInterface
     {
         return [
             UserFixtures::class,
+            CompanyFixtures::class,
         ];
     }
 }

@@ -4,10 +4,15 @@ declare(strict_types=1);
 
 namespace App\Modules\Load\Infrastructure\Api;
 
+use App\ApiGateway\DTO\CompanyDTO;
+use App\ApiGateway\DTO\ContactDTO;
 use App\ApiGateway\DTO\ListDTO;
 use App\ApiGateway\DTO\LoadCreateDTO;
+use App\ApiGateway\DTO\LoadDTO;
 use App\ApiGateway\DTO\LoadFilter;
+use App\Modules\Chat\Infrastructure\Adapter\UserAdapter;
 use App\Modules\City\Infrastructure\DTO\CityCoordinatesDTO;
+use App\Modules\Company\Domain\Entity\Company;
 use App\Modules\Load\Application\LoadService\LoadService;
 use App\Modules\Load\Domain\Entity\BodyType;
 use App\Modules\Load\Domain\Entity\CargoType;
@@ -18,6 +23,8 @@ use App\Modules\Load\Domain\Repository\LoadRepositoryInterface;
 use App\Modules\Load\Infrastructure\Adapter\CityAdapter;
 use App\Modules\Load\Infrastructure\DTO\FilterDTO;
 use App\Modules\Load\Infrastructure\Repository\LoadRepository;
+use App\Modules\Transport\Infrastructure\Adapter\CompanyAdapter;
+use App\Modules\User\Domain\Entity\User;
 use DateTime;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -26,7 +33,9 @@ final readonly class LoadApi
     public function __construct(
         private LoadRepository $loadRepository,
         private LoadService $loadService,
-        private CityAdapter $cityAdapter
+        private CityAdapter $cityAdapter,
+        private CompanyAdapter $companyAdapter,
+        private UserAdapter $userAdapter
     )
     {
     }
@@ -100,9 +109,64 @@ final readonly class LoadApi
             $filter->volumeMax ?? null
         );
 
-        $result =  $this->loadRepository->getList($apiFilter, $page, $perPage, $orderOption, $byUser);
+        $result = $this->loadRepository->getList($apiFilter, $page, $perPage, $orderOption, $byUser);
+        $companyIds = [];
+        /**  @var Load $item */
+        foreach($result->list as $item) {
+            $companyIds[] = $item->getCompanyId();
+        }
+        $companyIds = array_unique($companyIds);
 
-        return new ListDTO($result->list, $result->totalCount);
+        $companyCollection = $this->companyAdapter->getByIds($companyIds);
+        $userCollection = $this->userAdapter->getByCompanyIds($companyIds);
+
+        $loads = [];
+        /**  @var Load $item */
+        foreach($result->list as $item) {
+            /**  @var Company $company */
+            $company = $companyCollection->get($item->getCompanyId());
+            $userContacts = $userCollection->get($item->getCompanyId());
+
+
+            $contacts = [];
+            /**  @var User $userContact  */
+            foreach($userContacts as $userContact) {
+                $contacts[] = new ContactDTO(
+                    $userContact->getId(),
+                    $userContact->getName(),
+                    $userContact->getPhone()->getPhone(),
+                    $userContact->getPhone()->getMobilePhone(),
+                );
+            }
+
+            $loads[] = new LoadDTO(
+                $item->getId(),
+                $item->getUser()->getId(),
+                $item->getBids(),
+                $item->getFromAddress(),
+                $item->getToAddress(),
+                $item->getCargoTypeName(),
+                $item->getBodyTypeName(),
+                $item->getWeight(),
+                $item->getVolume(),
+                $item->getPriceWithoutTax(),
+                $item->getPriceWithTax(),
+                $item->getPriceCash(),
+                $item->getDownloadingTypeName(),
+                $item->getUnloadingTypeName(),
+                $item->getCreatedAt(),
+                $item->getUpdatedAt(),
+                new CompanyDTO(
+                    $company->getId(),
+                    $company->getName() . ', ' . $company->getOwnershipName(),
+                    $company->getTypeName(),
+                    $contacts,
+                )
+            );
+        }
+
+
+        return new ListDTO($loads, $result->totalCount);
     }
 
     private function getCityCoordinatesByCityId(LoadFilter $filter, string $cityIdKey, string $address): ?CityCoordinatesDTO

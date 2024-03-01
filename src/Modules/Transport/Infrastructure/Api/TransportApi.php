@@ -69,6 +69,7 @@ final readonly class TransportApi
         $result =  $this->transportRepository->getList($apiFilter, $page, $perPage, $orderOption, $byUser);
 
         $companyIds = [];
+        /**  @var Transport $item */
         foreach($result->list as $item) {
             $companyIds[] = $item->getCompanyId();
         }

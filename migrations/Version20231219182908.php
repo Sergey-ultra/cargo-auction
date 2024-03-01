@@ -24,6 +24,7 @@ final class Version20231219182908 extends AbstractMigration
         // this up() migration is auto-generated, please modify it to your needs
         $this->addSql('CREATE TABLE loads (
                           id INT NOT NULL,
+                          company_id INT NOT NULL,
                           user_id INT NOT NULL,
                           downloading_date_status VARCHAR(100) NOT NULL, 
                           downloading_date TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT NULL, 
@@ -50,10 +51,12 @@ final class Version20231219182908 extends AbstractMigration
                           PRIMARY KEY(id))'
         );
         $this->addSql('CREATE INDEX IDX_E52FFDEEA76ED395 ON loads (user_id)');
+        $this->addSql('CREATE INDEX IDX_E52FFDEEA61ED395 ON loads (company_id)');
         $this->addSql('CREATE TABLE phones (id INT NOT NULL, user_id INT DEFAULT NULL, phone VARCHAR(255) DEFAULT NULL, mobile_phone VARCHAR(255) DEFAULT NULL,PRIMARY KEY(id))');
         $this->addSql('CREATE INDEX IDX_E3282EF5A76ED395 ON phones (user_id)');
         $this->addSql('ALTER TABLE loads ADD CONSTRAINT FK_E52FFDEEA76ED395 FOREIGN KEY (user_id) REFERENCES "user" (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE phones ADD CONSTRAINT FK_E3282EF5A76ED395 FOREIGN KEY (user_id) REFERENCES "user" (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
+        $this->addSql('ALTER TABLE loads ADD CONSTRAINT FK_E52FFDEEA61ED395 FOREIGN KEY (company_id) REFERENCES "companies" (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
     }
 
     public function down(Schema $schema): void
@@ -63,6 +66,7 @@ final class Version20231219182908 extends AbstractMigration
         $this->addSql('DROP SEQUENCE loads_id_seq CASCADE');
         $this->addSql('DROP SEQUENCE phones_id_seq CASCADE');
         $this->addSql('ALTER TABLE loads DROP CONSTRAINT FK_E52FFDEEA76ED395');
+        $this->addSql('ALTER TABLE loads DROP CONSTRAINT FK_E52FFDEEA61ED395');
         $this->addSql('ALTER TABLE phones DROP CONSTRAINT FK_E3282EF5A76ED395');
         $this->addSql('DROP TABLE loads');
         $this->addSql('DROP TABLE phones');
