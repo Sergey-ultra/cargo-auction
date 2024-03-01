@@ -6,7 +6,7 @@ function LoadItem({load, openSendBidModal, openAuthModal}) {
 
     return (
         <div className="table__row" key={load.id}>
-            <div className="table__item">{load.bodyTypeName}</div>
+            <div className="table__item">{load.bodyType}</div>
             <div className="table__item table__item-price text-bold">
                 {load.fromAddress}
                 <span>{load.distance} км</span>
@@ -15,7 +15,7 @@ function LoadItem({load, openSendBidModal, openAuthModal}) {
                     || load.downloadingDateStatus === 'ready' && <div>готов {load.downloadingDate}.</div>}
             </div>
             <div className="table__item">
-                {load.weight}т. {load.volume}м3 {load.cargoTypeName}
+                {load.weight}т. {load.volume}м3 {load.cargoType}
             </div>
             <div className="table__item table__item-price">
                 {!userId && (<span className="text-gray">скрыто</span>)
