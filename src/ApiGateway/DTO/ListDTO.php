@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\ApiGateway\DTO;
 
-readonly class LoadList
+readonly class ListDTO
 {
     public function __construct(
         public array $list,
-        public int   $totalCount
+        public int  $totalCount
     ){}
 }

@@ -22,4 +22,20 @@ class TransportController extends AbstractController
             'errors' => [],
         ]);
     }
+
+    #[Route('/transport/{id}', name: 'transport.show', requirements: ['page' => '\d+'], methods: ['get'])]
+    public function show(int $id): Response
+    {
+        return $this->render('transport/show.html.twig', [
+            'errors' => [],
+        ]);
+    }
+
+    #[Route('/transport/{id}/edit', name: 'transport.edit', requirements: [ "id" => "\d+"], methods: ['get'])]
+    public function edit(int $id): Response
+    {
+        return $this->render('transport/form.html.twig', [
+            'errors' => [],
+        ]);
+    }
 }

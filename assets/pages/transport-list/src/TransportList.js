@@ -148,10 +148,10 @@ function TransportList() {
                             <div className="table__item">Груз</div>
                             <div className="table__item table__item-price">Ставка</div>
                         </div>
-                        {list.map(truck =>
+                        {list.map(transport =>
                             <TransportItem
-                                key={truck.id}
-                                truck={truck}
+                                key={transport.id}
+                                transport={transport}
                                 openSendBidModal={openSendBidModal}
                                 openAuthModal={openAuthModal}/>
                         )}

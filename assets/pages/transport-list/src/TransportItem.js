@@ -1,42 +1,40 @@
 import React, {Fragment} from "react";
 
-function TransportItem({truck, openSendBidModal, openAuthModal}) {
+function TransportItem({transport, openSendBidModal, openAuthModal}) {
     const userId = window?.authData?.userId;
 
 
     return (
-        <div className="table__row" key={truck.id}>
-            <div className="table__item">{truck.bodyTypeName}</div>
+        <div className="table__row" key={transport.id}>
+            <div className="table__item">{transport.bodyType}</div>
             <div className="table__item table__item-price text-bold">
-                {truck.fromAddress}
-                <span>{truck.toAddress}</span>
-                {truck.downtruckingDateStatus === 'permanently' && <div>Постоянно</div>
-                    || truck.downtruckingDateStatus === 'ready' && <div>готов {truck.downtruckingDate}.</div>}
+                {transport.fromName}
+                <span>{transport.toName}</span>
             </div>
             <div className="table__item">
-                {truck.weight}т. {truck.volume}м3 {truck.cargoTypeName}
+                {transport.weight}т. {transport.volume}м3 {transport.bodyType}
             </div>
             <div className="table__item table__item-price">
                 {!userId && (<span className="text-gray">скрыто</span>)
                     ||
                     <Fragment>
                         <div>
-                            {truck.priceWithoutTax &&
+                            {transport.priceWithoutTax &&
                                 (<div className="price__item">
-                                    <span className="text-bold">{truck.priceWithoutTax} руб</span>
+                                    <span className="text-bold">{transport.priceWithoutTax} руб</span>
                                     <span className="text-gray"> без НДС </span>
                                     <span className="text-bold"></span> руб/км
                                 </div>)}
 
-                            {truck.priceWithTax &&
+                            {transport.priceWithTax &&
                                 (<div className="price__item">
-                                    <span className="text-bold">{truck.priceWithTax} руб</span>
+                                    <span className="text-bold">{transport.priceWithTax} руб</span>
                                     <span className="text-gray"> c НДС </span>
                                     <span className="text-bold"></span> руб/км
                                 </div>)}
                         </div>
 
-                        <button className="send-bid" id="sendBid" onClick={() => openSendBidModal(truck.id)}>
+                        <button className="send-bid" id="sendBid" onClick={() => openSendBidModal(transport.id)}>
                             <svg fill="#ffffff" stroke="#ffffff" strokeWidth="0"
                                  data-qa="icon" viewBox="0 0 15 15" width="15" height="15"
                                  className="arrow-svg">
@@ -54,25 +52,26 @@ function TransportItem({truck, openSendBidModal, openAuthModal}) {
 
             <div className="table-bottom">
                 <div className="table__contact">
-                    {userId && (
-                            userId !== truck.user.id && (
-                                <Fragment>
-                                    <a href={`profile/messages/${truck.user.id}?truck_id=${truck.id}`}>
-                                        <span>
-                                            <svg fill="#3a7bbf" stroke="#3a7bbf" strokeWidth="0" data-qa="icon" viewBox="0 0 15 15" width="15" height="15">
-                                                <symbol id="ic_message" viewBox="0 0 17 16">
-                                                    <path fillRule="evenodd" clipRule="evenodd" d="m6.5 13-4.327-.022-.242-.001-1.008-.005-.462-.003a.464.464 0 0 1-.323-.793l.329-.324.005-.005.713-.704.172-.17.226-.222A6.452 6.452 0 0 1 0 6.5C0 2.916 2.916 0 6.5 0S13 2.916 13 6.5 10.084 13 6.5 13Zm-2.31-2.012.132-.13L3.094 9.44A4.452 4.452 0 0 1 2 6.5C2 4.02 4.02 2 6.5 2S11 4.02 11 6.5 8.98 11 6.5 11l-2.31-.012ZM14 4c3 2.5 3.273 6.777.855 9.621l1.498 1.508c.304.306.092.836-.335.838L9.755 16A6.651 6.651 0 0 1 5 13.997l1.842.011H6.84C11.945 14.008 15.4 9.007 14 4Z"></path>
-                                                </symbol>
-                                            </svg>
-                                         </span>
+                    {(userId && (transport.company.contacts.map(contact =>
+                        <Fragment key={contact.id}>
+                                    <a href={`profile/messages/${contact.id}?truck_id=${transport.id}`}>
+                                            <span>
+                                                <svg fill="#3a7bbf" stroke="#3a7bbf" strokeWidth="0" data-qa="icon"
+                                                     viewBox="0 0 15 15" width="15" height="15">
+                                                    <symbol id="ic_message" viewBox="0 0 17 16">
+                                                        <path fillRule="evenodd" clipRule="evenodd"
+                                                              d="m6.5 13-4.327-.022-.242-.001-1.008-.005-.462-.003a.464.464 0 0 1-.323-.793l.329-.324.005-.005.713-.704.172-.17.226-.222A6.452 6.452 0 0 1 0 6.5C0 2.916 2.916 0 6.5 0S13 2.916 13 6.5 10.084 13 6.5 13Zm-2.31-2.012.132-.13L3.094 9.44A4.452 4.452 0 0 1 2 6.5C2 4.02 4.02 2 6.5 2S11 4.02 11 6.5 8.98 11 6.5 11l-2.31-.012ZM14 4c3 2.5 3.273 6.777.855 9.621l1.498 1.508c.304.306.092.836-.335.838L9.755 16A6.651 6.651 0 0 1 5 13.997l1.842.011H6.84C11.945 14.008 15.4 9.007 14 4Z"></path>
+                                                    </symbol>
+                                                </svg>
+                                             </span>
                                         <span>Написать</span>
                                     </a>
-                                    <span>{truck.user.email}</span>
-                                    {truck.user.phones.map(phone => <span key={phone.phone}><a href={`tel:${ phone.phone }`}>{phone.phone}</a></span>)}
-                                </Fragment>
-                            )
+                                    <span><a href={`tel:${contact.phone}`}>{contact.phone}</a></span>
+                                    <span><a href={`tel:${contact.mobilePhone}`}>{contact.mobilePhone}</a></span>
 
-                        ) ||
+                        </Fragment>)
+                        ))
+                        ||
                         <Fragment>
                             <div className="button-empty" onClick={openAuthModal}>показать контакты и ставку</div>
                             <div>Доступно <b>бесплатно</b> после быстрой регистрации</div>
@@ -80,9 +79,9 @@ function TransportItem({truck, openSendBidModal, openAuthModal}) {
                     }
                 </div>
                 <div className="table-right">
-                    {userId === truck.user.id && (
+                    {transport?.user?.id && userId === transport.user.id && (
                         <Fragment>
-                            <a href={`/${truck.id}/edit`}>
+                            <a href={`/${transport.id}/edit`}>
                                 <svg width="18" height="18" viewBox="0 0 18 18" fill="none"
                                      xmlns="http://www.w3.org/2000/svg">
                                     <path fillRule="evenodd" clipRule="evenodd"
@@ -103,7 +102,7 @@ function TransportItem({truck, openSendBidModal, openAuthModal}) {
                         </Fragment>
                     ) || ''}
 
-                    <a href={`/truck/${truck.id}`} className="truck-info">
+                    <a href={`/transport/${transport.id}`} className="truck-info">
                         <svg width="24" height="24" viewBox="0 0 24 24">
                             <svg fill="white" stroke="white" strokeWidth="0" data-qa="icon"
                                  viewBox="0 0 20 20" width="20" height="20"
@@ -114,8 +113,8 @@ function TransportItem({truck, openSendBidModal, openAuthModal}) {
                         </svg>
                     </a>
 
-                    <div>доб <span>{truck.createdAt}</span></div>
-                    { truck.updatedAt && truck.createdAt !== truck.updatedAt && <div>изм { truck.updatedAt }</div>}
+                    <div>доб <span>{transport.createdAt}</span></div>
+                    { transport.updatedAt && transport.createdAt !== transport.updatedAt && <div>изм { transport.updatedAt }</div>}
                 </div>
             </div>
         </div>

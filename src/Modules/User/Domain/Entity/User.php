@@ -27,8 +27,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Centrif
     #[ORM\Column(length: 255)]
     private string $name;
 
-    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Phone::class)]
-    private Collection $phones;
+    #[ORM\OneToOne(mappedBy: 'user', targetEntity: Phone::class)]
+    private ?Phone $phone;
 
     #[ORM\Column]
     private array $roles = [];
@@ -175,34 +175,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Centrif
         return $this;
     }
 
-    /**
-     * @return Collection|Phone
-     */
-    public function getPhones(): Collection
+    public function getPhone(): ?Phone
     {
-        return $this->phones;
+        return $this->phone;
     }
 
-    public function addPhone(Phone $phone): self
+    public function setPhone(?Phone $phone): self
     {
-        if (!$this->phones->contains($phone)) {
-            $this->phones[] = $phone;
-            $phone->setUser($this);
-        }
+        $this->phone = $phone;
         return $this;
     }
 
-    public function removePhone(Phone $phone): self
-    {
-        if ($this->phones->contains($phone)) {
-            $this->phones->removeElement($phone);
 
-            if ($phone->getUser() === $this) {
-                $phone->setUser(null);
-            }
-        }
-        return $this;
-    }
 
     public function getCentrifugoSubject(): string
     {

@@ -47,6 +47,7 @@ class TransportRepository extends ServiceEntityRepository implements TransportRe
         if (null !== $filter) {
 
         }
+
         if (null !== $byUser) {
             $queryBuilder
                 ->andWhere("c.user <= :user")

@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace App\Modules\Load\Infrastructure\Api;
 
+use App\ApiGateway\DTO\ListDTO;
 use App\ApiGateway\DTO\LoadCreateDTO;
 use App\ApiGateway\DTO\LoadFilter;
-use App\ApiGateway\DTO\LoadList;
-use App\ApiGateway\Request\CreateRequest;
 use App\Modules\City\Infrastructure\DTO\CityCoordinatesDTO;
 use App\Modules\Load\Application\LoadService\LoadService;
 use App\Modules\Load\Domain\Entity\BodyType;
@@ -19,7 +18,6 @@ use App\Modules\Load\Domain\Repository\LoadRepositoryInterface;
 use App\Modules\Load\Infrastructure\Adapter\CityAdapter;
 use App\Modules\Load\Infrastructure\DTO\FilterDTO;
 use App\Modules\Load\Infrastructure\Repository\LoadRepository;
-use App\Modules\User\Domain\Entity\User;
 use DateTime;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -79,7 +77,7 @@ final readonly class LoadApi
         int            $perPage = LoadRepositoryInterface::PAGINATOR_PER_PAGE,
         string         $orderOption = LoadRepositoryInterface::CREATED_AT,
         ?UserInterface $byUser = null
-    ): LoadList
+    ): ListDTO
     {
         if (isset($filter->fromAddress) && isset($filter->fromRadius)) {
             $fromCity = $this->getCityCoordinatesByCityId($filter, 'fromAddressId', 'fromAddress');
@@ -104,7 +102,7 @@ final readonly class LoadApi
 
         $result =  $this->loadRepository->getList($apiFilter, $page, $perPage, $orderOption, $byUser);
 
-        return new LoadList($result->list, $result->totalCount);
+        return new ListDTO($result->list, $result->totalCount);
     }
 
     private function getCityCoordinatesByCityId(LoadFilter $filter, string $cityIdKey, string $address): ?CityCoordinatesDTO

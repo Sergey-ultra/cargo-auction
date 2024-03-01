@@ -10,6 +10,7 @@ use App\Modules\User\Domain\Factory\UserFactory;
 use App\Modules\User\Infrastructure\DTO\UserPayloadDTO;
 use App\Modules\User\Infrastructure\Repository\PhoneRepository;
 use App\Modules\User\Infrastructure\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
 
 final readonly class UserApi
 {
@@ -24,6 +25,23 @@ final readonly class UserApi
     public function getUserById(int $userId): ?User
     {
         return $this->userRepository->find($userId);
+    }
+
+    public function getByCompanyIds(array $ids): ArrayCollection
+    {
+        $users = $this->userRepository->findBy(['companyId' => $ids]);
+        $collection = new ArrayCollection();
+
+        foreach($users as $user) {
+            $array = $collection->get($user->getCompanyId());
+            if (!$array) {
+                $array = [];
+            }
+            $array[] = $user;
+            $collection->set($user->getCompanyId(), $array);
+        }
+
+        return $collection;
     }
 
     public function save(UserPayloadDTO $payload): void

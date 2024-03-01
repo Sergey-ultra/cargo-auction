@@ -79,7 +79,7 @@ class Company
 
     public function getTypeName(): string
     {
-        return CompanyType::COMPANY_TYPES[$this->typeId];
+        return CompanyType::COMPANY_TYPES[$this->typeId] ?? '';
     }
 
     public function setTypeId(int $typeId): self

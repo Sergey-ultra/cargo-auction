@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Transport\Domain\Entity;
 
 use App\Modules\Company\Domain\Entity\Company;
+use App\Modules\Load\Domain\Entity\BodyType;
 use App\Modules\Transport\Infrastructure\Repository\TransportRepository;
 use App\Modules\User\Domain\Entity\User;
 use App\ValueObject\Point;
@@ -70,11 +71,6 @@ class Transport
         return $this;
     }
 
-    public function getBodyType(): int
-    {
-        return $this->bodyType;
-    }
-
     public function getFromCityId(): ?int
     {
         return $this->fromCityId;
@@ -97,10 +93,20 @@ class Transport
         return $this;
     }
 
+    public function getBodyType(): int
+    {
+        return $this->bodyType;
+    }
+
     public function setBodyType(int $bodyType): self
     {
         $this->bodyType = $bodyType;
         return $this;
+    }
+
+    public function getBodyTypeName(): string
+    {
+        return BodyType::BODY_TYPES[$this->bodyType]['Name'];
     }
 
     public function getWeight(): float
