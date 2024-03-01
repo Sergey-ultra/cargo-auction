@@ -8,6 +8,8 @@ final readonly class CompanySaveDTO
 {
     public function __construct(
         public string $name,
+        public int $ownershipId,
+        public int $typeId,
         public ?string $description,
     ){}
 }

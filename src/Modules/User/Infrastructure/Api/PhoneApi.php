@@ -14,10 +14,10 @@ final readonly class PhoneApi
 {
     public function __construct(private PhoneRepository $repository, private PhoneVerifyService $phoneVerifyService)
     {}
-    public function verifyAndSave(string $phoneString, UserInterface $user): void
+    public function verifyAndSave(?string $phoneString, ?string $mobilePhoneString, UserInterface $user): void
     {
         $phone = new Phone();
-        $phone->setPhone($phoneString)->setUser($user);
+        $phone->setPhone($phoneString)->setMobilePhone($mobilePhoneString)->setUser($user);
 
         $isVerify = $this->phoneVerifyService->verify($phone);
         if ($isVerify) {

@@ -6,6 +6,7 @@ namespace App\Modules\Company\Domain\Entity;
 
 use App\Modules\Company\Infrastructure\Repository\CompanyRepository;
 use App\Modules\User\Domain\Entity\User;
+use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CompanyRepository::class)]
@@ -19,11 +20,15 @@ class Company
     private ?int $id = null;
     #[ORM\Column(length: 255)]
     private string $name;
+    #[ORM\Column]
+    private int $ownershipId;
+    #[ORM\Column]
+    private int $typeId;
     #[ORM\Column(length: 500)]
     private ?string $description;
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'companies')]
     #[ORM\JoinColumn(nullable: false)]
-    private User $user;
+    private ?User $user;
     #[ORM\Column(name: 'created_at', type: 'datetime', options: ['default' => "CURRENT_TIMESTAMP"])]
     private DateTimeInterface $createdAt;
     #[ORM\Column(name: 'updated_at', type: "datetime", nullable: true)]
@@ -51,6 +56,38 @@ class Company
         return $this;
     }
 
+    public function getOwnershipId(): int
+    {
+        return $this->ownershipId;
+    }
+
+    public function getOwnershipName(): string
+    {
+        return Ownership::OWNERSHIP_NAMES[$this->ownershipId];
+    }
+
+    public function setOwnershipId(int $ownershipId): self
+    {
+        $this->ownershipId = $ownershipId;
+        return $this;
+    }
+
+    public function getTypeId(): int
+    {
+        return $this->typeId;
+    }
+
+    public function getTypeName(): string
+    {
+        return CompanyType::COMPANY_TYPES[$this->typeId];
+    }
+
+    public function setTypeId(int $typeId): self
+    {
+        $this->typeId = $typeId;
+        return $this;
+    }
+
     public function getDescription(): ?string
     {
         return $this->description;
@@ -62,12 +99,12 @@ class Company
         return $this;
     }
 
-    public function getUser(): User
+    public function getUser(): ?User
     {
         return $this->user;
     }
 
-    public function setUser(User $user): self
+    public function setUser(?User $user): self
     {
         $this->user = $user;
         return $this;

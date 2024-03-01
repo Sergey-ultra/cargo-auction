@@ -23,10 +23,13 @@ class PhoneFixtures extends Fixture implements DependentFixtureInterface
 
     public function load(ObjectManager $manager): void
     {
-        for ($i = 1; $i < 200; $i++) {
-            $user = $this->getReference(UserFixtures::USER_REFERENCE .'_'.($i % 100));
+        for ($i = 1; $i <= 10; $i++) {
+            $user = $this->getReference(UserFixtures::REFERENCE . '_' . $i);
 
-            $phone = (new Phone())->setPhone($this->faker->phoneNumber)->setUser($user);
+            $phone = (new Phone())
+                ->setPhone($this->faker->phoneNumber)
+                ->setMobilePhone($this->faker->phoneNumber)
+                ->setUser($user);
 
             $manager->persist($phone);
         }

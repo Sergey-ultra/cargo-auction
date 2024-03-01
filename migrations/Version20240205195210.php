@@ -25,7 +25,9 @@ final class Version20240205195210 extends AbstractMigration
                             id INT NOT NULL, 
                             name VARCHAR(255) NOT NULL, 
                             description VARCHAR(255),
-                            user_id INT NOT NULL,
+                            ownership_id INT NOT NULL,
+                            type_id INT NOT NULL,
+                            user_id INT DEFAULT NULL,
                             created_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, 
                             updated_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT NULL, 
                             PRIMARY KEY(id))

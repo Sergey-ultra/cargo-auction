@@ -50,7 +50,7 @@ final class Version20231219182908 extends AbstractMigration
                           PRIMARY KEY(id))'
         );
         $this->addSql('CREATE INDEX IDX_E52FFDEEA76ED395 ON loads (user_id)');
-        $this->addSql('CREATE TABLE phones (id INT NOT NULL, user_id INT DEFAULT NULL, phone VARCHAR(255) NOT NULL, PRIMARY KEY(id))');
+        $this->addSql('CREATE TABLE phones (id INT NOT NULL, user_id INT DEFAULT NULL, phone VARCHAR(255) DEFAULT NULL, mobile_phone VARCHAR(255) DEFAULT NULL,PRIMARY KEY(id))');
         $this->addSql('CREATE INDEX IDX_E3282EF5A76ED395 ON phones (user_id)');
         $this->addSql('ALTER TABLE loads ADD CONSTRAINT FK_E52FFDEEA76ED395 FOREIGN KEY (user_id) REFERENCES "user" (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE phones ADD CONSTRAINT FK_E3282EF5A76ED395 FOREIGN KEY (user_id) REFERENCES "user" (id) NOT DEFERRABLE INITIALLY IMMEDIATE');

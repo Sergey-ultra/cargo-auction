@@ -40,7 +40,7 @@ class ProfileController extends AbstractController
     public function savePhone(#[MapRequestPayload] PhoneDTO $dto, PhoneApi $phoneApi): RedirectResponse
     {
        try {
-           $phoneApi->verifyAndSave($dto->phone, $this->getUser());
+           $phoneApi->verifyAndSave($dto->phone, $dto->mobilePhone, $this->getUser());
            return $this->redirectToRoute('profile.phones', [], Response::HTTP_SEE_OTHER);
        } catch (\Throwable $e) {
            return $this->redirectToRoute('profile.phones.create', [], Response::HTTP_SEE_OTHER);

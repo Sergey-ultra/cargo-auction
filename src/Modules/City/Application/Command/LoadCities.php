@@ -14,11 +14,10 @@ use Symfony\Component\HttpKernel\KernelInterface;
 
 #[AsCommand(
     name: 'load:cities',
+    description: 'Load info to cities table',
 )]
 class LoadCities extends Command
 {
-    private const COMMAND_DESCRIPTION = 'Load info to cities table';
-
     private CityRepository $repository;
     protected string $projectDir;
 

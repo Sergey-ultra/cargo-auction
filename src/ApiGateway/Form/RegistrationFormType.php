@@ -55,7 +55,7 @@ class RegistrationFormType extends AbstractType
             ->add('role', ChoiceType::class, [
                 'choices' => [
                     'Экспедитор' => 'expeditor',
-                    'Грузоваделец' => 'owner',
+                    'Грузовладелец' => 'owner',
                     'Перевозчик' => 'carrier',
                 ],
                 'mapped' => false,

@@ -407,7 +407,7 @@ class Load
 
     public function getBodyTypeName(): string
     {
-        return BodyType::BODY_TYPES[$this->bodyType];
+        return BodyType::BODY_TYPES[$this->bodyType]['Name'];
     }
 
     /**

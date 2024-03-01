@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Transport\Domain\Entity;
 
+use App\Modules\Company\Domain\Entity\Company;
 use App\Modules\Transport\Infrastructure\Repository\TransportRepository;
 use App\Modules\User\Domain\Entity\User;
 use App\ValueObject\Point;
@@ -20,21 +21,13 @@ class Transport
     #[ORM\Column]
     private ?int $id = null;
     #[ORM\Column]
-    private string $fromAddress;
-    #[ORM\Column(type: 'float', nullable: true)]
-    private float $fromLatitude;
-    #[ORM\Column(type: 'float', nullable: true)]
-    private float $fromLongitude;
-    #[ORM\Column(name: 'from_point', type: 'point',  nullable: true)]
-    private ?Point $fromPoint;
+    private ?int $fromCityId;
     #[ORM\Column]
-    private string $toAddress;
-    #[ORM\Column(type: 'float', nullable: true)]
-    private float $toLatitude;
-    #[ORM\Column(type: 'float', nullable: true)]
-    private float $toLongitude;
-    #[ORM\Column(name: 'to_point', type: 'point',  nullable: true)]
-    private ?Point $toPoint;
+    private ?string $fromName;
+    #[ORM\Column]
+    private ?int $toCityId;
+    #[ORM\Column]
+    private ?string $toName;
     #[ORM\Column]
     private int $bodyType;
     #[ORM\Column]
@@ -48,11 +41,9 @@ class Transport
     #[ORM\Column(nullable: true)]
     private ?int $priceCash;
     #[ORM\Column]
-    private int $downloadingType;
-    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'orders')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?User $user;
-
+    private ?int $downloadingType;
+    #[ORM\Column]
+    private int $companyId;
     #[ORM\Column(name: 'created_at', type: 'datetime', options: ['default' => "CURRENT_TIMESTAMP"])]
     private DateTimeInterface $createdAt;
     #[ORM\Column(name: 'updated_at', type: "datetime", nullable: true)]
@@ -68,98 +59,42 @@ class Transport
         $this->id = $id;
         return $this;
     }
-
-    public function getFromAddress(): string
+    public function getCompanyId(): int
     {
-        return $this->fromAddress;
+        return $this->companyId;
     }
 
-    public function setFromAddress(string $fromAddress): self
+    public function setCompanyId(int $companyId): self
     {
-        $this->fromAddress = $fromAddress;
-        return $this;
-    }
-
-    public function getFromLongitude(): float
-    {
-        return $this->fromLongitude;
-    }
-
-    public function setFromLongitude(float $fromLongitude): self
-    {
-        $this->fromLongitude = $fromLongitude;
-        return $this;
-    }
-
-    public function getFromLatitude(): float
-    {
-        return $this->fromLatitude;
-    }
-
-    public function setFromLatitude(float $fromLatitude): self
-    {
-        $this->fromLatitude = $fromLatitude;
-        return $this;
-    }
-
-    public function getFromPoint(): Point
-    {
-        return $this->fromPoint;
-    }
-
-    public function setFromPoint(Point $fromPoint): self
-    {
-        $this->fromPoint = $fromPoint;
-        return $this;
-    }
-
-    public function getToAddress(): string
-    {
-        return $this->toAddress;
-    }
-
-    public function setToAddress(string $toAddress): self
-    {
-        $this->toAddress = $toAddress;
-        return $this;
-    }
-
-    public function getToLongitude(): float
-    {
-        return $this->toLongitude;
-    }
-
-    public function setToLongitude(float $toLongitude): self
-    {
-        $this->toLongitude = $toLongitude;
-        return $this;
-    }
-
-    public function getToLatitude(): float
-    {
-        return $this->toLatitude;
-    }
-
-    public function setToLatitude(float $toLatitude): self
-    {
-        $this->toLatitude = $toLatitude;
-        return $this;
-    }
-
-    public function getToPoint(): Point
-    {
-        return $this->toPoint;
-    }
-
-    public function setToPoint(Point $toPoint): self
-    {
-        $this->toPoint = $toPoint;
+        $this->companyId = $companyId;
         return $this;
     }
 
     public function getBodyType(): int
     {
         return $this->bodyType;
+    }
+
+    public function getFromCityId(): ?int
+    {
+        return $this->fromCityId;
+    }
+
+    public function setFromCityId(?int $fromCityId): self
+    {
+        $this->fromCityId = $fromCityId;
+        return $this;
+    }
+
+    public function getToCityId(): ?int
+    {
+        return $this->toCityId;
+    }
+
+    public function setToCityId(?int $toCityId): self
+    {
+        $this->toCityId = $toCityId;
+        return $this;
     }
 
     public function setBodyType(int $bodyType): self
@@ -223,27 +158,17 @@ class Transport
         return $this;
     }
 
-    public function getDownloadingType(): int
+    public function getDownloadingType(): ?int
     {
         return $this->downloadingType;
     }
 
-    public function setDownloadingType(int $downloadingType): self
+    public function setDownloadingType(?int $downloadingType): self
     {
         $this->downloadingType = $downloadingType;
         return $this;
     }
 
-    public function getUser(): User
-    {
-        return $this->user;
-    }
-
-    public function setUser(?UserInterface $user): self
-    {
-        $this->user = $user;
-        return $this;
-    }
     public function getCreatedAt(): DateTimeInterface
     {
         return $this->createdAt;
@@ -268,4 +193,25 @@ class Transport
         return $this;
     }
 
+    public function getFromName(): ?string
+    {
+        return $this->fromName;
+    }
+
+    public function setFromName(?string $fromName): self
+    {
+        $this->fromName = $fromName;
+        return $this;
+    }
+
+    public function getToName(): ?string
+    {
+        return $this->toName;
+    }
+
+    public function setToName(?string $toName): self
+    {
+        $this->toName = $toName;
+        return $this;
+    }
 }

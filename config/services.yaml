@@ -26,5 +26,9 @@ services:
     App\Modules\Load\Application\GeoCoderService\GeoCoderService:
         arguments:
             $apiKey: '%env(YANDEX_GEOCODER_API_KEY)%'
+    App\Modules\Transport\Application\Command\ParseTransportCommand:
+        arguments:
+            $transportScriptString: '%env(PARSING_TRANSPORT_SCRIPT)%'
+            $cityScriptString: '%env(PARSING_CITY_SCRIPT)%'
 
 

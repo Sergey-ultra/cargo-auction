@@ -19,6 +19,11 @@ final readonly class CityApi
         return $this->cityRepository->searchByName($name);
     }
 
+    public function searchCitiesByNames(array $cities): array
+    {
+        return $this->cityRepository->searchByNames($cities);
+    }
+
     public function getCityById(int $id): ?City
     {
         return $this->cityRepository->find($id);

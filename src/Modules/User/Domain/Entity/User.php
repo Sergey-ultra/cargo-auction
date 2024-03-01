@@ -43,13 +43,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Centrif
     private $isVerified = false;
 
 
-     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Load::class)]
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Load::class)]
     private Collection $orders;
+    #[ORM\Column]
+    private ?int $companyId;
 
-//    public function toArray(): array
-//    {
-//        return (array)$this;
-//    }
 
     public function getId(): ?int
     {
@@ -216,5 +214,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Centrif
         return [
             'username' => $this->getName(),
         ];
+    }
+
+    public function getCompanyId(): ?int
+    {
+        return $this->companyId;
+    }
+
+    public function setCompanyId(?int $companyId): self
+    {
+        $this->companyId = $companyId;
+        return $this;
     }
 }

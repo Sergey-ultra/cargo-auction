@@ -119,7 +119,7 @@ function TransportList() {
             {list.length > 0
                 ? <Fragment>
                     <div className="meta">
-                        <h2>Найдено {totalCount} грузов</h2>
+                        <h2>Найдено {totalCount} машин</h2>
                         <div className="meta-right">
                             <div className="sort">
                                 <label>Упорядочить по </label>

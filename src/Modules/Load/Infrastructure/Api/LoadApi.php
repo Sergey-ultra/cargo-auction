@@ -50,7 +50,7 @@ final readonly class LoadApi
 
     public function getBodyTypes(): array
     {
-        return BodyType::BODY_TYPES;
+        return array_column(BodyType::BODY_TYPES, 'Name');
     }
 
     public function getLoadingTypes(): array

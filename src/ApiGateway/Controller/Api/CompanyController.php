@@ -17,7 +17,7 @@ class CompanyController extends ApiController
     #[Route('/company', name: 'company.my.save', methods:['post'])]
     public function save(#[MapRequestPayload]CompanySaveDTO $payload, CompanyApi $companyApi): JsonResponse
     {
-        $company = $companyApi->saveCompany($payload->name, $payload->description, $this->getUser());
+        $company = $companyApi->saveCompany($payload, $this->getUser());
 
         return $this->apiJson(['data' => $company->getId()], Response::HTTP_CREATED);
     }

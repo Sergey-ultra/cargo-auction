@@ -34,6 +34,19 @@ class CityRepository extends ServiceEntityRepository implements CityRepositoryIn
             ->execute();
     }
 
+    public function searchByNames(array $cities): array
+    {
+         $query = $this->createQueryBuilder('c');
+
+         foreach($cities as $key => $city) {
+             $query
+                 ->orWhere("c.name LIKE :name$key")
+                 ->setParameter("name$key", '%' . $city. '%');
+         }
+
+        return $query->getQuery()->execute();
+    }
+
     public function truncate(): void
     {
         $cmd = $this->_em->getClassMetadata(City::class);

@@ -17,7 +17,9 @@ class Phone
     #[ORM\Column]
     private ?int $id = null;
     #[ORM\Column]
-    private string $phone;
+    private ?string $phone;
+    #[ORM\Column]
+    private ?string $mobilePhone;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'phones')]
     #[ORM\JoinColumn(nullable: true)]
@@ -34,14 +36,25 @@ class Phone
         return $this;
     }
 
-    public function getPhone(): string
+    public function getPhone(): ?string
     {
         return $this->phone;
     }
 
-    public function setPhone(string $phone): self
+    public function setPhone(?string $phone): self
     {
         $this->phone = $phone;
+        return $this;
+    }
+
+    public function getMobilePhone(): ?string
+    {
+        return $this->mobilePhone;
+    }
+
+    public function setMobilePhone(?string $mobilePhone): self
+    {
+        $this->mobilePhone = $mobilePhone;
         return $this;
     }
 

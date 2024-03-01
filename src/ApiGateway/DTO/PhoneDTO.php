@@ -13,6 +13,10 @@ readonly class PhoneDTO
         #[NotBlank(message: 'I dont like this field empty')]
         #[Type('string')]
 //        #[Tel(options: ["defaultRegion" => "FR",  "onlyMobile" => true, "onlyEURoaming" => true])]
-        public string $phone,
+        public ?string $phone,
+        #[NotBlank(message: 'I dont like this field empty')]
+        #[Type('string')]
+//        #[Tel(options: ["defaultRegion" => "FR",  "onlyMobile" => true, "onlyEURoaming" => true])]
+        public ?string $mobilePhone,
     ){}
 }
