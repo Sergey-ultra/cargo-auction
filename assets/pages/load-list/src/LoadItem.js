@@ -7,7 +7,7 @@ function LoadItem({load, openSendBidModal, openAuthModal}) {
     return (
         <div className="table__row" key={load.id}>
             <div className="table__item">{load.bodyType}</div>
-            <div className="table__item table__item-price text-bold">
+            <div className="table__item table__item-big text-bold">
                 {load.fromAddress}
                 <span>{load.distance} км</span>
                 <span>{load.toAddress}</span>
@@ -17,7 +17,7 @@ function LoadItem({load, openSendBidModal, openAuthModal}) {
             <div className="table__item">
                 {load.weight}т. {load.volume}м3 {load.cargoType}
             </div>
-            <div className="table__item table__item-price">
+            <div className="table__item table__item-big">
                 {!userId && (<span className="text-gray">скрыто</span>)
                     || (load.priceType === 'fix' || load.priceType === 'negotiable') &&
                         <Fragment>
@@ -63,26 +63,36 @@ function LoadItem({load, openSendBidModal, openAuthModal}) {
             <div className="table-bottom">
                 <div className="table__contact">
                     {userId && (
-                            userId !== load.userId && load.company.contacts.map(contact =>
-                                <div key={contact.id}>
-                                    <a href={`profile/messages/${contact.id}?truck_id=${load.id}`}>
-                                            <span>
-                                                <svg fill="#3a7bbf" stroke="#3a7bbf" strokeWidth="0" data-qa="icon"
-                                                     viewBox="0 0 15 15" width="15" height="15">
-                                                    <symbol id="ic_message" viewBox="0 0 17 16">
-                                                        <path fillRule="evenodd" clipRule="evenodd"
-                                                              d="m6.5 13-4.327-.022-.242-.001-1.008-.005-.462-.003a.464.464 0 0 1-.323-.793l.329-.324.005-.005.713-.704.172-.17.226-.222A6.452 6.452 0 0 1 0 6.5C0 2.916 2.916 0 6.5 0S13 2.916 13 6.5 10.084 13 6.5 13Zm-2.31-2.012.132-.13L3.094 9.44A4.452 4.452 0 0 1 2 6.5C2 4.02 4.02 2 6.5 2S11 4.02 11 6.5 8.98 11 6.5 11l-2.31-.012ZM14 4c3 2.5 3.273 6.777.855 9.621l1.498 1.508c.304.306.092.836-.335.838L9.755 16A6.651 6.651 0 0 1 5 13.997l1.842.011H6.84C11.945 14.008 15.4 9.007 14 4Z"></path>
-                                                    </symbol>
-                                                </svg>
-                                             </span>
-                                        <span>Написать</span>
-                                    </a>
-                                    <span><a href={`tel:${contact.phone}`}>{contact.phone}</a></span>
-                                    <span><a href={`tel:${contact.mobilePhone}`}>{contact.mobilePhone}</a></span>
-                                    <span>{contact.name}</span>
+                        <Fragment>
+                            <div>
+                                <div>
+                                    <span className="contact_send">{load.company.fullName}</span>
+                                    <span>{load.company.type}</span>
                                 </div>
-                            )
-
+                                {userId !== load.userId && load.company.contacts.map(contact =>
+                                    <div key={contact.id} className="contact">
+                                        <a className="contact_send"
+                                           href={`profile/messages/${contact.id}?truck_id=${load.id}`}>
+                                                <span className="contact_svg">
+                                                    <svg fill="#2277cc" stroke="#2277cc" strokeWidth="0" data-qa="icon"
+                                                         viewBox="0 0 15 15" width="15" height="15">
+                                                        {/*<symbol id="ic_message" viewBox="0 0 17 16">*/}
+                                                            <path fillRule="evenodd" clipRule="evenodd"
+                                                                  d="m6.5 13-4.327-.022-.242-.001-1.008-.005-.462-.003a.464.464 0 0 1-.323-.793l.329-.324.005-.005.713-.704.172-.17.226-.222A6.452 6.452 0 0 1 0 6.5C0 2.916 2.916 0 6.5 0S13 2.916 13 6.5 10.084 13 6.5 13Zm-2.31-2.012.132-.13L3.094 9.44A4.452 4.452 0 0 1 2 6.5C2 4.02 4.02 2 6.5 2S11 4.02 11 6.5 8.98 11 6.5 11l-2.31-.012ZM14 4c3 2.5 3.273 6.777.855 9.621l1.498 1.508c.304.306.092.836-.335.838L9.755 16A6.651 6.651 0 0 1 5 13.997l1.842.011H6.84C11.945 14.008 15.4 9.007 14 4Z"></path>
+                                                        {/*</symbol>*/}
+                                                    </svg>
+                                                 </span>
+                                            <span>Написать</span>
+                                        </a>
+                                        {contact.phone && <span><a className="telephone"
+                                                                   href={`tel:${contact.phone}`}>{contact.phone}, </a></span>}
+                                        {contact.mobilePhone && <span><a className="telephone"
+                                                                         href={`tel:${contact.mobilePhone}`}>{contact.mobilePhone}, </a></span>}
+                                        <span>{contact.name}</span>
+                                    </div>
+                                )}
+                            </div>
+                        </Fragment>
                         ) ||
                         <Fragment>
                             <div className="button-empty" onClick={openAuthModal}>показать контакты и ставку</div>
@@ -114,7 +124,7 @@ function LoadItem({load, openSendBidModal, openAuthModal}) {
                         </Fragment>
                     ) || ''}
 
-                    <a href={`/load/${load.id}`} className="load-info">
+                    <a href={`/load/${load.id}`} className="icon-info">
                         <svg width="24" height="24" viewBox="0 0 24 24">
                             <svg fill="white" stroke="white" strokeWidth="0" data-qa="icon"
                                  viewBox="0 0 20 20" width="20" height="20"

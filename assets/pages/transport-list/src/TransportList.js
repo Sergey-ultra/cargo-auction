@@ -123,10 +123,8 @@ function TransportList() {
                         <div className="meta-right">
                             <div className="sort">
                                 <label>Упорядочить по </label>
-                                <FormControl sx={{ m: 1 }} variant="standard">
                                     <Select
-                                        name="orderBy"
-                                        id="orderBy"
+                                        size="small"
                                         value={orderBy}
                                         label="orderBy"
                                         onChange={e => setOrderBy(e.target.value)}>
@@ -134,19 +132,19 @@ function TransportList() {
                                             <MenuItem key={option.value} value={option.value} selected={orderBy === option.value}>{option.title}</MenuItem>
                                         )}
                                     </Select>
-                                </FormControl>
                             </div>
-                            <Pagination page={page} lastPage={lastPage} setPage={setPage}/>
+                            {lastPage > 1 && <Pagination page={page} lastPage={lastPage} setPage={setPage}/>}
                         </div>
                     </div>
 
 
                     <div className="table">
                         <div className="table__row table__row-header">
-                            <div className="table__item">Транспорт</div>
-                            <div className="table__item table__item-price">Маршрут</div>
-                            <div className="table__item">Груз</div>
-                            <div className="table__item table__item-price">Ставка</div>
+                            <div className="table__item">Направл.</div>
+                            <div className="table__item table__item-big">Транспорт</div>
+                            <div className="table__item">Откуда</div>
+                            <div className="table__item">Куда</div>
+                            <div className="table__item table__item-big">Ставка</div>
                         </div>
                         {list.map(transport =>
                             <TransportItem
@@ -159,13 +157,12 @@ function TransportList() {
 
 
                     <div className="table__meta">
-                        <Pagination page={page} lastPage={lastPage} setPage={setPage}/>
-                        <div>
+                        {lastPage > 1 && <Pagination page={page} lastPage={lastPage} setPage={setPage}/>}
+                        <div className="perPage">
                             <span>Выводить строк</span>
                             <Select
-                                id="perPage"
+                                size="small"
                                 value={perPage}
-                                label="Age"
                                 onChange={e => setPerPage(e.target.value)}
                             >
                                 {perPageOptions.map((option, key) =>

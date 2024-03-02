@@ -12,6 +12,8 @@ class LoadDTO
     public function __construct(
         public int $id,
         public int $userId,
+        public string $downloadingDateStatus,
+        public ?DateTimeInterface $downloadingDate,
         public Collection $bids,
         public string $fromAddress,
         public string $toAddress,

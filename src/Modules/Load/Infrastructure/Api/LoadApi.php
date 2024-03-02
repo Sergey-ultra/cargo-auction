@@ -142,6 +142,8 @@ final readonly class LoadApi
             $loads[] = new LoadDTO(
                 $item->getId(),
                 $item->getUser()->getId(),
+                $item->getDownloadingDateStatus(),
+                $item->getDownloadingDate(),
                 $item->getBids(),
                 $item->getFromAddress(),
                 $item->getToAddress(),

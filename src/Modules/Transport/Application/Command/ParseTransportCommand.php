@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Modules\Transport\Application\Command;
 
-use _PHPStan_11268e5ee\Nette\Neon\Exception;
 use App\ApiGateway\DTO\CompanySaveDTO;
 use App\Modules\Company\Infrastructure\Api\CompanyApi;
 use App\Modules\Load\Domain\Entity\BodyType;
@@ -13,6 +12,7 @@ use App\Modules\Transport\Infrastructure\DTO\CityParsingDTO;
 use App\Modules\Transport\Infrastructure\Repository\TransportRepository;
 use App\Modules\User\Infrastructure\Api\UserApi;
 use Doctrine\Common\Collections\ArrayCollection;
+use Exception;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;

@@ -24,7 +24,7 @@ function AutocompleteAddress({value, setAddressValue, label}) {
     }
 
     return  <Autocomplete
-        sx={{m: 1, minWidth: 300}}
+        sx={{m: 0, minWidth: 300}}
         options={citiesList}
         getOptionLabel={option => option.name}
         getOptionKey={option => option.id}

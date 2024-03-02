@@ -124,10 +124,8 @@ function LoadList(callback, deps) {
                         <div className="meta-right">
                             <div className="sort">
                                 <label>Упорядочить по </label>
-                                <FormControl sx={{ m: 1 }} variant="standard">
                                     <Select
-                                        name="orderBy"
-                                        id="orderBy"
+                                        size="small"
                                         value={orderBy}
                                         label="orderBy"
                                         onChange={e => setOrderBy(e.target.value)}>
@@ -135,9 +133,8 @@ function LoadList(callback, deps) {
                                             <MenuItem key={loadOption.value} value={loadOption.value} selected={orderBy === loadOption.value}>{loadOption.title}</MenuItem>
                                         )}
                                     </Select>
-                                </FormControl>
                             </div>
-                            <Pagination page={page} lastPage={lastPage} setPage={setPage}/>
+                            {lastPage > 1 && <Pagination page={page} lastPage={lastPage} setPage={setPage}/>}
                         </div>
                     </div>
 
@@ -145,9 +142,9 @@ function LoadList(callback, deps) {
                     <div className="table">
                         <div className="table__row table__row-header">
                             <div className="table__item">Транспорт</div>
-                            <div className="table__item table__item-price">Маршрут</div>
+                            <div className="table__item table__item-big">Маршрут</div>
                             <div className="table__item">Груз</div>
-                            <div className="table__item table__item-price">Ставка</div>
+                            <div className="table__item table__item-big">Ставка</div>
                         </div>
                         {list.map(load =>
                             <LoadItem
@@ -160,8 +157,8 @@ function LoadList(callback, deps) {
 
 
                     <div className="table__meta">
-                        <Pagination page={page} lastPage={lastPage} setPage={setPage}/>
-                        <div>
+                        {lastPage > 1 && <Pagination page={page} lastPage={lastPage} setPage={setPage}/>}
+                        <div className="perPage">
                             <span>Выводить строк</span>
                             <Select
                                 size="small"
