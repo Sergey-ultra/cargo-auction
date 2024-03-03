@@ -16,9 +16,9 @@ class Phone
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     private ?string $phone;
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     private ?string $mobilePhone;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'phones')]

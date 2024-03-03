@@ -8,15 +8,18 @@ use App\ApiGateway\DTO\CompanyDTO;
 use App\ApiGateway\DTO\ContactDTO;
 use App\ApiGateway\DTO\ListDTO;
 use App\ApiGateway\DTO\LoadFilter;
+use App\ApiGateway\DTO\TransportCommentDTO;
 use App\ApiGateway\DTO\TransportDTO;
 use App\Modules\Chat\Infrastructure\Adapter\UserAdapter;
 use App\Modules\City\Infrastructure\DTO\CityCoordinatesDTO;
 use App\Modules\Company\Domain\Entity\Company;
 use App\Modules\Load\Infrastructure\Adapter\CityAdapter;
+use App\Modules\Transport\Domain\Entity\Comment;
 use App\Modules\Transport\Domain\Entity\Transport;
 use App\Modules\Transport\Domain\Repository\TransportRepositoryInterface;
 use App\Modules\Transport\Infrastructure\Adapter\CompanyAdapter;
 use App\Modules\Transport\Infrastructure\DTO\FilterDTO;
+use App\Modules\Transport\Infrastructure\Repository\CommentRepository;
 use App\Modules\Transport\Infrastructure\Repository\TransportRepository;
 use App\Modules\User\Domain\Entity\User;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -25,6 +28,7 @@ final readonly class TransportApi
 {
     public function __construct(
         private TransportRepository $transportRepository,
+        private CommentRepository $commentRepository,
         private CityAdapter $cityAdapter,
         private CompanyAdapter $companyAdapter,
         private UserAdapter $userAdapter,
@@ -129,5 +133,15 @@ final readonly class TransportApi
             $city = $this->cityAdapter->getCityCoordinatesByCityByName($filter->{$address});
         }
         return $city;
+    }
+
+    public function saveComment(TransportCommentDTO $transportCommentDto): void
+    {
+        $comment = (new Comment())
+            ->setComment($transportCommentDto->comment)
+            ->setUserName($transportCommentDto->userName)
+            ->setCreatedAt();
+
+        $this->commentRepository->save($comment);
     }
 }

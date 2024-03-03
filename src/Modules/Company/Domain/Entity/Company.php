@@ -24,10 +24,10 @@ class Company
     private int $ownershipId;
     #[ORM\Column]
     private int $typeId;
-    #[ORM\Column(length: 500)]
+    #[ORM\Column(nullable: true)]
     private ?string $description;
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'companies')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?User $user;
     #[ORM\Column(name: 'created_at', type: 'datetime', options: ['default' => "CURRENT_TIMESTAMP"])]
     private DateTimeInterface $createdAt;

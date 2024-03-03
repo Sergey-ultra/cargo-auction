@@ -4,14 +4,10 @@ declare(strict_types=1);
 
 namespace App\Modules\Transport\Domain\Entity;
 
-use App\Modules\Company\Domain\Entity\Company;
 use App\Modules\Load\Domain\Entity\BodyType;
 use App\Modules\Transport\Infrastructure\Repository\TransportRepository;
-use App\Modules\User\Domain\Entity\User;
-use App\ValueObject\Point;
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: TransportRepository::class)]
 #[ORM\Table(name:"transports")]
@@ -21,13 +17,13 @@ class Transport
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     private ?int $fromCityId;
-    #[ORM\Column]
+    #[ORM\Column(length: 200, nullable: true)]
     private ?string $fromName;
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     private ?int $toCityId;
-    #[ORM\Column]
+    #[ORM\Column(length: 200, nullable: true)]
     private ?string $toName;
     #[ORM\Column]
     private int $bodyType;
@@ -41,7 +37,7 @@ class Transport
     private ?int $priceWithTax;
     #[ORM\Column(nullable: true)]
     private ?int $priceCash;
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     private ?int $downloadingType;
     #[ORM\Column]
     private int $companyId;

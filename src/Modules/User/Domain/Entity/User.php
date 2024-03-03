@@ -45,7 +45,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Centrif
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Load::class)]
     private Collection $orders;
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     private ?int $companyId;
 
 

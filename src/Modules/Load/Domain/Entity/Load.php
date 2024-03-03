@@ -47,12 +47,12 @@ class Load
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(['load'])]
     private ?User $user;
-    #[ORM\Column]
+    #[ORM\Column(length: 100)]
     #[Groups(['load'])]
     private string $downloadingDateStatus;
     #[ORM\Column(type: 'datetime')]
     #[Groups(['load'])]
-    private ?DateTimeInterface $downloadingDate;
+    private DateTimeInterface $downloadingDate;
     #[ORM\Column]
     #[Groups(['load'])]
     private string $fromAddress;
@@ -85,7 +85,7 @@ class Load
     #[ORM\Column]
     #[Groups(['load'])]
     private float $volume;
-    #[ORM\Column]
+    #[ORM\Column(length: 50)]
     #[Groups(['load'])]
     private string $priceType;
     #[ORM\Column(nullable: true)]
@@ -146,12 +146,12 @@ class Load
         return $this;
     }
 
-    public function getDownloadingDate(): ?DateTimeInterface
+    public function getDownloadingDate(): DateTimeInterface
     {
         return $this->downloadingDate;
     }
 
-    public function setDownloadingDate(?DateTimeInterface $downloadingDate): self
+    public function setDownloadingDate(DateTimeInterface $downloadingDate): self
     {
         $this->downloadingDate = $downloadingDate;
         return $this;

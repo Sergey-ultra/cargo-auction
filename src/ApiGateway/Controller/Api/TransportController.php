@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace App\ApiGateway\Controller\Api;
 
+use App\ApiGateway\DTO\CommentDTO;
 use App\ApiGateway\DTO\LoadFilter;
+use App\ApiGateway\DTO\TransportCommentDTO;
 use App\Modules\Transport\Infrastructure\Api\TransportApi;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Attribute\MapQueryString;
+use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Route('/api', name: 'api_')]
@@ -41,5 +44,12 @@ class TransportController extends ApiController
             ]];
 
         return $this->apiJson($result);
+    }
+
+    #[Route('/transport/comment', name: 'api.transport.comment.store', methods:['post'])]
+    public function saveComment(#[MapRequestPayload]CommentDTO $commentDto, TransportApi $transportApi): JsonResponse
+    {
+        $transportApi->saveComment(new TransportCommentDTO($commentDto->comment, $this->getUser()->getName()));
+        return $this->json(['data' => ['status' => 'ok']]);
     }
 }

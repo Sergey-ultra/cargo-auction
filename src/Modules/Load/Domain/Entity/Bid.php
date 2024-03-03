@@ -18,8 +18,8 @@ class Bid
     #[ORM\Column]
     private int $bid;
     #[ORM\ManyToOne(targetEntity: Load::class, inversedBy: 'bids')]
-    #[ORM\JoinColumn(nullable: true)]
-    private ?Load $load;
+    #[ORM\JoinColumn(nullable: false)]
+    private Load $load;
 
     public function getId(): ?int
     {
@@ -48,7 +48,7 @@ class Bid
         return $this->load;
     }
 
-    public function setLoad(?Load $load): self
+    public function setLoad(Load $load): self
     {
         $this->load = $load;
         return $this;

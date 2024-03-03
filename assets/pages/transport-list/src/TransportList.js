@@ -54,8 +54,27 @@ function TransportList() {
 
 
     const [isOpenAuthModal, setOpenAuthModal] = useState(false);
+    const [addingComment, setAddingComment] = useState(null);
     const openAuthModal = () => setOpenAuthModal(true);
     const closeAuthModal = () => setOpenAuthModal(false);
+    const toggleAddingComment = id => {
+        if (id === addingComment) {
+            setAddingComment(null);
+        } else {
+            setAddingComment(id);
+        }
+    }
+
+    const saveComment = async object=> {
+        if (object.id) {
+            const { data } = await request('/api/transport/comment', 'PUT', { body: object });
+        } else {
+            const { data } = await request('/api/transport/comment', 'POST', { body: object });
+            console.log(data);
+        }
+
+    }
+
 
     const fetchLoadList = async() => {
         const params = Object.assign(filter, {page}, {perPage}, {orderBy});
@@ -151,7 +170,10 @@ function TransportList() {
                                 key={transport.id}
                                 transport={transport}
                                 openSendBidModal={openSendBidModal}
-                                openAuthModal={openAuthModal}/>
+                                openAuthModal={openAuthModal}
+                                addingComment={addingComment}
+                                toggleAddingComment={toggleAddingComment}
+                                saveComment={saveComment}/>
                         )}
                     </div>
 

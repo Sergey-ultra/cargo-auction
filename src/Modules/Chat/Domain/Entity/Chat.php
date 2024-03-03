@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace  App\Modules\Chat\Domain\Entity;
 
+use App\Modules\Chat\Infrastructure\Repository\ChatRepository;
 use App\Modules\User\Domain\Entity\User;
+use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ChatRepository::class)]
@@ -21,17 +23,20 @@ class Chat
     private string $description;
     #[ORM\Column]
     private string $draft;
-    #[ORM\Column]
+    #[ORM\Column(length: 100)]
     private string $type = 'dialog';
     #[ORM\Column]
     private bool $unread = false;
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'chats')]
     #[ORM\JoinColumn(nullable: false)]
     private User $owner;
-
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'chats')]
     #[ORM\JoinColumn(nullable: false)]
     private User $partner;
+    #[ORM\Column(name: 'created_at', type: 'datetime', options: ['default' => "CURRENT_TIMESTAMP"])]
+    private DateTimeInterface $createdAt;
+    #[ORM\Column(name: 'updated_at', type: "datetime", nullable: true)]
+    private ?DateTimeInterface $updatedAt;
 
     public function getId(): ?int
     {
@@ -118,6 +123,30 @@ class Chat
     public function setPartner(User $partner): self
     {
         $this->partner = $partner;
+        return $this;
+    }
+
+    public function getCreatedAt(): DateTimeInterface
+    {
+        return $this->createdAt;
+    }
+
+    #[ORM\PrePersist]
+    public function setCreatedAt(): self
+    {
+        $this->createdAt = new \DateTime();
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?DateTimeInterface
+    {
+        return $this->updatedAt;
+    }
+
+    #[ORM\PrePersist]
+    public function setUpdatedAt(): self
+    {
+        $this->updatedAt = null;
         return $this;
     }
 }
