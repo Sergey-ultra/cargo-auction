@@ -10,6 +10,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Symfony\Component\Serializer\SerializerInterface;
 
+#[Route('/api', name: 'api_')]
 class AuthController extends AbstractController
 {
     #[Route('/sign-in', name: 'app_sign_in')]
@@ -29,6 +30,12 @@ class AuthController extends AbstractController
                 'userEmail' => $user->getEmail(),
             ]
         ]);
+    }
+
+    #[Route('/login/{service}', name: 'login-with-service', requirements: ['service' => 'google|facebook'], methods: ['get'])]
+    public function login(): JsonResponse
+    {
+        return $this->json(['data' => ['url' => '']]);
     }
 
 //    #[Route('/sign-in', name: 'app_sign_in')]

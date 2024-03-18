@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\ApiGateway\Controller\Api;
 
 use App\ApiGateway\DTO\FilterSaveDTO;
+use App\ApiGateway\DTO\FilterShowDTO;
 use App\ApiGateway\DTO\FilterTypeDTO;
 use App\Modules\Filter\Infrastructure\Api\FilterApi;
 use Symfony\Component\HttpFoundation\JsonResponse;

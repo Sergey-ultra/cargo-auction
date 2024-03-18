@@ -21,6 +21,7 @@ interface LoadRepositoryInterface
         self::DOWNLOADING_DATE => 'дате загрузки',
         self::CARGO_TYPE => 'типу груза',
     ];
+
     public function getList(
         ?FilterDTO     $filter,
         int            $page = 1,

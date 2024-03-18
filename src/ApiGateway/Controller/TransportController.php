@@ -23,7 +23,7 @@ class TransportController extends AbstractController
         ]);
     }
 
-    #[Route('/transport/{id}', name: 'transport.show', requirements: ['page' => '\d+'], methods: ['get'])]
+    #[Route('/transport/{id}', name: 'transport.show', requirements: ['id' => '\d+'], methods: ['get'])]
     public function show(int $id): Response
     {
         return $this->render('transport/show.html.twig', [

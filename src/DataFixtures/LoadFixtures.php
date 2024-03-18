@@ -64,7 +64,7 @@ class LoadFixtures extends Fixture implements DependentFixtureInterface
                 ->setToPoint(new Point($toLongitude, $toLatitude))
                 ->setWeight($this->faker->randomFloat('1', 1, 25))
                 ->setVolume($this->faker->randomFloat('1', 1, 59))
-                ->setPriceType($this->faker->randomElement(Load::PRICE_TYPE))
+                ->setPriceType($this->faker->randomElement(array_keys(Load::PRICE_TYPE)))
                 ->setPriceWithoutTax($this->faker->numberBetween(100, 200000))
                 ->setPriceWithTax($this->faker->numberBetween(100, 200000))
                 ->setPriceCash($this->faker->numberBetween(100, 200000))

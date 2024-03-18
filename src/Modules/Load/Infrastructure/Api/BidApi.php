@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Load\Infrastructure\Api;
 
+use App\ApiGateway\DTO\BidDTO;
 use App\ApiGateway\DTO\WebSocketNotification;
 use App\Modules\Load\Domain\Entity\Bid;
 use App\Modules\Load\Infrastructure\Repository\BidRepository;
@@ -20,7 +21,7 @@ final readonly class BidApi
     {
     }
 
-    public function saveBid(int $bidValue, int $loadId): int
+    public function saveBid(int $bidValue, int $loadId): BidDTO
     {
         $load = $this->loadRepository->find($loadId);
 
@@ -28,7 +29,9 @@ final readonly class BidApi
         $bid->setLoad($load);
         $bid->setBid($bidValue);
 
+
         $this->bidRepository->save($bid);
+
         $message = sprintf("На вашу заявку поставили ставку в размере %d %s", $bidValue, 'руб');
         $loadUser = $bid->getLoad()->getUser();
 
@@ -40,6 +43,6 @@ final readonly class BidApi
 
         }
 
-        return $bid->getId();
+        return new BidDTO($bid->getId(), $bid->getBid());
     }
 }

@@ -6,6 +6,7 @@ namespace App\ApiGateway\Controller;
 
 use App\ApiGateway\DTO\PhoneDTO;
 use App\Modules\Chat\Infrastructure\Api\ChatApi;
+use App\Modules\Filter\Domain\Enum\FilterType;
 use App\Modules\User\Infrastructure\Api\PhoneApi;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -52,7 +53,14 @@ class ProfileController extends AbstractController
     public function getChatByUserId(int $id, Request $request, ChatApi $chatApi): RedirectResponse
     {
         $loadId = $request->query->getInt('load_id');
-        $chat = $chatApi->getChatByUser($this->getUser(), $loadId, $id);
+        $truckId = $request->query->getInt('truck_id');
+
+        if (0 !== $loadId) {
+            $chat = $chatApi->getChatByUserAndLoadId($this->getUser(), $loadId, $id);
+        } else if (0 !== $truckId) {
+            $chat = $chatApi->getChatByUserAndTransportId($this->getUser(), $truckId, $id);
+        }
+
 
         return $this->redirectToRoute('profile.chat', ['id' => $chat->getId()]);
     }

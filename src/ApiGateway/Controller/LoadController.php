@@ -17,7 +17,7 @@ class LoadController extends AbstractController
         return $this->render('cargo/index.html.twig');
     }
 
-    #[Route('/load/{id}', name: 'cargo.show', requirements: ['page' => '\d+'], methods: ['get'])]
+    #[Route('/load/{id}', name: 'cargo.show', requirements: ['id' => '\d+'], methods: ['get'])]
     public function show(int $id, LoadApi $loadApi): Response
     {
         $load = $loadApi->getLoadById($id);

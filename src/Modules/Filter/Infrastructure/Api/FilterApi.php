@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Filter\Infrastructure\Api;
 
 use App\ApiGateway\DTO\FilterSaveDTO;
+use App\ApiGateway\DTO\FilterShowDTO;
 use App\ApiGateway\Enum\FilterType;
 use App\Modules\Filter\Domain\Enum\FilterType as ModuleFilterType;
 use App\Modules\Filter\Domain\Entity\Filter;
@@ -17,9 +18,23 @@ final readonly class FilterApi
     {
     }
 
+    /** @return FilterShowDTO[] */
     public function getFiltersByUser(UserInterface $user, FilterType $type): array
     {
-        return $this->filterRepository->findBy(['user' => $user, 'type' => $type->value]);
+        $list = $this->filterRepository->findBy(['user' => $user, 'type' => $type->value]);
+
+        return array_map(
+            function(Filter $filter) {
+                return new FilterShowDTO(
+                    $filter->getId(),
+                    $filter->getName(),
+                    $filter->getFilter(),
+                    FilterType::from($filter->getType()->value),
+                    $filter->getCreatedAt()->format('d M'),
+                );
+            },
+            $list
+        );
     }
 
     public function save(FilterSaveDTO $filterDto, UserInterface $user): void

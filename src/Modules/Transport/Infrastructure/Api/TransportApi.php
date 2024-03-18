@@ -4,15 +4,17 @@ declare(strict_types=1);
 
 namespace App\Modules\Transport\Infrastructure\Api;
 
-use App\ApiGateway\DTO\CompanyDTO;
+use App\ApiGateway\DTO\CommentDTO;
+use App\ApiGateway\DTO\CommentShowDTO;
+use App\ApiGateway\DTO\CompanyShowDTO;
+use App\ApiGateway\DTO\CompanyWithContactsDTO;
 use App\ApiGateway\DTO\ContactDTO;
 use App\ApiGateway\DTO\ListDTO;
 use App\ApiGateway\DTO\LoadFilter;
-use App\ApiGateway\DTO\TransportCommentDTO;
+use App\ApiGateway\DTO\RatingDTO;
 use App\ApiGateway\DTO\TransportDTO;
 use App\Modules\Chat\Infrastructure\Adapter\UserAdapter;
 use App\Modules\City\Infrastructure\DTO\CityCoordinatesDTO;
-use App\Modules\Company\Domain\Entity\Company;
 use App\Modules\Load\Infrastructure\Adapter\CityAdapter;
 use App\Modules\Transport\Domain\Entity\Comment;
 use App\Modules\Transport\Domain\Entity\Transport;
@@ -22,18 +24,33 @@ use App\Modules\Transport\Infrastructure\DTO\FilterDTO;
 use App\Modules\Transport\Infrastructure\Repository\CommentRepository;
 use App\Modules\Transport\Infrastructure\Repository\TransportRepository;
 use App\Modules\User\Domain\Entity\User;
+use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 final readonly class TransportApi
 {
     public function __construct(
         private TransportRepository $transportRepository,
-        private CommentRepository $commentRepository,
+        private CommentApi $commentApi,
         private CityAdapter $cityAdapter,
         private CompanyAdapter $companyAdapter,
         private UserAdapter $userAdapter,
     )
     {
+    }
+
+    public function getLoadDraftMessageById(int $id): string
+    {
+        $transport = $this->transportRepository->find($id);
+        return sprintf(
+            "По транспорту: %s - %s, %d, %s, %d т., %d м3",
+            $transport->getFromName(),
+            $transport->getToName(),
+            34,
+            $transport->getBodyType(),
+            $transport->getWeight(),
+            $transport->getVolume()
+        );
     }
 
     public function getDefaultOrderByOption(): string
@@ -46,6 +63,7 @@ final readonly class TransportApi
         int            $page = 1,
         int            $perPage = TransportRepositoryInterface::PAGINATOR_PER_PAGE,
         string         $orderOption = TransportRepositoryInterface::CREATED_AT,
+        ?int           $commentUserId = null,
         ?UserInterface $byUser = null
     ): ListDTO
     {
@@ -72,12 +90,21 @@ final readonly class TransportApi
 
         $result =  $this->transportRepository->getList($apiFilter, $page, $perPage, $orderOption, $byUser);
 
+        /** @var int[] $companyIds */
+        $ids = [];
+        /** @var int[] $companyIds */
         $companyIds = [];
         /**  @var Transport $item */
         foreach($result->list as $item) {
+            $ids[] = $item->getId();
             $companyIds[] = $item->getCompanyId();
         }
 
+        /** @var ArrayCollection<int, CommentShowDTO> $commentCollection */
+        $commentCollection = $commentUserId
+            ? $this->commentApi->getByLoadIds($ids, $commentUserId)
+            : new ArrayCollection();
+        /** @var ArrayCollection<int, CompanyShowDTO> $companyCollection */
         $companyCollection = $this->companyAdapter->getByIds($companyIds);
         $userCollection = $this->userAdapter->getByCompanyIds($companyIds);
 
@@ -86,9 +113,15 @@ final readonly class TransportApi
         $transports = [];
         /**  @var Transport $item */
         foreach($result->list as $item) {
-            /**  @var Company $company */
+            /**  @var CompanyShowDTO $company */
             $company = $companyCollection->get($item->getCompanyId());
             $userContacts = $userCollection->get($item->getCompanyId());
+            $comment = $commentCollection->get($item->getId());
+
+            $companyCity = null !== $company->cityId
+                ? $this->cityAdapter->getCityById($company->cityId)
+                : null;
+
 
             $contacts = [];
             /**  @var User $userContact  */
@@ -98,6 +131,7 @@ final readonly class TransportApi
                     $userContact->getName(),
                     $userContact->getPhone()->getPhone(),
                     $userContact->getPhone()->getMobilePhone(),
+                    $userContact->getEmail(),
                 );
             }
 
@@ -111,12 +145,17 @@ final readonly class TransportApi
                 $item->getPriceWithoutTax(),
                 $item->getPriceWithTax(),
                 $item->getPriceCash(),
+                $comment,
                 $item->getCreatedAt(),
                 $item->getUpdatedAt(),
-                new CompanyDTO(
-                    $company->getId(),
-                    $company->getName() . ', ' . $company->getOwnershipName(),
-                    $company->getTypeName(),
+                new CompanyWithContactsDTO(
+                    $company->id,
+                    $company->fullName,
+                    isset($companyCity) ? $companyCity->name : '',
+                    $company->type,
+                    new RatingDTO(
+                        5
+                    ),
                     $contacts,
                 )
             );
@@ -133,15 +172,5 @@ final readonly class TransportApi
             $city = $this->cityAdapter->getCityCoordinatesByCityByName($filter->{$address});
         }
         return $city;
-    }
-
-    public function saveComment(TransportCommentDTO $transportCommentDto): void
-    {
-        $comment = (new Comment())
-            ->setComment($transportCommentDto->comment)
-            ->setUserName($transportCommentDto->userName)
-            ->setCreatedAt();
-
-        $this->commentRepository->save($comment);
     }
 }

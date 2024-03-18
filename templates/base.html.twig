@@ -17,7 +17,7 @@
         <script>
             {% if is_granted('IS_AUTHENTICATED_FULLY') %}
                 window.authData = {
-                    userId: '{{ app.user.id }}',
+                    userId: {{ app.user.id }},
                     email: '{{ app.user.email }}'
                 };
             {% endif %}

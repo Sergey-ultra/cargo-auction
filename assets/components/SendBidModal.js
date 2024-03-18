@@ -5,27 +5,33 @@ import {Button, DialogContent} from "@mui/material";
 import {useHttp} from "../hooks/api";
 
 
-export default function SendBidModal({ handleClose, isOpen, currentLoadId }) {
+export default function SendBidModal({ addBidToLoad, handleClose, isOpen, currentLoadId }) {
     const [bid, setBid] = useState(0);
+    const { request, isLoading, error, clearError } = useHttp();
 
     const changeHandler = event => setBid(Number(event.target.value));
 
-
-    const { request, isLoading, error, clearError } = useHttp();
+    const closeModal = () => {
+        setBid(0);
+        handleClose();
+    }
 
     const sendBid = async e => {
         e.preventDefault();
         try {
             const { data } = await request(`/api/sendBid/${currentLoadId}`, 'POST', {body: {bid: bid}});
+            if (data) {
+                closeModal();
+                addBidToLoad(data);
+            }
 
-            handleClose();
         } catch (e) {
             console.log(e.message)
         }
     }
 
     return (
-        <Dialog onClose={handleClose} open={isOpen}>
+        <Dialog onClose={closeModal} open={isOpen}>
             <DialogTitle>Отправить ставку</DialogTitle>
             <DialogContent>
                 <form onSubmit={sendBid}>

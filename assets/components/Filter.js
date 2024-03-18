@@ -10,8 +10,8 @@ function Filter() {
         setFilter({...filter, [event.target.name]: event.target.value})
     }
 
-    const setFromAddressFilterValue = name => setFilter({...filter, fromAddress: name});
-    const setToAddressFilterValue = name => setFilter({...filter, toAddress: name});
+    const setFromAddressFilterValue = city => setFilter({...filter, from: {id: city.id, name: city.name}});
+    const setToAddressFilterValue = city => setFilter({...filter, to: {id: city.id, name: city.name}});
 
     return (
     <form className="box" id="filter">
@@ -21,7 +21,7 @@ function Filter() {
                     <label className="filter__label text-bold">Откуда</label>
                     <AutocompleteAddress
                         value={filter.fromAddress}
-                        setAddressValue={setFromAddressFilterValue}
+                        setCityObject={setFromAddressFilterValue}
                         label=""
                     />
                 </div>
@@ -52,8 +52,8 @@ function Filter() {
                 <div className="filter__element">
                     <label className="filter__label text-bold">Куда</label>
                     <AutocompleteAddress
-                        value={filter.toAddress}
-                        setAddressValue={setToAddressFilterValue}
+                        value={filter.to.address}
+                        setCityObject={setToAddressFilterValue}
                         label=""
                     />
                 </div>
@@ -78,9 +78,9 @@ function Filter() {
                     <label className="filter__label">Вес, т</label>
                     <div className="filter__block">
                         <input type="text" className="filter__input" name="weightMin" value={filter.weightMin}
-                               onChange={changeFilter}/>
+                               onChange={changeFilter} placeholder="от"/>
                         <input type="text" className="filter__input" name="weightMax" value={filter.weightMax}
-                               onChange={changeFilter}/>
+                               onChange={changeFilter} placeholder="до"/>
                     </div>
                 </div>
                 <div className="filter__element filter__minMax">
@@ -89,9 +89,9 @@ function Filter() {
                     </label>
                     <div className="filter__block">
                         <input type="text" className="filter__input" name="volumeMin" value={filter.volumeMin}
-                               onChange={changeFilter}/>
+                               onChange={changeFilter} placeholder="от"/>
                         <input type="text" className="filter__input" name="volumeMax" value={filter.volumeMax}
-                               onChange={changeFilter}/>
+                               onChange={changeFilter} placeholder="до"/>
                     </div>
                 </div>
             </div>

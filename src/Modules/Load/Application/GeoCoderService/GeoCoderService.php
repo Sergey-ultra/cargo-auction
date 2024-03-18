@@ -30,9 +30,13 @@ class GeoCoderService
         if (200 === $status) {
             $res = json_decode($response->getContent(), true);
 
-            $coordinates = $res['response']['GeoObjectCollection']['featureMember'][0]['GeoObject']['Point']['pos'];
-            $coordinates = explode(' ', $coordinates);
-            return new Point((float)$coordinates[1], (float)$coordinates[0]);
+            if (count($res['response']['GeoObjectCollection']['featureMember'])) {
+                $coordinates = $res['response']['GeoObjectCollection']['featureMember'][0]['GeoObject']['Point']['pos'];
+                $coordinates = explode(' ', $coordinates);
+                return new Point((float)$coordinates[1], (float)$coordinates[0]);
+            }
+
+            return null;
         }
         return null;
     }

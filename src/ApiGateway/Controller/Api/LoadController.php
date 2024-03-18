@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace App\ApiGateway\Controller\Api;
 
 
+use App\ApiGateway\DTO\CommentDTO;
+use App\ApiGateway\DTO\CommentRequestDTO;
+use App\ApiGateway\DTO\IdsDTO;
 use App\ApiGateway\DTO\LoadCreateDTO;
 use App\ApiGateway\DTO\LoadFilter;
-use App\ApiGateway\Request\CreateRequest;
+use App\Modules\Load\Infrastructure\Api\CommentApi;
 use App\Modules\Load\Infrastructure\Api\LoadApi;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapQueryString;
@@ -28,9 +30,16 @@ class LoadController extends ApiController
         $orderBy = $request->query->getString('orderBy', $loadApi->getDefaultOrderByOption());
         $isMy = $request->query->getBoolean('isMy');
 
-        $user = $isMy ? $this->getUser() : null;
+        $byUser = $isMy ? $this->getUser() : null;
 
-        $listDto = $loadApi->getList($filter, $page, $perPage, $orderBy, $user);
+        $listDto = $loadApi->getList(
+            $filter,
+            $page,
+            $perPage,
+            $orderBy,
+            $this->getUser()?->getId(),
+            $byUser
+        );
 
         $totalCount = $listDto->totalCount;
         $lastPage = (int)ceil($totalCount / $perPage);
@@ -48,12 +57,34 @@ class LoadController extends ApiController
         return $this->apiJson($result);
     }
 
-    #[Route('/load/create', name: 'api.cargo.store', methods:['post'] )]
+    #[Route('/load/{id}', name: 'api.cargo.show', requirements: ['id' => '\d+'], methods: ['get'])]
+    public function show(int $id, LoadApi $loadApi): Response
+    {
+        $load = $loadApi->getLoadById($id);
+
+        return $this->apiJson(['data' => $load]);
+    }
+
+
+    #[Route(path: '/load/create', name: 'api.cargo.store', methods:['post'] )]
     //    #[IsGranted("ROLE_ADMIN")]
     public function store(#[MapRequestPayload] LoadCreateDTO $loadCreateDto, LoadApi $loadApi): JsonResponse
     {
-        $load = $loadApi->saveLoad($loadCreateDto, $this->getUser());
-        return $this->apiJson(data: $load);
+        $createdLoadId = $loadApi->saveLoad($loadCreateDto, $this->getUser());
 
+        return $this->apiJson($createdLoadId, Response::HTTP_CREATED);
+    }
+
+    #[Route('/load/comment', name: 'api.cargo.comment.store', methods:['post'])]
+    public function saveComment(#[MapRequestPayload]CommentRequestDTO $commentDto, CommentApi $commentApi): JsonResponse
+    {
+        $comment = $commentApi->saveComment(
+            new CommentDTO(
+                $commentDto->comment,
+                $this->getUser()->getId(),
+                $commentDto->entityId
+            )
+        );
+        return $this->json(['data' => $comment], Response::HTTP_CREATED);
     }
 }

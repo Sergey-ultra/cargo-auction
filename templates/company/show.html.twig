@@ -1,0 +1,17 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Информация о компании{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link href="{{ asset('assets/css/company.css') }}" rel="stylesheet"/>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {{ encore_entry_script_tags('company') }}
+{% endblock %}
+
+{% block body %}
+    <div id="company"></div>
+{% endblock %}

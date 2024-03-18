@@ -17,9 +17,11 @@ class Comment
     #[ORM\Column]
     private ?int $id = null;
     #[ORM\Column]
+    private int $transportId;
+    #[ORM\Column]
     private string $comment;
     #[ORM\Column]
-    private string $userName;
+    private int $userId;
     #[ORM\Column(name: 'created_at', type: 'datetime', options: ['default' => "CURRENT_TIMESTAMP"])]
     private DateTimeInterface $createdAt;
     #[ORM\Column(name: 'updated_at', type: "datetime", nullable: true)]
@@ -36,6 +38,17 @@ class Comment
         return $this;
     }
 
+    public function getTransportId(): int
+    {
+        return $this->transportId;
+    }
+
+    public function setTransportId(int $transportId): self
+    {
+        $this->transportId = $transportId;
+        return $this;
+    }
+
     public function getComment(): string
     {
         return $this->comment;
@@ -44,17 +57,6 @@ class Comment
     public function setComment(string $comment): self
     {
         $this->comment = $comment;
-        return $this;
-    }
-
-    public function getUserName(): string
-    {
-        return $this->userName;
-    }
-
-    public function setUserName(string $userName): self
-    {
-        $this->userName = $userName;
         return $this;
     }
 
@@ -79,6 +81,17 @@ class Comment
     public function setUpdatedAt(): self
     {
         $this->updatedAt = null;
+        return $this;
+    }
+
+    public function getUserId(): int
+    {
+        return $this->userId;
+    }
+
+    public function setUserId(int $userId): self
+    {
+        $this->userId = $userId;
         return $this;
     }
 }

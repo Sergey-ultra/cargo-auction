@@ -17,6 +17,7 @@ class CompanyController extends ApiController
     #[Route('/company', name: 'company.my.save', methods:['post'])]
     public function save(#[MapRequestPayload]CompanySaveDTO $payload, CompanyApi $companyApi): JsonResponse
     {
+        dd($payload);
         $company = $companyApi->saveCompany($payload, $this->getUser());
 
         return $this->apiJson(['data' => $company->getId()], Response::HTTP_CREATED);
@@ -28,5 +29,13 @@ class CompanyController extends ApiController
         $myCompany = $companyApi->findByUser($this->getUser());
 
         return $this->apiJson(['data' => $myCompany]);
+    }
+
+    #[Route('/company/{id}', name: 'cargo.show', requirements: ['id' => '\d+'], methods: ['get'])]
+    public function show(int $id, CompanyApi $companyApi): Response
+    {
+        $company = $companyApi->getById($id);
+
+        return $this->apiJson(['data' => $company]);
     }
 }

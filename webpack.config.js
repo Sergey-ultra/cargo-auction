@@ -23,9 +23,11 @@ Encore
     .addEntry('app', './assets/index.js')
     .addEntry('loadList', './assets/load-list.js')
     .addEntry('loadForm', './assets/load-form.js')
+    .addEntry('load', './assets/load.js')
     .addEntry('transportList', './assets/transport-list.js')
     .addEntry('messages', './assets/messages.js')
     .addEntry('myCompany', './assets/my-company.js')
+    .addEntry('company', './assets/company.js')
 
     // When enabled, Webpack "splits" your files into smaller pieces for greater optimization.
     .splitEntryChunks()
@@ -59,7 +61,8 @@ Encore
     })
 
     // enables Sass/SCSS support
-    //.enableSassLoader()
+    .enableSassLoader()
+
 
     // uncomment if you use TypeScript
     //.enableTypeScriptLoader()

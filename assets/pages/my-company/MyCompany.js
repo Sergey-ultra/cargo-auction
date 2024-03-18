@@ -1,19 +1,21 @@
 import React, {useEffect, useState} from 'react';
 import {useHttp} from "../../hooks/api";
 import {Button, TextField} from "@mui/material";
-
+import AutocompleteAddress from "../../components/AutocompleteAddress";
 
 
 function MyCompany() {
     const [company, setCompany] = useState({
         name: '',
         description: '',
+        cityId: null,
     });
     const {request} = useHttp();
 
+    const setCityId = value => setCompany({...company, cityId: value});
+
     const saveCompany = async e => {
         e.preventDefault();
-        console.log(company);
         if (company.name) {
             const {data} = await request('/api/company', 'POST', {body: {...company}});
         }
@@ -35,7 +37,10 @@ function MyCompany() {
             <form onSubmit={saveCompany}>
                 <div className="form-item">
                     <label className="label">Месторасположение центрального офиса или город юридической регистрации*</label>
-
+                    <AutocompleteAddress
+                        value={company.cityId}
+                        setAddressValue={setCityId}
+                        label="Откуда"/>
                 </div>
                 <div className="form-item">
                     <label className="label">Правовая форма и название</label>

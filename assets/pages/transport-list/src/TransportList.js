@@ -6,7 +6,7 @@ import Pagination from "../../../components/common/Pagination";
 import TransportItem from "./TransportItem";
 import SendBidModal from "../../../components/SendBidModal";
 import SaveFilterModal from "../../../components/SaveFilterModal";
-import AuthModal from "../../../components/AuthModal";
+import AuthModal from "../../../components/auth/AuthModal";
 import Filter from "../../../components/Filter";
 import {FilterContext} from "../../../context/filter.context";
 import {useHandleSelectOptions} from "../../../hooks/handleSelectOptions";
@@ -66,13 +66,17 @@ function TransportList() {
     }
 
     const saveComment = async object=> {
+        let response;
         if (object.id) {
-            const { data } = await request('/api/transport/comment', 'PUT', { body: object });
+            response = await request('/api/transport/comment', 'PUT', { body: object });
         } else {
-            const { data } = await request('/api/transport/comment', 'POST', { body: object });
-            console.log(data);
+            response = await request('/api/transport/comment', 'POST', { body: object });
         }
-
+        const { data } = response;
+        if (data) {
+            return data.id;
+        }
+        return null;
     }
 
 
@@ -160,10 +164,10 @@ function TransportList() {
                     <div className="table">
                         <div className="table__row table__row-header">
                             <div className="table__item">Направл.</div>
-                            <div className="table__item table__item-big">Транспорт</div>
+                            <div className="table__item table__item-bid">Транспорт</div>
                             <div className="table__item">Откуда</div>
                             <div className="table__item">Куда</div>
-                            <div className="table__item table__item-big">Ставка</div>
+                            <div className="table__item table__item-bid">Ставка</div>
                         </div>
                         {list.map(transport =>
                             <TransportItem

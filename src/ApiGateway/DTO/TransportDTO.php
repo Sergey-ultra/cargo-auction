@@ -18,9 +18,10 @@ final readonly class TransportDTO
         public int $priceWithoutTax,
         public int $priceWithTax,
         public int $priceCash,
+        public ?CommentShowDTO $comment,
         public DateTimeInterface $createdAt,
         public ?DateTimeInterface $updatedAt,
-        public CompanyDTO $company,
+        public CompanyWithContactsDTO $company,
     ){
     }
 }

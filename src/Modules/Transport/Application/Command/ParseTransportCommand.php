@@ -68,7 +68,7 @@ final class ParseTransportCommand extends Command
 
     private function fillRawData(): void
     {
-        $transportScriptString = $this->transportScriptString . "{\"page\":1,\"items_per_page\":10,\"filter\":{\"dates\":{\"date_from\":\"2024-02-29\",\"date_option\":\"today-plus\"},\"from\":{\"id\":151,\"type\":1,\"exact_only\":true},\"to\":{\"id\":86,\"type\":1,\"exact_only\":true},\"with_rate\":false}}'";
+        $transportScriptString = $this->transportScriptString . "{\"page\":1,\"items_per_page\":10,\"filter\":{\"dates\":{\"date_from\":\"2024-02-29\",\"date_option\":\"today-plus\"},\"from\":{\"id\":1,\"type\":0,\"exact_only\":true},\"to\":{\"id\":1,\"type\":0,\"exact_only\":true},\"with_rate\":false}}'";
         //sleep(rand(30, 190));
 
         $result = shell_exec($transportScriptString);
@@ -89,6 +89,7 @@ final class ParseTransportCommand extends Command
                 $account['firm_name'],
                 $account['ownership_id'],
                 $account['firm_type_id'],
+                null,
                 null
             );
 

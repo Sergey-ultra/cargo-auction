@@ -8,8 +8,8 @@ use App\Modules\Load\Infrastructure\Repository\LoadRepository;
 use App\Modules\User\Domain\Entity\User;
 use App\ValueObject\Point;
 use DateTimeInterface;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\PersistentCollection;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 
@@ -32,8 +32,8 @@ class Load
 
     public const PRICE_TYPE = [
         'negotiable' => 'Возможен торг',
-        'fix' => ' Без торга',
-        'request' => ' Запрос',
+        'fix' => 'Без торга',
+        'request' => 'Запрос',
         'auction' =>  'Торги',
     ];
     #[ORM\Id]
@@ -54,6 +54,8 @@ class Load
     #[Groups(['load'])]
     private DateTimeInterface $downloadingDate;
     #[ORM\Column]
+    private int $fromCityId;
+    #[ORM\Column]
     #[Groups(['load'])]
     private string $fromAddress;
     #[ORM\Column(type: 'float', nullable: true)]
@@ -66,6 +68,8 @@ class Load
     #[Groups(['load'])]
     private ?Point $fromPoint;
     #[ORM\Column]
+    private int $toCityId;
+    #[ORM\Column]
     #[Groups(['load'])]
     private string $toAddress;
     #[ORM\Column(type: 'float', nullable: true)]
@@ -77,6 +81,7 @@ class Load
     #[ORM\Column(name: 'to_point', type: 'point',  nullable: true)]
     #[Groups(['load'])]
     private ?Point $toPoint;
+
     #[Groups(['load'])]
     private ?int $distance;
     #[ORM\Column]
@@ -109,6 +114,8 @@ class Load
     #[ORM\Column]
     #[Groups(['load'])]
     private int $unloadingType;
+    #[ORM\Column]
+    private ?string $note;
     #[ORM\Column(name: 'created_at', type: 'datetime', options: ['default' => "CURRENT_TIMESTAMP"])]
     #[Groups(['load'])]
     private DateTimeInterface $createdAt;
@@ -117,7 +124,7 @@ class Load
     private ?DateTimeInterface $updatedAt;
 
     #[ORM\OneToMany(mappedBy: 'load', targetEntity: Bid::class)]
-    private Collection $bids;
+    private PersistentCollection $bids;
 
 //    public function __toString(): string
 //    {
@@ -154,6 +161,17 @@ class Load
     public function setDownloadingDate(DateTimeInterface $downloadingDate): self
     {
         $this->downloadingDate = $downloadingDate;
+        return $this;
+    }
+
+    public function getFromCityId(): int
+    {
+        return $this->fromCityId;
+    }
+
+    public function setFromCityId(int $fromCityId): self
+    {
+        $this->fromCityId = $fromCityId;
         return $this;
     }
 
@@ -198,6 +216,17 @@ class Load
     public function setFromPoint(Point $fromPoint): self
     {
         $this->fromPoint = $fromPoint;
+        return $this;
+    }
+
+    public function getToCityId(): int
+    {
+        return $this->toCityId;
+    }
+
+    public function setToCityId(int $toCityId): self
+    {
+        $this->toCityId = $toCityId;
         return $this;
     }
 
@@ -397,6 +426,17 @@ class Load
         return $this;
     }
 
+    public function getNote(): ?string
+    {
+        return $this->note;
+    }
+
+    public function setNote(?string $note): self
+    {
+        $this->note = $note;
+        return $this;
+    }
+
     public function getCreatedAt(): DateTimeInterface
     {
         return $this->createdAt;
@@ -432,9 +472,9 @@ class Load
     }
 
     /**
-     * @return Collection|Bid
+     * @return PersistentCollection<Bid>
      */
-    public function getBids(): Collection
+    public function getBids(): PersistentCollection
     {
         return $this->bids;
     }
@@ -453,9 +493,9 @@ class Load
         if ($this->bids->contains($bid)) {
             $this->bids->removeElement($bid);
 
-            if ($bid->getLoad() === $this) {
-                $bid->setLoad(null);
-            }
+//            if ($bid->getLoad() === $this) {
+//                $bid->setLoad(null);
+//            }
         }
         return $this;
     }

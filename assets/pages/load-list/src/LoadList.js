@@ -6,7 +6,7 @@ import Pagination from "../../../components/common/Pagination";
 import LoadItem from "./LoadItem";
 import SendBidModal from "../../../components/SendBidModal";
 import SaveFilterModal from "../../../components/SaveFilterModal";
-import AuthModal from "../../../components/AuthModal";
+import AuthModal from "../../../components/auth/AuthModal";
 import Filter from "../../../components/Filter";
 import {FilterContext} from "../../../context/filter.context";
 import {useHandleSelectOptions} from "../../../hooks/handleSelectOptions";
@@ -33,6 +33,29 @@ function LoadList(callback, deps) {
     const openSaveFilterModal = () => setOpenSaveFilterModal(true);
     const closeSaveFilterModal = () => setOpenSaveFilterModal(false);
 
+    const [addingComment, setAddingComment] = useState(null);
+    const toggleAddingComment = id => {
+        if (id === addingComment) {
+            setAddingComment(null);
+        } else {
+            setAddingComment(id);
+        }
+    }
+
+    const saveComment = async object=> {
+        let response;
+        if (object.id) {
+             response = await request('/api/load/comment', 'PUT', { body: object });
+        } else {
+             response = await request('/api/load/comment', 'POST', { body: object });
+        }
+        const { data } = response;
+        if (data) {
+            return data.id;
+        }
+       return null;
+    }
+
     const saveFilter = async(name) => {
         const { data } = await request('/api/load-filter', 'POST', { body: {name, filter, type: 'load'}});
         if (data.status === 'ok') {
@@ -50,11 +73,32 @@ function LoadList(callback, deps) {
     }
     const closeSendBidModal = () => setOpenSendBidModal(false);
 
+    const addBidToLoad = bid => {
+        const newList = list.map(load => {
+            if (load.id === currentLoadId) {
+                load.bids.count++;
+                load.bids.bids.push(bid);
+
+                if (bid.bid > load.bids.maxValue) {
+                    load.bids.maxValue = bid.bid;
+                }
+
+                return load;
+            }
+            return load;
+        })
+
+        setList(newList);
+    }
+
 
 
     const [isOpenAuthModal, setOpenAuthModal] = useState(false);
     const openAuthModal = () => setOpenAuthModal(true);
     const closeAuthModal = () => setOpenAuthModal(false);
+
+
+
 
     const fetchLoadList = async() => {
         const params = Object.assign(filter, {page}, {perPage}, {orderBy});
@@ -65,11 +109,14 @@ function LoadList(callback, deps) {
         setQuery(params);
 
         const { data } = await request('/api/load-list', 'GET', {params});
-        setList(data.list);
+
+        if (data.list && Array.isArray(data.list)) {
+            setList(data.list);
+        }
+
         setTotalCount(data.totalCount);
         setLastPage(data.lastPage);
     }
-
 
 
 
@@ -105,7 +152,11 @@ function LoadList(callback, deps) {
 
     return (
         <Fragment>
-            <SendBidModal handleClose={closeSendBidModal} isOpen={isOpenSendBidModal} currentLoadId={currentLoadId}/>
+            <SendBidModal
+                addBidToLoad={addBidToLoad}
+                handleClose={closeSendBidModal}
+                isOpen={isOpenSendBidModal}
+                currentLoadId={currentLoadId}/>
             <SaveFilterModal handleClose={closeSaveFilterModal} isOpen={isOpenSaveFilterModal} saveFilter={saveFilter}/>
             <AuthModal isOpen={isOpenAuthModal} onClose={closeAuthModal}/>
 
@@ -141,17 +192,21 @@ function LoadList(callback, deps) {
 
                     <div className="table">
                         <div className="table__row table__row-header">
+                            <div className="table__item table__item-direction">Направление</div>
                             <div className="table__item">Транспорт</div>
-                            <div className="table__item table__item-big">Маршрут</div>
                             <div className="table__item">Груз</div>
-                            <div className="table__item table__item-big">Ставка</div>
+                            <div className="table__item table__item-route">Маршрут</div>
+                            <div className="table__item table__item-bid">Ставка</div>
                         </div>
                         {list.map(load =>
                             <LoadItem
                                 key={load.id}
                                 load={load}
                                 openSendBidModal={openSendBidModal}
-                                openAuthModal={openAuthModal}/>
+                                openAuthModal={openAuthModal}
+                                addingComment={addingComment}
+                                toggleAddingComment={toggleAddingComment}
+                                saveComment={saveComment}/>
                         )}
                     </div>
 

@@ -42,7 +42,8 @@ class ChatRepository extends ServiceEntityRepository implements ChatRepositoryIn
                 ->setDescription($partner->getName())
                 ->setDraft($draftMessage)
                 ->setOwner($owner)
-                ->setPartner($partner);
+                ->setPartner($partner)
+                ->setCreatedAt();
 
             $this->_em->persist($existing);
             $this->_em->flush();

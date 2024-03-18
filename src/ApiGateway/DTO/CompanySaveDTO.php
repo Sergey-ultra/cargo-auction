@@ -10,6 +10,7 @@ final readonly class CompanySaveDTO
         public string $name,
         public int $ownershipId,
         public int $typeId,
+        public ?int $cityId,
         public ?string $description,
     ){}
 }

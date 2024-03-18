@@ -11,6 +11,7 @@ final readonly class ContactDTO
         public string $name,
         public ?string $phone,
         public ?string $mobilePhone,
+        public ?string $email,
     )
     {
     }

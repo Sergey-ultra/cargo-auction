@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\ApiGateway\DTO;
 
-final readonly class TransportCommentDTO
+class CommentShowDTO
 {
     public function __construct(
+        public int $id,
         public string $comment,
-        public string $userName,
-    ){}
+        public int $entityId,
+    ){
+    }
 }

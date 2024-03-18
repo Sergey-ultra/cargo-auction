@@ -19,6 +19,11 @@ Run fixtures
 php bin/console doctrine:fixtures:load
 ```
 
+Create JWT keys
+```bash
+php bin/console lexik:jwt:generate-keypair
+```
+
 Load cities to DB
 ```bash
 php bin/console load:cities

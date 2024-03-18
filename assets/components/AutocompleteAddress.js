@@ -2,7 +2,7 @@ import React, {useState} from "react";
 import {Autocomplete, TextField} from "@mui/material";
 import {useHttp} from "../hooks/api";
 
-function AutocompleteAddress({value, setAddressValue, label}) {
+function AutocompleteAddress({value, setCityObject, label}) {
     const { request, isLoading, error, clearError } = useHttp();
     const [localValue, setLocalValue] = useState(value);
     const [citiesList, setCitiesList] = useState([]);
@@ -31,7 +31,7 @@ function AutocompleteAddress({value, setAddressValue, label}) {
         onChange={(event, newValue) => {
             if (newValue && newValue.name) {
                 setLocalValue(newValue.name);
-                setAddressValue(newValue.name);
+                setCityObject(newValue);
                 setCitiesList([]);
             }
         }}

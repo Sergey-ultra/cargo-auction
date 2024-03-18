@@ -18,8 +18,9 @@ class BidController extends ApiController
     public function createBid(int $id, #[MapRequestPayload] BidCreateDTO $payload,BidApi $bidApi): JsonResponse
     {
         try {
-            $bidId = $bidApi->saveBid($payload->bid, $id);
-            return $this->apiJson(['data' => $bidId], Response::HTTP_CREATED);
+            $bid = $bidApi->saveBid($payload->bid, $id);
+
+            return $this->apiJson(['data' => $bid], Response::HTTP_CREATED);
         } catch (\Throwable $e) {
             return $this->json(['error' => $e], Response::HTTP_INTERNAL_SERVER_ERROR);
         }

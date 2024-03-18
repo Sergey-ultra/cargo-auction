@@ -29,6 +29,23 @@ class LoadRepository extends ServiceEntityRepository implements LoadRepositoryIn
         parent::__construct($registry, Load::class);
     }
 
+    public function getById(int $id): ?Load
+    {
+        $item = $this->createQueryBuilder('c')
+            ->select('c, ST_Distance(c.fromPoint, c.toPoint)/1000 distance')
+            ->where("c.id = :id")
+            ->setParameter("id", $id)
+            ->getQuery()
+            ->getSingleResult();
+
+        if (!$item) {
+            return null;
+        }
+
+        ($item[0])->setDistance((int)$item['distance']);
+        return $item[0];
+    }
+
     public function getList(
         ?FilterDTO     $filter,
         int            $page = 1,

@@ -26,6 +26,11 @@
         "@emotion/react": "^11.11.3",
         "@emotion/styled": "^11.11.0",
         "@mui/material": "^5.15.5",
-        "centrifuge": "^5.0.1"
+        "@mui/x-date-pickers": "^7.1.1",
+        "centrifuge": "^5.0.1",
+        "dayjs": "^1.11.10",
+        "leaflet": "^1.9.4",
+        "sass": "^1.74.1",
+        "sass-loader": "^13.3.3"
     }
 }

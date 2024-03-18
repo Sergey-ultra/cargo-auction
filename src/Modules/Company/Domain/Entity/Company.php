@@ -18,6 +18,8 @@ class Company
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
+    #[ORM\Column]
+    private ?int $cityId;
     #[ORM\Column(length: 255)]
     private string $name;
     #[ORM\Column]
@@ -42,6 +44,17 @@ class Company
     public function setId(?int $id): self
     {
         $this->id = $id;
+        return $this;
+    }
+
+    public function getCityId(): ?int
+    {
+        return $this->cityId;
+    }
+
+    public function setCityId(?int $cityId): self
+    {
+        $this->cityId = $cityId;
         return $this;
     }
 

@@ -11,26 +11,33 @@ function TransportItem({
 }) {
     const userId = window?.authData?.userId;
     const [comment, setComment] = useState({
-        id: null,
-        comment: ''
+        id: transport.comment ? transport.comment.id : null,
+        comment: transport.comment ? transport.comment.comment : '',
+        entityId: transport.id,
     });
 
-
+    const sendComment = async () => {
+        const id = await saveComment(comment);
+        if (id) {
+            setComment({ ...comment, id });
+            toggleAddingComment(transport.id);
+        }
+    }
     return (
         <div className="table__row" key={transport.id}>
             <div className="table__item">RUS</div>
-            <div className="table__item table__item-big">
+            <div className="table__item table__item-bid">
                 {transport.bodyType}
                 {transport.weight}т. {transport.volume}м3
                 {transport.bodyType}
             </div>
-            <div className="table__item text-bold">
-                <span>{transport.fromName}</span>
+            <div className="table__item">
+                <span className="text-bold">{transport.fromName}</span>
             </div>
-            <div className="table__item text-bold">
-                <span>{transport.toName}</span>
+            <div className="table__item">
+                <span className="text-bold">{transport.toName}</span>
             </div>
-            <div className="table__item table__item-big">
+            <div className="table__item table__item-bid">
                 {!userId && (<span className="text-gray">скрыто</span>)
                     ||
                     <Fragment>
@@ -68,13 +75,15 @@ function TransportItem({
             </div>
 
             <div className="table-bottom">
-                <div className="contacts">
+                <div className="table__left">
                     {userId && (
                             <Fragment>
                                 <div className="contacts__wrapper">
                                     <div className="table__contact">
-                                        <div>
+                                        <div className="contact">
                                             <span className="contact_send">{transport.company.fullName}</span>
+                                            <span>Код: {transport.company.id}, </span>
+                                            <span>{transport.company.cityName}, </span>
                                             <span>{transport.company.type}</span>
                                         </div>
                                         {transport.company.contacts.map(contact =>
@@ -104,11 +113,72 @@ function TransportItem({
                                     <a className="contact_send" href="#">Жалоба</a>
                                 </div>
                                 {addingComment === transport.id &&
-                                    <div className="speech-bubble">
-                                        <TextField size="small" value={ comment.comment } onChange={e => setComment({ ...comment, comment: e.target.value })}/>
-                                        <Button sx={{ m: 1, width: '25ch' }} variant="contained" size="small" onClick={() => saveComment(comment)}>Сохранить</Button>
-                                        <Button onClick={() => toggleAddingComment(transport.id)}>Отмена</Button>
-                                    </div>}
+                                    <div className="speech">
+                                        <TextField
+                                            sx={{m: 1}}
+                                            fullWidth
+                                            size="small"
+                                            value={ comment.comment }
+                                            onChange={e => setComment({ ...comment, comment: e.target.value })}/>
+                                        <div className="speech__buttons">
+                                            <Button sx={{ width: '20ch' }} variant="contained" size="small" onClick={sendComment}>Сохранить</Button>
+                                            <Button onClick={() => toggleAddingComment(transport.id)}>Отмена</Button>
+                                        </div>
+                                    </div>
+                                }
+                                {comment.id &&
+                                    <div className="speech__comment">
+                                        <div className="speech__avatar">
+                                            <svg fill="var(--glz-color-neutral-tone-4)"
+                                                 stroke="var(--glz-color-neutral-tone-4)" strokeWidth="0"
+                                                 data-qa="icon" viewBox="0 0 12 12" width="12" height="12">
+                                                <use href="#ic_human">
+                                                    <symbol id="ic_human" viewBox="0 0 16 16">
+                                                        <path fillRule="evenodd" clipRule="evenodd"
+                                                              d="M8 10.012c1.684 0 3.439.366 5.263 1.1 1.825.732 2.737 1.691 2.737 2.876V16H0v-2.012c0-1.185.912-2.144 2.737-2.877 1.824-.733 3.579-1.1 5.263-1.1ZM8 8c-1.092 0-2.027-.39-2.807-1.17-.78-.78-1.17-1.715-1.17-2.807 0-1.091.39-2.035 1.17-2.83C5.973.398 6.908 0 8 0c1.092 0 2.027.398 2.807 1.193.78.795 1.17 1.739 1.17 2.83 0 1.092-.39 2.028-1.17 2.807C10.027 7.61 9.092 8 8 8Z">
+
+                                                        </path>
+                                                    </symbol>
+                                                </use>
+                                            </svg>
+                                        </div>
+                                        <div className="speech__inner">
+                                            <span>{comment.comment}</span>
+                                            <div className="speech__icons">
+                                                <button className="speech__button icon">
+                                                    <span className="speech__icon">
+                                                        <svg fill="var(--glz-color-neutral-tone-4)"
+                                                             stroke="var(--glz-color-neutral-tone-4)" strokeWidth="0"
+                                                             hoverColor="var(--glz-color-neutral-tone-5)"
+                                                             viewBox="0 0 12 12" width="12" height="12">
+                                                            <use href="#ic_edit">
+                                                                <symbol id="ic_edit" viewBox="0 0 18 18"><path
+                                                                    fillRule="evenodd" clipRule="evenodd"
+                                                                    d="M17.719 4.031 15.89 5.86l-3.75-3.75L13.969.281A.954.954 0 0 1 14.672 0c.281 0 .515.094.703.281l2.344 2.344a.954.954 0 0 1 .281.703.954.954 0 0 1-.281.703ZM0 14.25 11.063 3.187l3.75 3.75L3.75 18H0v-3.75Z"></path></symbol>
+                                                            </use>
+                                                        </svg>
+                                                    </span>
+                                                </button>
+                                                <button className="speech__button icon">
+                                                    <span className="speech__icon">
+                                                        <svg fill="var(--glz-color-neutral-tone-4)"
+                                                             stroke="var(--glz-color-neutral-tone-4)"
+                                                             strokeWidth="0"
+                                                             hoverColor="var(--glz-color-neutral-tone-5)"
+                                                             viewBox="0 0 12 12" width="12" height="12">
+                                                            <use href="#ic_delete-outline">
+                                                                <symbol id="ic_delete-outline" viewBox="0 0 18 18">
+                                                                    <path fillRule="evenodd" clipRule="evenodd"
+                                                                          d="M6.75 7.125v6.75c0 .11-.035.2-.105.27a.365.365 0 0 1-.27.105h-.75c-.11 0-.2-.035-.27-.105a.365.365 0 0 1-.105-.27v-6.75c0-.11.035-.2.105-.27.07-.07.16-.105.27-.105h.75c.11 0 .2.035.27.105.07.07.105.16.105.27Zm3 0v6.75c0 .11-.035.2-.105.27a.365.365 0 0 1-.27.105h-.75c-.11 0-.2-.035-.27-.105a.365.365 0 0 1-.105-.27v-6.75c0-.11.035-.2.105-.27.07-.07.16-.105.27-.105h.75c.11 0 .2.035.27.105.07.07.105.16.105.27Zm3 0v6.75c0 .11-.035.2-.105.27a.365.365 0 0 1-.27.105h-.75c-.11 0-.2-.035-.27-.105a.365.365 0 0 1-.105-.27v-6.75c0-.11.035-.2.105-.27.07-.07.16-.105.27-.105h.75c.11 0 .2.035.27.105.07.07.105.16.105.27Zm1.5 8.484V4.5H3.75v11.11a1.33 1.33 0 0 0 .252.79c.059.067.1.1.123.1h9.75c.023 0 .065-.033.123-.1a1.33 1.33 0 0 0 .252-.791ZM6.375 3h5.25l-.563-1.371a.33.33 0 0 0-.199-.129H7.148a.33.33 0 0 0-.199.129L6.375 3Zm10.875.375v.75c0 .11-.035.2-.105.27a.365.365 0 0 1-.27.105H15.75v11.11c0 .648-.184 1.208-.55 1.681-.368.473-.81.709-1.325.709h-9.75c-.516 0-.957-.229-1.324-.686-.367-.457-.551-1.01-.551-1.658V4.5H1.125c-.11 0-.2-.035-.27-.105a.365.365 0 0 1-.105-.27v-.75c0-.11.035-.2.105-.27.07-.07.16-.105.27-.105h3.621l.82-1.957c.118-.29.329-.535.633-.738C6.504.102 6.813 0 7.125 0h3.75c.313 0 .621.102.926.305.304.203.515.449.633.738L13.254 3h3.621c.11 0 .2.035.27.105.07.07.105.16.105.27Z"></path>
+                                                                </symbol>
+                                                            </use>
+                                                        </svg>
+                                                    </span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
                             </Fragment>)
 
                         ||
@@ -144,8 +214,9 @@ function TransportItem({
                         </Fragment>
                     ) || ''}
 
-                    <Tooltip title="Написать комментарий. Он будет виден только вам и сотрудникам компании" placement="top">
-                        <div className="icon-note" onClick={() => toggleAddingComment(transport.id)}>
+                    <Tooltip title="Написать комментарий. Он будет виден только вам и сотрудникам компании"
+                             placement="top">
+                        <div className="icon icon-note" onClick={() => toggleAddingComment(transport.id)}>
                             <svg fill="#ffffff" stroke="#ffffff" strokeWidth="0" data-qa="icon" viewBox="0 0 12 12"
                                  width="12" height="12">
                                 <path fillRule="evenodd" clipRule="evenodd"
@@ -156,7 +227,8 @@ function TransportItem({
 
                     <div>доб <span>{transport.createdAt}</span></div>
                     {transport.updatedAt && transport.createdAt !== transport.updatedAt &&
-                        <div>изм {transport.updatedAt}</div>}
+                        <div>изм {transport.updatedAt}</div>
+                    }
                 </div>
             </div>
         </div>
