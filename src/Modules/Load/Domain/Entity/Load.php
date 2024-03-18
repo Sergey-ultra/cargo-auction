@@ -453,9 +453,9 @@ class Load
         if ($this->bids->contains($bid)) {
             $this->bids->removeElement($bid);
 
-            if ($bid->getLoad() === $this) {
-                $bid->setLoad(null);
-            }
+//            if ($bid->getLoad() === $this) {
+//                $bid->setLoad(null);
+//            }
         }
         return $this;
     }
