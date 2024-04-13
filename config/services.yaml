@@ -30,5 +30,14 @@ services:
         arguments:
             $transportScriptString: '%env(PARSING_TRANSPORT_SCRIPT)%'
             $cityScriptString: '%env(PARSING_CITY_SCRIPT)%'
+#    hwi_oauth.user.provider.entity:
+#
 
+    my.oauth_aware.user_provider.service:
+        class: HWI\Bundle\OAuthBundle\Security\Core\User\EntityUserProvider
+        arguments:
+            $class: App\Modules\User\Domain\Entity\User
+            $properties:
+                'facebook': 'facebook'
+                'google': 'google'
 

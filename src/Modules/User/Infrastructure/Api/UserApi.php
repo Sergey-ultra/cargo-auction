@@ -27,6 +27,11 @@ final readonly class UserApi
         return $this->userRepository->find($userId);
     }
 
+    public function getUserByEmail(string $email): ?User
+    {
+        return $this->userRepository->findOneBy(['email' => $email]);
+    }
+
     /**
      * @param int $companyId
      * @return User[]
@@ -53,10 +58,11 @@ final readonly class UserApi
         return $collection;
     }
 
-    public function save(UserPayloadDTO $payload): void
+    public function save(UserPayloadDTO $payload): User
     {
         $user = $this->factory->create($payload);
         $this->userRepository->save($user);
+        return $user;
     }
 
     public function saveRandomUser(string $name, int $companyId, ?string $phoneString, ?string $mobilePhoneString): void

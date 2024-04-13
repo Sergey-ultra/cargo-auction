@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace App\ApiGateway\Controller\Api;
 
-
 use App\ApiGateway\DTO\CommentDTO;
 use App\ApiGateway\DTO\CommentRequestDTO;
-use App\ApiGateway\DTO\IdsDTO;
 use App\ApiGateway\DTO\LoadCreateDTO;
 use App\ApiGateway\DTO\LoadFilter;
 use App\Modules\Load\Infrastructure\Api\CommentApi;

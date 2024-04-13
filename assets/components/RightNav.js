@@ -4,12 +4,26 @@ import {Button} from "@mui/material";
 import AuthModal from "./auth/AuthModal";
 
 export default function RightNav() {
-    const isAuth = window.authData && window.authData.userId;
+    const isAuth = window.authData && window?.authData?.userId;
     const email = window?.authData?.email;
 
     const [isOpenAuthModal, setOpenAuthModal] = useState(false);
-    const handleClickOpen = () => setOpenAuthModal(true);
+
+    const [showMode, setShowMode] = useState('login');
+    const showLogin = () => setShowMode('login');
+    const showRegister = () => setShowMode('register');
+
+    const showRegisterModal = () => {
+        openAuthModal();
+        showRegister();
+    }
+
+    const openAuthModal = () => {
+        setOpenAuthModal(true);
+        showLogin();
+    }
     const closeAuthModal = () => setOpenAuthModal(false);
+
 
 
 
@@ -23,11 +37,13 @@ export default function RightNav() {
 
     return (
         <div className="right">
-            <Button variant="contained" className="button button-primary button-small" sx={{ marginRight: 2 }} onClick={handleClickOpen}>
+            <Button variant="contained" className="button button-primary button-small" sx={{ marginRight: 2 }} onClick={openAuthModal}>
                 Вход
             </Button>
-            <a className="button button-secondary button-small" href="/register">Регистрация</a>
-            <AuthModal isOpen={isOpenAuthModal} onClose={closeAuthModal}/>
+            <Button className="button button-secondary button-small" onClick={showRegisterModal}>
+                Регистрация
+            </Button>
+            <AuthModal isOpen={isOpenAuthModal} onClose={closeAuthModal} showMode={showMode} showLogin={showLogin} showRegister={showRegister}/>
         </div>
     );
 }

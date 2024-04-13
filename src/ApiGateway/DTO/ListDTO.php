@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\ApiGateway\DTO;
 
-readonly class ListDTO
+final readonly class ListDTO
 {
     public function __construct(
         public array $list,

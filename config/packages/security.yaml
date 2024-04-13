@@ -13,28 +13,43 @@ security:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
-        api:
-            pattern: ^/api
-            jwt: ~
-        login:
+#        api:
+#            pattern: ^api/
 #            stateless: true
+#            user_checker: App\Modules\User\Application\Security\UserChecker
+#            jwt: ~
+        login:
+            pattern: ^/api/sign-in
+            stateless: true
             json_login:
                 login_path: app_sign_in
                 check_path: app_sign_in
-                success_handler: lexik_jwt_authentication.handler.authentication_success
+                success_handler: App\Modules\User\Application\Security\AuthenticationSuccessHandler
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
 
             #                enable_csrf: true
 
 
         main:
-#            stateless: true
-            lazy: true
+            pattern: ^/
+            stateless: true
             jwt: ~
+            entry_point:
+                jwt
+            lazy: true
             provider: app_user_provider
             logout:
                 path: app_sign_out
 #                handlers: [ App\Service\Authentication\LogoutHandler ]
+#            oauth:
+#                resource_owners:
+#                    facebook: "/login/facebook"
+#                    google: "/login/google"
+#                login_path: /login
+#                use_forward: false
+#                failure_path: /login
+#                oauth_user_provider:
+#                    service: my.oauth_aware.user_provider.service
 
 
             # activate different ways to authenticate
@@ -48,7 +63,10 @@ security:
     access_control:
         # - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }
+        - { path: ^/, roles: PUBLIC_ACCESS }
         - { path: ^/app, roles: ROLE_USER }
+        - { path: ^/api, roles: PUBLIC_ACCESS }
+
 
 when@test:
     security:

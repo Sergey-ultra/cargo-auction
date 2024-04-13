@@ -18,4 +18,5 @@ return [
     Sentry\SentryBundle\SentryBundle::class => ['prod' => true],
     Fresh\CentrifugoBundle\FreshCentrifugoBundle::class => ['all' => true],
     Lexik\Bundle\JWTAuthenticationBundle\LexikJWTAuthenticationBundle::class => ['all' => true],
+    HWI\Bundle\OAuthBundle\HWIOAuthBundle::class => ['all' => true],
 ];

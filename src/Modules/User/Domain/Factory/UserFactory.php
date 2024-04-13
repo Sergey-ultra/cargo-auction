@@ -13,7 +13,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 class UserFactory
 {
     private Generator $faker;
-    public function __construct(private UserPasswordHasherInterface $userPasswordHasher)
+    public function __construct(private readonly UserPasswordHasherInterface $userPasswordHasher)
     {
         $this->faker = Factory::create();
     }
@@ -24,10 +24,10 @@ class UserFactory
         $user
             ->setName($payload->name)
             ->setEmail($payload->email)
-            ->setRoles($payload->roles);
+            ->setRoles([$payload->role]);
 
         $user->setPassword(
-            $this->userPasswordHasher->hashPassword($user, $payload->plainPassword)
+            $this->userPasswordHasher->hashPassword($user, $payload->password)
         );
 
         return $user;

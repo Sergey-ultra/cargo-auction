@@ -29,6 +29,7 @@
         "@mui/x-date-pickers": "^7.1.1",
         "centrifuge": "^5.0.1",
         "dayjs": "^1.11.10",
+        "js-cookie": "^3.0.5",
         "leaflet": "^1.9.4",
         "sass": "^1.74.1",
         "sass-loader": "^13.3.3"

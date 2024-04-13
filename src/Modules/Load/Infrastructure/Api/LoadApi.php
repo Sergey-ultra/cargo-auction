@@ -228,8 +228,8 @@ final readonly class LoadApi
             $contacts[] = new ContactDTO(
                 $companyContact->getId(),
                 $companyContact->getName(),
-                $companyContact->getPhone()->getPhone(),
-                $companyContact->getPhone()->getMobilePhone(),
+                $companyContact->getPhone()?->getPhone(),
+                $companyContact->getPhone()?->getMobilePhone(),
                 $companyContact->getEmail(),
             );
         }

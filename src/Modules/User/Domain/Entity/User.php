@@ -16,6 +16,18 @@ use Symfony\Component\Security\Core\User\UserInterface;
 #[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface, CentrifugoUserInterface
 {
+    const ROLES = [
+        'expeditor' => 'Экспедитор',
+        'owner' => 'Грузовладелец',
+        'carrier' => 'Перевозчик',
+    ];
+
+    const ROLE_VALUES = [
+        'expeditor',
+        'owner',
+        'carrier',
+    ];
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]

@@ -1,5 +1,7 @@
 import React, {Fragment, useState} from 'react';
 import {Button, Menu, MenuItem} from "@mui/material";
+import Cookies from 'js-cookie';
+
 
 export default function MenuUser({ email }) {
     const [dropAnchorEl, setDropAnchorEl] = useState(null);
@@ -16,10 +18,13 @@ export default function MenuUser({ email }) {
 
     const closeDrop = () => setDropAnchorEl(null);
 
-    // const logout = () => {
-    //     sessionStorage.removeItem('jwt');
-    //     closeDrop();
-    // }
+
+
+    const logout = () => {
+        Cookies.remove('jwt')
+        closeDrop();
+        window.location.reload();
+    }
 
     const closeNotification = () => setNotificationAnchorEl(null);
 
@@ -92,8 +97,8 @@ export default function MenuUser({ email }) {
                 <MenuItem onClick={closeDrop}>
                     <a href="#">Баланс</a>
                 </MenuItem>
-                <MenuItem onClick={closeDrop}>
-                    <a href="/sign-out">Выйти</a>
+                <MenuItem onClick={logout}>
+                    <span>Выйти</span>
                 </MenuItem>
             </Menu>
         </Fragment>

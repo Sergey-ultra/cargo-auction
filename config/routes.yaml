@@ -4,3 +4,7 @@ controllers:
         namespace: App\ApiGateway\Controller
     type: attribute
 
+app_sign_in:
+    path: /api/sign-in
+
+

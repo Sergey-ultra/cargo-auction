@@ -13,6 +13,7 @@
         "doctrine/orm": "^2.16",
         "fresh/centrifugo-bundle": "^4.2",
         "fzaninotto/faker": "^1.5",
+        "hwi/oauth-bundle": "^2.2",
         "jsor/doctrine-postgis": "^2.2",
         "lexik/jwt-authentication-bundle": "^2.20",
         "php-amqplib/rabbitmq-bundle": "^2.14",
