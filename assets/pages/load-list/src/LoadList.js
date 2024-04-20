@@ -101,7 +101,22 @@ function LoadList(callback, deps) {
 
 
     const fetchLoadList = async() => {
-        const params = Object.assign(filter, {page}, {perPage}, {orderBy});
+        const params = {
+            fromAddressId: filter.from.id,
+            fromAddress: filter.from.name,
+            fromRadius: filter.fromRadius,
+            toAddressId: filter.to.id,
+            toAddress: filter.to.name,
+            toRadius: filter.toRadius,
+            weightMin: filter.weightMin,
+            weightMax: filter.weightMax,
+            volumeMin: filter.volumeMin,
+            volumeMax: filter.volumeMax,
+            page,
+            perPage,
+            orderBy
+        };
+
         if (isMy) {
             params.isMy = true;
         }

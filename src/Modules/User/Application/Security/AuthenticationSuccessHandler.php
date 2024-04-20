@@ -23,7 +23,7 @@ class AuthenticationSuccessHandler implements AuthenticationSuccessHandlerInterf
     public function onAuthenticationSuccess(Request $request, TokenInterface $token): Response
     {
         if (!$token->getUser()->isVerified()) {
-            return new JsonResponse(['not_verified' => true]);
+            return new JsonResponse(['is_required_email_verification' => true]);
         }
 
         return $this->baseHandler->onAuthenticationSuccess($request, $token);

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\User\Domain\Factory;
 
+use App\Modules\User\Domain\Entity\Phone;
 use App\Modules\User\Domain\Entity\User;
 use App\Modules\User\Infrastructure\DTO\UserPayloadDTO;
 use Faker\Factory;
@@ -20,11 +21,17 @@ class UserFactory
 
     public function create(UserPayloadDTO $payload): User
     {
+        $phone = new Phone();
+        $phone->setPhone($payload->phone);
+
         $user = new User();
         $user
+            ->setPhone($phone)
             ->setName($payload->name)
             ->setEmail($payload->email)
             ->setRoles([$payload->role]);
+
+        $phone->setUser($user);
 
         $user->setPassword(
             $this->userPasswordHasher->hashPassword($user, $payload->password)

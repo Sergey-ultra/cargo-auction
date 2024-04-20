@@ -21,8 +21,8 @@ class Phone
     #[ORM\Column(nullable: true)]
     private ?string $mobilePhone;
 
-    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'phones')]
-    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\OneToOne(inversedBy: 'phones', targetEntity: User::class)]
+//    #[ORM\JoinColumn(nullable: true)]
     private ?User $user;
 
     public function getId(): ?int

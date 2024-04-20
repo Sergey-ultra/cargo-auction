@@ -16,22 +16,27 @@ export default function AuthModal({ onClose, isOpen, showMode, showLogin, showRe
 
     const [isRequiredEmailVerification, setIsRequiredEmailVerification] = useState(false);
 
+    const closeRequiredEmailVerification = () => {
+        onClose();
+        setIsRequiredEmailVerification(false);
+    }
 
-    const [authHeader, setAuthHeader] = useState('Войдите с помощью');
 
-    useEffect(() => {
-        switch (showMode) {
-            case 'login':
-                setAuthHeader('Войдите с помощью');
-                break;
-            case 'registration':
-                setAuthHeader('Регистрация');
-                break;
-            case 'recover':
-                setAuthHeader('Восстановить пароль');
-                break;
-        }
-    },[showMode])
+    // const [authHeader, setAuthHeader] = useState('Войдите с помощью');
+    //
+    // useEffect(() => {
+    //     switch (showMode) {
+    //         case 'login':
+    //             setAuthHeader('Войдите с помощью');
+    //             break;
+    //         case 'registration':
+    //             setAuthHeader('Регистрация');
+    //             break;
+    //         case 'recover':
+    //             setAuthHeader('Восстановить пароль');
+    //             break;
+    //     }
+    // },[showMode])
 
     // let authHeader = () => {
     //     switch (showMode) {
@@ -66,7 +71,7 @@ export default function AuthModal({ onClose, isOpen, showMode, showLogin, showRe
 
         if (response.token) {
             window.location.reload();
-        } else if (response.not_verified) {
+        } else if (response.is_required_email_verification) {
             setIsRequiredEmailVerification(true);
         }
     }
@@ -84,13 +89,13 @@ export default function AuthModal({ onClose, isOpen, showMode, showLogin, showRe
 
     return (
         <Dialog onClose={onClose} open={isOpen}>
-            <DialogTitle>{authHeader}</DialogTitle>
+            <DialogTitle>{showMode === 'login' ? 'Войдите с помощью' : 'Регистрация'}</DialogTitle>
             <DialogContent>
                 {isRequiredEmailVerification
                     ?
                     <div>
                         <div className="form-group">
-                            <span>На ваш email выслано подтверждение аккаунта</span>
+                            <span>Необходимо подтверждение email</span>
                         </div>
                         <div className="form-group">
                             <Button className="btn" onClick={resendVerificationEmail}>
@@ -98,7 +103,7 @@ export default function AuthModal({ onClose, isOpen, showMode, showLogin, showRe
                             </Button>
                         </div>
                         <div className="form-group">
-                            <Button className="btn" onClick={onClose}>Понятно</Button>
+                            <Button className="btn" onClick={closeRequiredEmailVerification}>Понятно</Button>
                         </div>
                     </div>
 
@@ -106,30 +111,44 @@ export default function AuthModal({ onClose, isOpen, showMode, showLogin, showRe
                     <div className="auth">
                         {showMode === 'login' &&
                             <div>
+                                <form onSubmit={login}>
+                                    <p className="auth__meta control-label">Email</p>
+                                    <div className="form-item">
+                                        <input type="text" id="username" name="username" value={form.username}
+                                               className="fullWidth"
+                                               onChange={changeHandler}/>
+                                    </div>
+                                    <p className="auth__meta control-label">Password</p>
+                                    <div className="form-item">
+                                        <input type="password" id="password" name="password" value={form.password}
+                                               className="fullWidth"
+                                               onChange={changeHandler}/>
+                                    </div>
+
+
+                                    <Button variant="contained" fullWidth className="button button-primary"
+                                            type="submit"
+                                            sx={{marginRight: 2}} disabled={isLoading}>Войти</Button>
+                                </form>
+                                <div className="section-hr">
+                                    <div className="section-hr__line"></div>
+                                    <div className="section-hr__text"> или</div>
+                                    <div className="section-hr__line"></div>
+                                </div>
                                 <div className="auth__choice">
                                     <div className="auth__wrap">
-                                        <div className="auth__wrap-el auth__with-g"
+                                        <div className="auth__wrap-el"
                                              onClick={() => loginWithService('google')}>
                                             <div className="icon">
-                                                <svg xmlns="http://www.w3.org/2000/svg" fillRule="evenodd"
-                                                     clipRule="evenodd" data-name="Layer 21"
-                                                     imageRendering="optimizeQuality"
-                                                     shapeRendering="geometricPrecision"
-                                                     textRendering="geometricPrecision"
-                                                     viewBox="0 0 31 32">
-                                                    <path fill="#fbbc05"
-                                                          d="M6.4 16c0-1.04.17-2.04.48-2.97l-5.4-4.12C.43 11.05-.16 13.45-.16 16s.59 4.95 1.64 7.08l5.39-4.12c-.3-.93-.47-1.93-.47-2.96z"/>
-                                                    <path fill="#ea4335"
-                                                          d="M15.86 6.55c2.26 0 4.3.8 5.9 2.11L26.42 4c-2.84-2.47-6.48-4-10.56-4C9.53 0 4.09 3.62 1.48 8.91l5.4 4.12c1.24-3.77 4.78-6.48 8.98-6.48z"/>
-                                                    <path fill="#34a853"
-                                                          d="M15.86 25.45c-4.2 0-7.74-2.71-8.98-6.48l-5.4 4.12C4.09 28.38 9.53 32 15.86 32c3.91 0 7.64-1.39 10.44-3.99l-5.12-3.95c-1.44.91-3.26 1.39-5.32 1.39z"/>
-                                                    <path fill="#4285f4"
-                                                          d="M31.16 16c0-.94-.15-1.96-.37-2.91H15.86v6.18h8.6c-.43 2.11-1.6 3.73-3.28 4.79l5.12 3.95c2.95-2.73 4.86-6.8 4.86-12.01z"/>
+                                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path
+                                                        d="M16.4 13.6a4.4 4.4 0 0 1-3.6 3.14 4.92 4.92 0 0 1-5.6-4.36 4.8 4.8 0 0 1 6.61-4.82.4.4 0 0 0 .51-.17l1.16-2.12a.42.42 0 0 0-.19-.56A8 8 0 0 0 4 12.23 8.08 8.08 0 0 0 11.66 20 8 8 0 0 0 20 12.42v-1.6a.4.4 0 0 0-.4-.4h-7.2a.4.4 0 0 0-.4.4v2.4a.4.4 0 0 0 .4.4h4"
+                                                        fill="#EA4335"></path>
                                                 </svg>
                                             </div>
                                         </div>
 
-                                        <div className="auth__wrap-el auth__with-fb"
+                                        <div className="auth__wrap-el"
                                              onClick={() => loginWithService('facebook')}>
                                             <div className="icon">
                                                 <svg xmlns="http://www.w3.org/2000/svg" fillRule="evenodd"
@@ -147,31 +166,17 @@ export default function AuthModal({ onClose, isOpen, showMode, showLogin, showRe
 
                                     </div>
                                 </div>
-                                <div className="section-hr">
-                                    <div className="section-hr__line"></div>
-                                    <div className="section-hr__text"> или</div>
-                                    <div className="section-hr__line"></div>
-                                </div>
-                                <form onSubmit={login}>
-                                    <div className="form-item">
-                                        <input type="text" id="username" name="username" value={form.username}
-                                               onChange={changeHandler} placeholder="Email"/>
-                                    </div>
-                                    <div className="form-item">
-                                        <input type="password" id="password" name="password" value={form.password}
-                                               onChange={changeHandler} placeholder="Password"/>
-                                    </div>
 
-
-                                    <Button variant="outlined" type="submit"
-                                            className="button button-primary button-small"
-                                            sx={{marginRight: 2}} disabled={isLoading}>Войти</Button>
-
-                                    <Button className="login" onClick={showRegister}>Регистрация</Button>
-                                </form>
+                                <p className="auth__hint">
+                                    Нет аккаунта?
+                                    <span className="auth__hintText login" onClick={showRegister}>Регистрация</span>
+                                </p>
                             </div>
                         }
-                        {showMode === 'register' && <Register showLogin={showLogin}/>}
+                        {showMode === 'register' && <Register
+                            showLogin={showLogin}
+                            setIsRequiredEmailVerification={setIsRequiredEmailVerification}
+                        />}
                     </div>
                 }
             </DialogContent>

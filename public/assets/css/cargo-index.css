@@ -1,12 +1,4 @@
-:root {
-    --glz-color-primary: #2277cc;
-    --glz-color-warning: #f0af0d;
-    --glz-color-success-tone-2: #008300;
-    --glz-color-primary-tone-1: #1f6bb8;
-    --glz-color-neutral-tone-3: #b5babf;
-    --glz-color-warning-tone-3: #fef7e7;
-    --glz-color-neutral-tone-4: #838b94;
-}
+
 .add {
     margin-bottom: 15px;
     font-size: 18px;

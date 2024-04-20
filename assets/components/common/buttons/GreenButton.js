@@ -1,13 +1,17 @@
 import {Button, styled} from "@mui/material";
 
-const FindButton = styled(Button)(({ theme }) => ({
-    color: theme.palette.getContrastText('#00a400'),
-    backgroundColor: '#00a400',
+const GreenButton = styled(Button)({
+    color: '#fff',
+    backgroundColor: '#35c25e',
+    borderColor: '#111827',
     height: '28px',
+    fontSize: '13px',
     borderRadius: '14px',
+    padding: '0 2rem',
     '&:hover': {
-        backgroundColor: '#00a400',
+        backgroundColor: '#2da44f',
+        borderColor: '#111827'
     },
-}));
+});
 
-export default FindButton;
+export default GreenButton;

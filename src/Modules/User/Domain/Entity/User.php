@@ -39,7 +39,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Centrif
     #[ORM\Column(length: 255)]
     private string $name;
 
-    #[ORM\OneToOne(mappedBy: 'user', targetEntity: Phone::class)]
+    #[ORM\OneToOne(mappedBy: 'user', targetEntity: Phone::class,  cascade:["persist", "remove"])]
     private ?Phone $phone;
 
     #[ORM\Column]

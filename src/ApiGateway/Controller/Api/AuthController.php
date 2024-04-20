@@ -32,7 +32,7 @@ class AuthController extends AbstractController
         $user = $userApi->save($payload);
         $this->sendVerificationEmail($user);
 
-        return $this->json(['data' => ['status' => 'ok']]);
+        return $this->json(['data' => ['status' => 'is_required_email_verification']]);
     }
 
     #[Route('/api/send-verification-email', name: 'api.send-verification-email', methods: ['post'])]

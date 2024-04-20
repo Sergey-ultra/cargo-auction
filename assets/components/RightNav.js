@@ -2,6 +2,7 @@ import React, {useState} from "react";
 import MenuUser from "./MenuUser";
 import {Button} from "@mui/material";
 import AuthModal from "./auth/AuthModal";
+import GreenButton from "./common/buttons/GreenButton";
 
 export default function RightNav() {
     const isAuth = window.authData && window?.authData?.userId;
@@ -40,9 +41,9 @@ export default function RightNav() {
             <Button variant="contained" className="button button-primary button-small" sx={{ marginRight: 2 }} onClick={openAuthModal}>
                 Вход
             </Button>
-            <Button className="button button-secondary button-small" onClick={showRegisterModal}>
+            <GreenButton onClick={showRegisterModal}>
                 Регистрация
-            </Button>
+            </GreenButton>
             <AuthModal isOpen={isOpenAuthModal} onClose={closeAuthModal} showMode={showMode} showLogin={showLogin} showRegister={showRegister}/>
         </div>
     );

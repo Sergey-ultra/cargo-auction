@@ -2,21 +2,26 @@ import {useState} from "react";
 
 export const useFilter = () => {
     const [filter, setFilter] = useState({
-        from: {},
+        from: {
+            id: '',
+            name: '',
+        },
         fromRadius: '',
-        to: {},
+        to: {
+            id: '',
+            name: '',
+        },
         toRadius: '',
         weightMin: '',
         weightMax: '',
         volumeMin: '',
         volumeMax: '',
-
     });
 
     const clearFilter = () => setFilter({
-        from: '',
+        from: {},
         fromRadius: '',
-        to: '',
+        to: {},
         toRadius: '',
         weightMin: '',
         weightMax: '',

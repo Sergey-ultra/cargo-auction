@@ -1,5 +1,5 @@
 import React, {Fragment, useEffect, useState} from "react";
-import MessengerIcon from "./MessengerIcon";
+import MessengerIcon from "../../components/common/icons/MessengerIcon";
 import {useHttp} from "../../hooks/api";
 
 const Load = () => {
