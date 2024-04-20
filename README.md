@@ -6,17 +6,20 @@ docker-compose up -d
 
 ### 2. Initialize Database and Run Migrations
 
-Create the PostgreSQL database and run the migrations to set up the required tables.
+Create the PostgreSQL database
 
 ```bash
 php bin/console doctrine:database:create
-exec php bin/console doctrine:migrations:migrate
 ```
-
-Run fixtures
+Run the migrations to set up the required tables and run fixtures to fill tables
 
 ```bash
+php bin/console doctrine:migrations:migrate
 php bin/console doctrine:fixtures:load
+```
+Or restore db dump
+```bash
+docker exec -i cargo_postgres psql -U postgres -d cargo < cargo.sql
 ```
 
 Create JWT keys
@@ -29,12 +32,7 @@ Load cities to DB
 php bin/console load:cities
 ```
 
-### 3. Start the WebSocket Server
+### 3.WebSocket Server use Centrifugo app
 
-Run the WebSocket server for real-time functionality. The `-vv` flag enables verbose output.
-
-```bash
-php bin/console websocket:server:run -vv
-```
 
 
