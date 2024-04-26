@@ -16,7 +16,7 @@ final readonly class UserPayloadDTO
 {
     public function __construct(
         #[NotBlank(message: 'Имя не должен быть пустой')]
-        #[Length(min: 6, minMessage: 'Your name should be at least {{ limit }} characters')]
+        #[Length(min: 3, minMessage: 'Your name should be at least {{ limit }} characters')]
         public string $name,
         #[NotBlank(message: 'Email не должен быть пустой')]
         #[Email(message: '{{ value }} должен быть валидный')]

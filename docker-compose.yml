@@ -69,15 +69,17 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=cargo
+      - PASSWORD_AUTHENTICATION=md5
       - POSTGRES_MULTIPLE_EXTENSIONS=postgis,hstore,postgis_topology, postgis_sfcgal
     volumes:
-      - ./docker/db:/var/lib/postgresql/data:rw
+#      - ./docker/db/main:/etc/postgresql/13/main
+      - ./docker/db/data:/var/lib/postgresql/data:rw
       - ./docker/db/init.sql:/docker-entrypoint-initdb.d/setup-db.sql
     networks:
       - cargo
 
-volumes:
-  db_data:
+#volumes:
+#  db_data:
 
 networks:
   cargo:

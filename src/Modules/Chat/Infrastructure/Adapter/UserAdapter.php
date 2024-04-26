@@ -29,6 +29,10 @@ final readonly class UserAdapter
         return $this->userApi->getByCompanyId($id);
     }
 
+    /**
+     * @param int[] $ids
+     * @return ArrayCollection<int, array>
+     */
     public function getByCompanyIds(array $ids): ArrayCollection
     {
         return $this->userApi->getByCompanyIds($ids);

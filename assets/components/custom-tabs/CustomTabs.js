@@ -1,8 +1,8 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 
 
-function CustomTabs({ tabs, onChange }) {
-    const [selectedTab, setSelectedTab] = useState([]);
+function CustomTabs({ tabs, defaultValue, onChange }) {
+    const [selectedTab, setSelectedTab] = useState(defaultValue);
 
     const selectTab = value => {
         setSelectedTab(value);
@@ -13,9 +13,9 @@ function CustomTabs({ tabs, onChange }) {
     <div className="cTabs">
         {tabs.map((tab) =>
             <div
-            className={`cItem ${tab.value === selectedTab ? 'cItem-active' : ''}`}
-            key={tab.value}
-            onClick={() => selectTab(tab.value)}>
+                className={`cItem ${tab.value === selectedTab ? 'cItem-active' : ''}`}
+                key={tab.value}
+                onClick={() => selectTab(tab.value)}>
             {tab.title}
             </div>
         )}

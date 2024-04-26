@@ -19,7 +19,7 @@ export default function SaveFilterModal({ handleClose, saveFilter, isOpen }) {
             <DialogTitle>Сохранить фильтр</DialogTitle>
             <DialogContent>
                 <form onSubmit={save}>
-                    <div className="form-item">
+                    <div className="form-group">
                         <div className="label">Имя фильтров</div>
                         <div className="input">
                             <input name="name" value={name} onChange={changeName}/>

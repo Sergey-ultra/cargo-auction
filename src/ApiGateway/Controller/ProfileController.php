@@ -20,14 +20,18 @@ class ProfileController extends AbstractController
     #[Route('profile/edit', name: 'profile', methods:['get'])]
     public function edit(): Response
     {
-        return $this->render('profile/edit.html.twig');
+        $user = $this->getUser();
+
+        return $this->render('profile/edit.html.twig', [
+            'user' => $user,
+        ]);
     }
 
     #[Route('profile/phones', name: 'profile.phones', methods:['get'])]
     public function phones(): Response
     {
         return $this->render('profile/phones.html.twig', [
-            'phones' => $this->getUser()->getPhones(),
+            'phones' => $this->getUser()->getPhone(),
         ]);
     }
 

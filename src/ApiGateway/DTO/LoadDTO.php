@@ -25,7 +25,7 @@ class LoadDTO
         public int $userId,
         public string $createdAt,
         public ?string $updatedAt,
-        public CompanyWithContactsDTO $company,
+        public ?CompanyWithContactsDTO $company,
     ){
     }
 }

@@ -7,9 +7,10 @@ namespace App\ApiGateway\DTO;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Type;
 
-class CommentRequestDTO
+final readonly class CommentSaveDTO
 {
     public function __construct(
+        public ?int $id,
         #[NotBlank(message: 'Комментарий не может быть пустым')]
         #[Type('string')]
         public string $comment,

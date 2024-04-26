@@ -1,6 +1,7 @@
 import React, {Fragment, useState} from 'react';
 import {Button, Menu, MenuItem} from "@mui/material";
 import Cookies from 'js-cookie';
+import './menu.scss';
 
 
 export default function MenuUser({ email }) {
@@ -74,31 +75,31 @@ export default function MenuUser({ email }) {
                     'aria-labelledby': 'basic-button',
                 }}>
                 <MenuItem onClick={closeDrop}>
-                    <a href="/profile/edit">Мои настройки</a>
+                    <a className="menu__link" href="/profile/edit">Мои настройки</a>
                 </MenuItem>
                 <MenuItem onClick={closeDrop}>
-                    <a href="/profile/messages">Личные сообщения</a>
+                    <a className="menu__link" href="/profile/messages">Личные сообщения</a>
                 </MenuItem>
                 <MenuItem onClick={closeDrop}>
-                    <a href="/profile/company">Моя компания</a>
+                    <a className="menu__link" href="/profile/company">Моя компания</a>
                 </MenuItem>
                 <MenuItem onClick={closeDrop}>
-                    <a href="/profile/load-list">Мои объявления</a>
+                    <a className="menu__link" href="/profile/load-list">Мои объявления</a>
                 </MenuItem>
                 <MenuItem onClick={closeDrop}>
-                    <a href="#">Мои фильтры</a>
+                    <a className="menu__link" href="#">Мои фильтры</a>
                 </MenuItem>
                 <MenuItem onClick={closeDrop}>
-                    <a href="#">Мои отзывы</a>
+                    <a className="menu__link" href="#">Мои отзывы</a>
                 </MenuItem>
                 <MenuItem onClick={closeDrop}>
-                    <a href="#">Мои рассылки</a>
+                    <a className="menu__link" href="#">Мои рассылки</a>
                 </MenuItem>
                 <MenuItem onClick={closeDrop}>
-                    <a href="#">Баланс</a>
+                    <a className="menu__link" href="#">Баланс</a>
                 </MenuItem>
                 <MenuItem onClick={logout}>
-                    <span>Выйти</span>
+                    <span className="menu__link">Выйти</span>
                 </MenuItem>
             </Menu>
         </Fragment>

@@ -23,4 +23,11 @@ class CommentRepository extends ServiceEntityRepository implements CommentReposi
         $this->_em->persist($comment);
         $this->_em->flush();
     }
+
+    public function delete(int $id): void
+    {
+        $em = $this->getEntityManager();
+        $em->remove($em->getReference(Comment::class, $id));
+        $em->flush();
+    }
 }

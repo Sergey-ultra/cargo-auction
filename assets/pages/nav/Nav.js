@@ -1,11 +1,11 @@
 import React, {useEffect, useState} from 'react';
 import { Centrifuge } from 'centrifuge';
-import RightNav from "../../components/RightNav";
-import Notification from "../../components/Notification";
+import RightNav from "./src/RightNav";
+import Notification from "./src/Notification";
 import {useNotification} from "../../hooks/notification";
 import {NotificationContext} from "../../context/notification.context";
 import {useCookie} from "../../hooks/cookie";
-import CookieModal from "../../components/CookieModal";
+import CookieModal from "./src/CookieModal";
 import {useHttp} from "../../hooks/api";
 
 
@@ -67,15 +67,9 @@ function Nav() {
         }, [centrifugoToken]);
     }
 
-
-
-
-
-
     if (!getCookie('was')) {
         setIsOpenWasModal(true);
     }
-
 
     setCookie('was', true, {
         expires: 365,

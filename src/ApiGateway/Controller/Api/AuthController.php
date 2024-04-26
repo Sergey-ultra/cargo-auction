@@ -8,6 +8,7 @@ use App\ApiGateway\DTO\VerificationDTO;
 use App\Modules\User\Application\Security\EmailVerifier;
 use App\Modules\User\Infrastructure\Api\UserApi;
 use App\Modules\User\Infrastructure\DTO\UserPayloadDTO;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -16,8 +17,7 @@ use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
-use Symfony\Component\Serializer\SerializerInterface;
+
 
 //#[Route('/api', name: 'api_')]
 class AuthController extends AbstractController
@@ -29,7 +29,11 @@ class AuthController extends AbstractController
     #[Route('/api/register', name: 'api.register', methods: ['post'])]
     public function register(#[MapRequestPayload('json')]UserPayloadDTO $payload, UserApi $userApi): JsonResponse
     {
-        $user = $userApi->save($payload);
+        try {
+            $user = $userApi->save($payload);
+        } catch (UniqueConstraintViolationException $exception) {
+            return $this->json(['data' => ['status' => 'email_is_already_exists']]);
+        }
         $this->sendVerificationEmail($user);
 
         return $this->json(['data' => ['status' => 'is_required_email_verification']]);

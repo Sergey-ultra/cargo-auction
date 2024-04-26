@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\ApiGateway\Controller\Api;
 
 use App\ApiGateway\DTO\CommentDTO;
-use App\ApiGateway\DTO\CommentRequestDTO;
+use App\ApiGateway\DTO\CommentSaveDTO;
 use App\ApiGateway\DTO\LoadCreateDTO;
 use App\ApiGateway\DTO\LoadFilter;
 use App\Modules\Load\Infrastructure\Api\CommentApi;
@@ -35,6 +35,7 @@ class LoadController extends ApiController
             $page,
             $perPage,
             $orderBy,
+            (bool)$this->getUser(),
             $this->getUser()?->getId(),
             $byUser
         );
@@ -58,7 +59,7 @@ class LoadController extends ApiController
     #[Route('/load/{id}', name: 'api.cargo.show', requirements: ['id' => '\d+'], methods: ['get'])]
     public function show(int $id, LoadApi $loadApi): Response
     {
-        $load = $loadApi->getLoadById($id);
+        $load = $loadApi->getLoadById($id, (bool)$this->getUser());
 
         return $this->apiJson(['data' => $load]);
     }
@@ -74,15 +75,36 @@ class LoadController extends ApiController
     }
 
     #[Route('/load/comment', name: 'api.cargo.comment.store', methods:['post'])]
-    public function saveComment(#[MapRequestPayload]CommentRequestDTO $commentDto, CommentApi $commentApi): JsonResponse
+    public function createComment(#[MapRequestPayload]CommentSaveDTO $commentDto, CommentApi $commentApi): JsonResponse
     {
         $comment = $commentApi->saveComment(
             new CommentDTO(
+                null,
                 $commentDto->comment,
                 $this->getUser()->getId(),
                 $commentDto->entityId
             )
         );
         return $this->json(['data' => $comment], Response::HTTP_CREATED);
+    }
+
+    #[Route('/load/comment/{id}', name: 'api.cargo.comment.update', requirements: ['id' => '\d+'], methods: ['put'])]
+    public function updateComment(#[MapRequestPayload]CommentSaveDTO $commentDto, CommentApi $commentApi): JsonResponse
+    {
+        $comment = $commentApi->saveComment(
+            new CommentDTO(
+                $commentDto->id,
+                $commentDto->comment,
+                $this->getUser()->getId(),
+                $commentDto->entityId
+            )
+        );
+        return $this->json(['data' => $comment]);
+    }
+
+    #[Route('/load/comment/{id}', name: 'api.cargo.comment.delete', requirements: ['id' => '\d+'], methods: ['delete'])]
+    public function deleteComment(int $id, CommentApi $commentApi): void
+    {
+        $commentApi->deleteComment($id);
     }
 }

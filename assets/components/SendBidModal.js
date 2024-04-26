@@ -35,7 +35,7 @@ export default function SendBidModal({ addBidToLoad, handleClose, isOpen, curren
             <DialogTitle>Отправить ставку</DialogTitle>
             <DialogContent>
                 <form onSubmit={sendBid}>
-                    <div className="form-item">
+                    <div className="form-margin">
                         <div className="label">Ваша ставка</div>
                         <div className="input">
                             <input type="number" name="bid" value={bid} onChange={changeHandler}/>

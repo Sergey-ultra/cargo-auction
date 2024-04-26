@@ -17,22 +17,23 @@ Run the migrations to set up the required tables and run fixtures to fill tables
 php bin/console doctrine:migrations:migrate
 php bin/console doctrine:fixtures:load
 ```
-Or restore db dump
-```bash
-docker exec -i cargo_postgres psql -U postgres -d cargo < cargo.sql
-```
-
-Create JWT keys
-```bash
-php bin/console lexik:jwt:generate-keypair
-```
-
 Load cities to DB
 ```bash
 php bin/console load:cities
 ```
 
-### 3.WebSocket Server use Centrifugo app
+Or restore db dump
+```bash
+docker exec -i cargo_postgres psql -U postgres -d cargo < cargo.sql
+```
+
+### 3. Create JWT keys
+
+```bash
+php bin/console lexik:jwt:generate-keypair
+```
+
+### 4.WebSocket Server use Centrifugo app
 
 
 

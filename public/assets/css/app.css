@@ -122,10 +122,6 @@ body {
     flex: 1 1 auto;
     margin-bottom: 30px;
 }
-.pagination {
-    gap: 3px;
-    display: flex;
-}
 .legend {
     font-size: 1.5em;
     padding-bottom: .5em;
@@ -139,8 +135,6 @@ body {
 .row-end {
      justify-content: end;
  }
-
-
 .fieldset {
     background-color: #fff;
     padding: 1em 1em;
@@ -149,11 +143,12 @@ body {
     font-size: 16px;
     border-radius: 8px;
 }
-.form-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+.form-margin {
     margin-bottom: 24px;
+}
+.form-group {
+    display: flex;
+    gap: 10px;
 }
 .control-label {
     display: inline-block;

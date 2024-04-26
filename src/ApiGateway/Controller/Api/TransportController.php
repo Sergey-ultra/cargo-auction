@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\ApiGateway\Controller\Api;
 
 use App\ApiGateway\DTO\CommentDTO;
-use App\ApiGateway\DTO\CommentRequestDTO;
+use App\ApiGateway\DTO\CommentSaveDTO;
 use App\ApiGateway\DTO\LoadFilter;
 use App\Modules\Transport\Infrastructure\Api\CommentApi;
 use App\Modules\Transport\Infrastructure\Api\TransportApi;
@@ -56,7 +56,7 @@ class TransportController extends ApiController
     }
 
     #[Route('/transport/comment', name: 'api.transport.comment.store', methods:['post'])]
-    public function saveComment(#[MapRequestPayload]CommentRequestDTO $commentDto, CommentApi $commentApi): JsonResponse
+    public function saveComment(#[MapRequestPayload]CommentSaveDTO $commentDto, CommentApi $commentApi): JsonResponse
     {
         $comment = $commentApi->saveComment(
             new CommentDTO(

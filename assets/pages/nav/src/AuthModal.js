@@ -1,18 +1,29 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
+import {useForm} from "react-hook-form";
 import DialogTitle from '@mui/material/DialogTitle';
 import Dialog from '@mui/material/Dialog';
-import {Button, DialogContent} from "@mui/material";
-import {useHttp} from "../../hooks/api";
-import {NotificationContext} from "../../context/notification.context";
-import "./auth.scss"
+import {Alert, Button, DialogContent} from "@mui/material";
+import {useHttp} from "../../../hooks/api";
 import Register from "./Register";
+import "./auth.scss"
 
 
-export default function AuthModal({ onClose, isOpen, showMode, showLogin, showRegister}) {
-    const [form,setForm] = useState({
-        username: '',
-        password:''
+
+export default function AuthModal({ onClose, isOpen, showMode, showLogin, showRegister }) {
+    const { request, error, clearError } = useHttp();
+    const {
+        getValues,
+        register,
+        handleSubmit,
+        setError,
+        formState: { errors, isSubmitting }
+    } = useForm({
+        defaultValues: {
+            username: '',
+            password: '',
+        }
     });
+
 
     const [isRequiredEmailVerification, setIsRequiredEmailVerification] = useState(false);
 
@@ -21,53 +32,17 @@ export default function AuthModal({ onClose, isOpen, showMode, showLogin, showRe
         setIsRequiredEmailVerification(false);
     }
 
-
-    // const [authHeader, setAuthHeader] = useState('Войдите с помощью');
-    //
-    // useEffect(() => {
-    //     switch (showMode) {
-    //         case 'login':
-    //             setAuthHeader('Войдите с помощью');
-    //             break;
-    //         case 'registration':
-    //             setAuthHeader('Регистрация');
-    //             break;
-    //         case 'recover':
-    //             setAuthHeader('Восстановить пароль');
-    //             break;
-    //     }
-    // },[showMode])
-
-    // let authHeader = () => {
-    //     switch (showMode) {
-    //         case 'login':
-    //             return 'Войдите с помощью';
-    //         case 'registration':
-    //             return 'Регистрация';
-    //         case 'recover':
-    //             return 'Восстановить пароль';
-    //     }
-    // };
-
-
-    const changeHandler = event => {
-        setForm({...form, [event.target.name]: event.target. value})
-    }
-
-    const {notify} = useContext(NotificationContext)
-    const { request, isLoading, error, clearError } = useHttp();
-
     useEffect(() => {
         if (error) {
-            notify(error);
+            setError('root', {
+                message: error
+            });
             clearError();
         }
     },[error])
 
-    const login = async e => {
-        e.preventDefault();
-
-        const response = await request('/api/sign-in', 'POST', {body: {...form}});
+    const login = async data => {
+        const response = await request('/api/sign-in', 'POST', {body: {...data}});
 
         if (response.token) {
             window.location.reload();
@@ -77,7 +52,8 @@ export default function AuthModal({ onClose, isOpen, showMode, showLogin, showRe
     }
 
     const resendVerificationEmail = async() => {
-        await request('/api/send-verification-email', 'POST', { body: { email: form.username}});
+        console.log(getValues());
+        //await request('/api/send-verification-email', 'POST', { body: { email: form.username}});
     }
 
     const loginWithService = async(service) => {
@@ -111,25 +87,38 @@ export default function AuthModal({ onClose, isOpen, showMode, showLogin, showRe
                     <div className="auth">
                         {showMode === 'login' &&
                             <div>
-                                <form onSubmit={login}>
+                                {errors?.root &&
+                                    <Alert severity="error" sx={{ marginBottom: 3 }}>{errors.root.message}</Alert>
+                                }
+                                <form onSubmit={handleSubmit(login)}>
                                     <p className="auth__meta control-label">Email</p>
-                                    <div className="form-item">
-                                        <input type="text" id="username" name="username" value={form.username}
-                                               className="fullWidth"
-                                               onChange={changeHandler}/>
-                                    </div>
-                                    <p className="auth__meta control-label">Password</p>
-                                    <div className="form-item">
-                                        <input type="password" id="password" name="password" value={form.password}
-                                               className="fullWidth"
-                                               onChange={changeHandler}/>
+                                    <div className="form-margin">
+                                        <input type="text" name="username" className="fullWidth" {...register("username", {
+                                            required: 'Введите email',
+                                            pattern: {
+                                                value: /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/,
+                                                message: 'Email не валидный'
+                                            },
+                                        })}/>
+                                        {errors?.username && <div className="text-error">{errors.username.message}</div>}
                                     </div>
 
+
+                                    <p className="auth__meta control-label">Password</p>
+                                    <div className="form-margin">
+                                        <input type="password" name="password" className="fullWidth" {...register("password", {
+                                            required: 'Введите пароль',
+                                        })}/>
+                                        {errors?.password && <div className="text-error">{errors.password.message}</div>}
+                                    </div>
 
                                     <Button variant="contained" fullWidth className="button button-primary"
                                             type="submit"
-                                            sx={{marginRight: 2}} disabled={isLoading}>Войти</Button>
+                                            sx={{marginRight: 2}} disabled={isSubmitting}>
+                                        {isSubmitting ? 'Loading...' : 'Войти'}
+                                    </Button>
                                 </form>
+
                                 <div className="section-hr">
                                     <div className="section-hr__line"></div>
                                     <div className="section-hr__text"> или</div>

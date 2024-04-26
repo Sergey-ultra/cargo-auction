@@ -102,6 +102,7 @@ final readonly class LoadApi
         int            $page = 1,
         int            $perPage = LoadRepositoryInterface::PAGINATOR_PER_PAGE,
         string         $orderOption = LoadRepositoryInterface::CREATED_AT,
+        bool           $isAuth = false,
         ?int           $commentUserId = null,
         ?UserInterface $byUser = null
     ): ListDTO
@@ -124,8 +125,7 @@ final readonly class LoadApi
             $filter->weightMin ?? null,
             $filter->weightMax ?? null,
             $filter->volumeMin ?? null,
-            $filter->volumeMax ?? null
-        );
+            $filter->volumeMax ?? null        );
 
         $result = $this->loadRepository->getList($apiFilter, $page, $perPage, $orderOption, $byUser);
 
@@ -143,31 +143,43 @@ final readonly class LoadApi
             $cityIds[] = $load->getToCityId();
         }
         $companyIds = array_unique($companyIds);
-        $cityIds = array_unique($cityIds);
 
-        /** @var ArrayCollection<int, CommentShowDTO> $commentCollection */
-        $commentCollection = $commentUserId
-            ? $this->commentApi->getByLoadIds($loadIds, $commentUserId)
-            : new ArrayCollection();
-        /** @var ArrayCollection<int, CompanyShowDTO> $companyCollection */
-        $companyCollection = $this->companyAdapter->getByIds($companyIds);
-        $userCollection = $this->userAdapter->getByCompanyIds($companyIds);
+
+        if ($isAuth) {
+            /** @var ArrayCollection<int, CompanyShowDTO> $companyCollection */
+            $companyCollection = $this->companyAdapter->getByIds($companyIds);
+            /** @var ArrayCollection<int, array> $userCollection */
+            $userCollection = $this->userAdapter->getByCompanyIds($companyIds);
+            /** @var ArrayCollection<int, CommentShowDTO> $commentCollection */
+            $commentCollection = $commentUserId
+                ? $this->commentApi->getByLoadIds($loadIds, $commentUserId)
+                : new ArrayCollection();
+        }
+
+        $cityIds = array_unique($cityIds);
         /** @var ArrayCollection<int, CityDTO> $cityCollection */
         $cityCollection = $this->cityAdapter->getCitiesByIds($cityIds);
 
         /** @var LoadDTO[] $loads */
         $loads = [];
 
-        /**  @var Load $load */
+        /** @var Load $load */
         foreach($result->list as $load) {
-            /**  @var CompanyShowDTO $company */
-            $company = $companyCollection->get($load->getCompanyId());
-            $userContacts = $userCollection->get($load->getCompanyId());
+            $companyDto = null;
+            $comment = null;
+
+            if ($isAuth) {
+                /** @var CompanyShowDTO $company */
+                $company = $companyCollection->get($load->getCompanyId());
+                $companyContacts = $userCollection->get($load->getCompanyId());
+                $companyDto = $this->buildCompanyDTO($company, $companyContacts);
+                $comment = $commentCollection->get($load->getId());
+            }
+
             $fromCity = $cityCollection->get($load->getFromCityId());
             $toCity = $cityCollection->get($load->getToCityId());
-            $comment = $commentCollection->get($load->getId());
 
-            $loads[] = $this->buildLoadDTO($load, $company, $userContacts, $fromCity, $toCity, $comment);
+            $loads[] = $this->buildLoadDTO($load, $companyDto, $fromCity, $toCity, $comment);
         }
 
 
@@ -184,7 +196,7 @@ final readonly class LoadApi
         return $city;
     }
 
-    public function getLoadById(int $id): ?LoadDTO
+    public function getLoadById(int $id, bool $isAuth = false): ?LoadDTO
     {
         $load = $this->loadRepository->getById($id);
 
@@ -192,20 +204,26 @@ final readonly class LoadApi
             return null;
         }
 
-        /**  @var CompanyShowDTO $company */
-        $company = $this->companyAdapter->getById($load->getCompanyId());
-        /** @var User[] $companyContacts */
-        $companyContacts = $this->userAdapter->getByCompanyId($load->getCompanyId());
+        $companyDto = null;
+        if ($isAuth) {
+            /** @var CompanyShowDTO $company */
+            $company = $this->companyAdapter->getById($load->getCompanyId());
+            /** @var User[] $companyContacts */
+            $companyContacts = $this->userAdapter->getByCompanyId($load->getCompanyId());
+            $companyDto = $this->buildCompanyDTO($company, $companyContacts);
+        }
+
+
         /** @var ArrayCollection<int, CityDTO> $cityCollection */
         $cityCollection = $this->cityAdapter->getCitiesByIds([
             $load->getFromCityId(),
             $load->getToCityId(),
         ]);
 
+
         return $this->buildLoadDTO(
             $load,
-            $company,
-            $companyContacts,
+            $companyDto,
             $cityCollection->get($load->getFromCityId()),
             $cityCollection->get($load->getToCityId()),
         );
@@ -213,37 +231,19 @@ final readonly class LoadApi
 
     private function buildLoadDTO(
         Load $item,
-        CompanyShowDTO $company,
-        array $companyContacts,
+        ?CompanyWithContactsDTO $companyDto,
         CityDTO $fromCity,
         CityDTO $toCity,
-        CommentShowDTO $comment = null,
+        ?CommentShowDTO $comment = null,
         string $country = 'RUS'
     ): LoadDTO
     {
-        /** @var ContactDTO[] $contacts */
-        $contacts = [];
-        /**  @var User $userContact  */
-        foreach($companyContacts as $companyContact) {
-            $contacts[] = new ContactDTO(
-                $companyContact->getId(),
-                $companyContact->getName(),
-                $companyContact->getPhone()?->getPhone(),
-                $companyContact->getPhone()?->getMobilePhone(),
-                $companyContact->getEmail(),
-            );
-        }
-
-        $companyCity = null !== $company->cityId
-            ? $this->cityAdapter->getCityById($company->cityId)
-            : null;
-
         $maxBid = 0;
         if ($item->getBids()->count() > 0) {
             $maxBid = max($item->getBids()->map(fn(Bid $bid) => $bid->getBid())->toArray());
         }
 
-        $bids =  new BidsDTO(
+        $bids = new BidsDTO(
             $item->getBids()->count(),
             $maxBid,
             $item->getBids()->map(fn(Bid $bid) => new BidDTO($bid->getId(), $bid->getBid())),
@@ -304,16 +304,38 @@ final readonly class LoadApi
             $item->getUser()->getId(),
             $item->getCreatedAt()->format('d M'),
             $item->getUpdatedAt()?->format('d M'),
-            new CompanyWithContactsDTO(
-                $company->id,
-                $company->fullName,
-                isset($companyCity) ? $companyCity->name : '',
-                $company->type,
-                new RatingDTO(
-                    5
-                ),
-                $contacts,
-            )
+            $companyDto,
+        );
+    }
+
+    private function buildCompanyDTO(CompanyShowDTO $company, array $companyContacts): CompanyWithContactsDTO
+    {
+        /** @var ContactDTO[] $contacts */
+        $contacts = [];
+        /**  @var User $userContact  */
+        foreach($companyContacts as $companyContact) {
+            $contacts[] = new ContactDTO(
+                $companyContact->getId(),
+                $companyContact->getName(),
+                $companyContact->getPhone()?->getPhone(),
+                $companyContact->getPhone()?->getMobilePhone(),
+                $companyContact->getEmail(),
+            );
+        }
+
+        $companyCity = null !== $company->cityId
+            ? $this->cityAdapter->getCityById($company->cityId)
+            : null;
+
+        return  new CompanyWithContactsDTO(
+            $company->id,
+            $company->fullName,
+            isset($companyCity) ? $companyCity->name : '',
+            $company->type,
+            new RatingDTO(
+                5
+            ),
+            $contacts,
         );
     }
 

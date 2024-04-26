@@ -2,12 +2,12 @@ import React, {Fragment, useContext, useEffect, useState} from 'react';
 import {Button, FormControl, Menu, MenuItem, Select, Tab, Tabs} from "@mui/material";
 import {useHttp} from "../../../hooks/api";
 import {setQuery} from "../../../hooks/queryParams";
-import Pagination from "../../../components/common/Pagination";
+import Pagination from "../../../components/pagination/Pagination";
 import TransportItem from "./TransportItem";
 import SendBidModal from "../../../components/SendBidModal";
 import SaveFilterModal from "../../../components/SaveFilterModal";
-import AuthModal from "../../../components/auth/AuthModal";
-import Filter from "../../../components/Filter";
+import AuthModal from "../../nav/src/AuthModal";
+import Filter from "../../../components/filter/Filter";
 import {FilterContext} from "../../../context/filter.context";
 import {useHandleSelectOptions} from "../../../hooks/handleSelectOptions";
 

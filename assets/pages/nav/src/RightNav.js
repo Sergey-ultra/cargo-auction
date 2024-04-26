@@ -1,8 +1,8 @@
 import React, {useState} from "react";
 import MenuUser from "./MenuUser";
 import {Button} from "@mui/material";
-import AuthModal from "./auth/AuthModal";
-import GreenButton from "./common/buttons/GreenButton";
+import AuthModal from "./AuthModal";
+import GreenButton from "../../../components/buttons/GreenButton";
 
 export default function RightNav() {
     const isAuth = window.authData && window?.authData?.userId;

@@ -51,12 +51,12 @@ export const useHttp = () => {
 
             if (!response.ok) {
                 if (response.status === 422) {
-                    await setError([...data.violations]);
+                    setError([...data.violations]);
                     console.log(response)
                 } else if (response.status === 401) {
-
+                    setError(data.message);
                 } else {
-                    await setError(data.error);
+                    setError(data.error);
                 }
             }
 

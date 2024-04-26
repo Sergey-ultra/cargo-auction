@@ -1,7 +1,7 @@
 import {useState} from "react";
 
 export const useFilter = () => {
-    const [filter, setFilter] = useState({
+    const initialState = {
         from: {
             id: '',
             name: '',
@@ -16,19 +16,10 @@ export const useFilter = () => {
         weightMax: '',
         volumeMin: '',
         volumeMax: '',
-    });
+    };
+    const [filter, setFilter] = useState(initialState);
 
-    const clearFilter = () => setFilter({
-        from: {},
-        fromRadius: '',
-        to: {},
-        toRadius: '',
-        weightMin: '',
-        weightMax: '',
-        volumeMin: '',
-        volumeMax: '',
-
-    });
+    const clearFilter = () => setFilter(initialState);
 
     const changeFilterAddresses = () => {
         if (filter.toAddress || filter.fromAddress) {

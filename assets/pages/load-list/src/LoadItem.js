@@ -1,7 +1,8 @@
 import React, {Fragment, useState} from "react";
 import {Button, TextField, Tooltip} from "@mui/material";
 import PrecisionRating from "../../../components/rating/Rating";
-import EditIcon from "../../../components/common/icons/EditIcon";
+import EditIcon from "../../../components/icons/EditIcon";
+import EditSmallIcon from "../../../components/icons/EditSmallIcon";
 
 function LoadItem({
                       load,
@@ -9,7 +10,8 @@ function LoadItem({
                       openAuthModal,
                       addingComment,
                       toggleAddingComment,
-                      saveComment
+                      saveComment,
+                      deleteComment
                   }) {
     let userId = window?.authData?.userId;
     if (userId) {
@@ -28,6 +30,15 @@ function LoadItem({
             setComment({ ...comment, id });
             toggleAddingComment(load.id);
         }
+    }
+
+    const makeDeleteComment = async() => {
+        await deleteComment(comment.id);
+        setComment({
+            id: null,
+            comment: '',
+            entityId: load.id,
+        });
     }
 
     return (
@@ -216,7 +227,7 @@ function LoadItem({
                                         </div>
                                     </div>
                                 }
-                                {comment.id &&
+                                {comment.id && !addingComment &&
                                     <div className="speech__comment">
                                         <div className="speech__avatar">
                                             <svg fill="var(--glz-color-neutral-tone-4)"
@@ -235,21 +246,12 @@ function LoadItem({
                                         <div className="speech__inner">
                                             <span>{comment.comment}</span>
                                             <div className="speech__icons">
-                                                <button className="speech__button icon">
+                                                <button className="speech__button icon" onClick={() => toggleAddingComment(load.id)}>
                                                     <span className="speech__icon">
-                                                        <svg fill="var(--glz-color-neutral-tone-4)"
-                                                             stroke="var(--glz-color-neutral-tone-4)" strokeWidth="0"
-                                                             hoverColor="var(--glz-color-neutral-tone-5)"
-                                                             viewBox="0 0 12 12" width="12" height="12">
-                                                            <use href="#ic_edit">
-                                                                <symbol id="ic_edit" viewBox="0 0 18 18"><path
-                                                                    fillRule="evenodd" clipRule="evenodd"
-                                                                    d="M17.719 4.031 15.89 5.86l-3.75-3.75L13.969.281A.954.954 0 0 1 14.672 0c.281 0 .515.094.703.281l2.344 2.344a.954.954 0 0 1 .281.703.954.954 0 0 1-.281.703ZM0 14.25 11.063 3.187l3.75 3.75L3.75 18H0v-3.75Z"></path></symbol>
-                                                            </use>
-                                                        </svg>
+                                                       <EditSmallIcon/>
                                                     </span>
                                                 </button>
-                                                <button className="speech__button icon">
+                                                <button className="speech__button icon" onClick={makeDeleteComment}>
                                                     <span className="speech__icon">
                                                         <svg fill="var(--glz-color-neutral-tone-4)"
                                                              stroke="var(--glz-color-neutral-tone-4)"

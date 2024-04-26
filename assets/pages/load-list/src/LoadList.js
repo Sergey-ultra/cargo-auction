@@ -2,12 +2,12 @@ import React, {Fragment, useContext, useEffect, useState} from 'react';
 import {Button, FormControl, MenuItem, Select} from "@mui/material";
 import {useHttp} from "../../../hooks/api";
 import {setQuery} from "../../../hooks/queryParams";
-import Pagination from "../../../components/common/Pagination";
+import Pagination from "../../../components/pagination/Pagination";
 import LoadItem from "./LoadItem";
 import SendBidModal from "../../../components/SendBidModal";
 import SaveFilterModal from "../../../components/SaveFilterModal";
-import AuthModal from "../../../components/auth/AuthModal";
-import Filter from "../../../components/Filter";
+import AuthModal from "../../nav/src/AuthModal";
+import Filter from "../../../components/filter/Filter";
 import {FilterContext} from "../../../context/filter.context";
 import {useHandleSelectOptions} from "../../../hooks/handleSelectOptions";
 
@@ -45,7 +45,7 @@ function LoadList(callback, deps) {
     const saveComment = async object=> {
         let response;
         if (object.id) {
-             response = await request('/api/load/comment', 'PUT', { body: object });
+             response = await request(`/api/load/comment/${object.id}`, 'PUT', { body: object });
         } else {
              response = await request('/api/load/comment', 'POST', { body: object });
         }
@@ -54,6 +54,10 @@ function LoadList(callback, deps) {
             return data.id;
         }
        return null;
+    }
+
+    const deleteComment = async (id) => {
+        await request(`/api/load/comment/${id}`, 'DELETE');
     }
 
     const saveFilter = async(name) => {
@@ -221,7 +225,8 @@ function LoadList(callback, deps) {
                                 openAuthModal={openAuthModal}
                                 addingComment={addingComment}
                                 toggleAddingComment={toggleAddingComment}
-                                saveComment={saveComment}/>
+                                saveComment={saveComment}
+                                deleteComment={deleteComment}/>
                         )}
                     </div>
 

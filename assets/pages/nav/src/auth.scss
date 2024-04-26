@@ -1,3 +1,6 @@
+:root {
+    --main-variant-color: #525AFF;
+}
 .icon {
     height: 20px;
     width: 20px;
@@ -5,8 +8,8 @@
 .fullWidth {
     width: 100%;
 }
-:root {
-    --main-variant-color: #525AFF;
+.text-error {
+    color: red;
 }
 .tipconts {
     display: flex;

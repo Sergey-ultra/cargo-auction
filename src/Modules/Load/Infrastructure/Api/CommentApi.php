@@ -45,7 +45,12 @@ class CommentApi
 
     public function saveComment(CommentDTO $commentDto): Comment
     {
-        $comment = (new Comment())
+        $comment = (new Comment());
+        if ($commentDto->id) {
+            $comment = $this->commentRepository->find($commentDto->id);
+        }
+
+        $comment
             ->setComment($commentDto->comment)
             ->setUserId($commentDto->userId)
             ->setLoadId($commentDto->entityId)
@@ -54,5 +59,10 @@ class CommentApi
         $this->commentRepository->save($comment);
 
         return $comment;
+    }
+
+    public function deleteComment(int $id): void
+    {
+        $this->commentRepository->delete($id);
     }
 }
