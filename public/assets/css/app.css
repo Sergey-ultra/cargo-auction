@@ -137,11 +137,14 @@ body {
  }
 .fieldset {
     background-color: #fff;
-    padding: 1em 1em;
     margin-bottom: 1.5em;
     box-shadow: rgba(22, 33, 54, 0.16) 0px 1px 2px;
     font-size: 16px;
     border-radius: 8px;
+}
+.form__inner {
+    padding: 10px 16px 4px 24px;
+    position: relative;
 }
 .form-margin {
     margin-bottom: 24px;
@@ -155,6 +158,12 @@ body {
 }
 .label {
     width: 128px;
+}
+.text-bold {
+    font-weight: 900;
+}
+.text-red {
+    color: #d0021b;
 }
 .input {
     position: relative;
@@ -378,4 +387,17 @@ ul {
 .footer-title {
     margin: 0;
     padding: 15px 0;
+}
+.b-href,
+a {
+    color: #0c77c3;
+    cursor: pointer;
+    text-decoration: underline;
+    -webkit-text-decoration-color: rgba(12, 119, 195, 0.33);
+    text-decoration-color: rgba(12, 119, 195, 0.33);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.45ex;
+    transition: color 37.5ms ease-in-out, background-color 37.5ms ease-in-out, -webkit-text-decoration-color 37.5ms ease-in-out;
+    transition: color 37.5ms ease-in-out, background-color 37.5ms ease-in-out, text-decoration-color 37.5ms ease-in-out;
+    transition: color 37.5ms ease-in-out, background-color 37.5ms ease-in-out, text-decoration-color 37.5ms ease-in-out, -webkit-text-decoration-color 37.5ms ease-in-out;
 }

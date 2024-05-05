@@ -18,16 +18,14 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ORM\Table(name:"loads")]
 class Load
 {
-    public const DOWNLOADING_DATE_STATUSES = [
-        'ready',
-        'permanently',
-        'request',
-    ];
+    public const DOWNLOADING_DATE_FROM_DATE_STATUS = 'from-date';
+    public const DOWNLOADING_DATE_PERMANENT_STATUS = 'permanently';
+    public const DOWNLOADING_DATE_REQUEST_STATUS = 'request';
 
     public const DOWNLOADING_DATE_TITLES = [
-        'ready' => 'Готов к загрузке',
-        'permanently' => 'Постоянно',
-        'request' => 'Груза  нет, запрос ставки',
+        self::DOWNLOADING_DATE_FROM_DATE_STATUS => 'Готов к загрузке',
+        self::DOWNLOADING_DATE_PERMANENT_STATUS => 'Постоянно',
+        self::DOWNLOADING_DATE_REQUEST_STATUS => 'Груза  нет, запрос ставки',
     ];
 
     public const PRICE_TYPE = [
@@ -107,7 +105,7 @@ class Load
     private int $cargoType;
     #[ORM\Column]
     #[Groups(['load'])]
-    private int $bodyType;
+    private array $bodyTypes = [];
     #[ORM\Column]
     #[Groups(['load'])]
     private int $downloadingType;
@@ -362,14 +360,14 @@ class Load
         return $this;
     }
 
-    public function getBodyType(): int
+    public function getBodyTypes(): array
     {
-        return $this->bodyType;
+        return $this->bodyTypes;
     }
 
-    public function setBodyType(int $bodyType): self
+    public function setBodyTypes(array $bodyTypes): self
     {
-        $this->bodyType = $bodyType;
+        $this->bodyTypes = $bodyTypes;
         return $this;
     }
 
@@ -468,7 +466,18 @@ class Load
 
     public function getBodyTypeName(): string
     {
-        return BodyType::BODY_TYPES[$this->bodyType]['Name'];
+        $typesMapById = BodyType::getTypesMapById();
+        $names = array_map(fn(int $id) => $typesMapById[$id]['car_type'], $this->bodyTypes);
+
+        return implode(', ', $names);
+    }
+
+    public function getBodyTypeShortNames(): string
+    {
+        $typesMapById = BodyType::getTypesMapById();
+        $names = array_map(fn(int $id) => $typesMapById[$id]['short'], $this->bodyTypes);
+
+        return implode(', ', $names);
     }
 
     /**

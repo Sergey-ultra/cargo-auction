@@ -102,7 +102,8 @@ class Transport
 
     public function getBodyTypeName(): string
     {
-        return BodyType::BODY_TYPES[$this->bodyType]['Name'];
+        $typesMapById = BodyType::getTypesMapById();
+        return $typesMapById[$this->bodyType]['car_type'];
     }
 
     public function getWeight(): float

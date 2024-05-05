@@ -22,6 +22,11 @@ Load cities to DB
 php bin/console load:cities
 ```
 
+Рестарт Postgres
+```bash
+/etc/init.d/postgresql restart
+```
+
 Or restore db dump
 ```bash
 docker exec -i cargo_postgres psql -U postgres -d cargo < cargo.sql

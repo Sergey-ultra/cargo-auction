@@ -18,6 +18,7 @@ use Faker\Generator;
 
 class LoadFixtures extends Fixture implements DependentFixtureInterface
 {
+    const CITY_IDS = [155074, 97486, 109644];
     private Generator $faker;
     private ObjectManager $manager;
 
@@ -35,6 +36,7 @@ class LoadFixtures extends Fixture implements DependentFixtureInterface
 
     private function loadOrders(): void
     {
+
         for ($i = 1; $i <= 1000; $i++) {
 
             $user = $i < 15
@@ -50,15 +52,24 @@ class LoadFixtures extends Fixture implements DependentFixtureInterface
 
             $company = $this->getReference(CompanyFixtures::REFERENCE .'_'.$this->faker->numberBetween(1, 5));
 
+            $bodyTypes = $this->faker->randomElements(array_column(BodyType::TYPES, 'dictionary_item_id'), 2);
+
             $order
                 ->setCompanyId($company->getId())
-                ->setDownloadingDateStatus($this->faker->randomElement(array_filter(Load::DOWNLOADING_DATE_STATUSES, fn($el) => $el !== 'request')))
+                ->setDownloadingDateStatus($this->faker->randomElement(
+                    array_filter(
+                        array_keys(Load::DOWNLOADING_DATE_TITLES),
+                        fn(string $el) => $el !== Load::DOWNLOADING_DATE_REQUEST_STATUS)
+                    )
+                )
                 ->setDownloadingDate($this->faker->dateTimeBetween('now','6 days'))
-                ->setFromAddress($this->faker->city)
+                ->setFromAddress($this->faker->streetAddress)
+                ->setFromCityId($this->faker->randomElement(self::CITY_IDS))
                 ->setFromLongitude($fromLongitude)
                 ->setFromLatitude($fromLatitude)
                 ->setFromPoint(new Point($fromLongitude, $fromLatitude))
-                ->setToAddress($this->faker->city)
+                ->setToAddress($this->faker->streetAddress)
+                ->setToCityId($this->faker->randomElement(self::CITY_IDS))
                 ->setToLongitude($toLongitude)
                 ->setToLatitude($toLatitude)
                 ->setToPoint(new Point($toLongitude, $toLatitude))
@@ -69,10 +80,11 @@ class LoadFixtures extends Fixture implements DependentFixtureInterface
                 ->setPriceWithTax($this->faker->numberBetween(100, 200000))
                 ->setPriceCash($this->faker->numberBetween(100, 200000))
                 ->setCargoType($this->faker->numberBetween(0, count(CargoType::CARGO_TYPES) - 1))
-                ->setBodyType($this->faker->numberBetween(0, count(BodyType::BODY_TYPES) -1))
+                ->setBodyTypes($bodyTypes)
                 ->setDownloadingType($this->faker->numberBetween(0, count(LoadingType::LOADING_TYPES) -1))
                 ->setUnloadingType($this->faker->numberBetween(0, count(LoadingType::LOADING_TYPES) -1))
                 ->setUser($user)
+                ->setNote('-ГОТОВ НА УКАЗАННЫЕ ДАТЫ!- -БЫСТРАЯ ПОГРУЗКА- -БЫСТРАЯ ВЫГРУЗКА БЕЗ ВЫХОДНЫХ!- -ЗВОНИТЕ!-')
                 ->setCreatedAt()
                 ->setUpdatedAt();
 

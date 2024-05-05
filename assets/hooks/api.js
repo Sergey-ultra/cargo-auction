@@ -9,11 +9,14 @@ export const useHttp = () => {
 
         const headers = {
             'Accept': 'application/json',
-            'Content-Type': 'application/json'
+        }
+
+        if (!params.hasOwnProperty('form')) {
+            headers['Content-Type'] = 'application/json';
         }
 
         if (params.hasOwnProperty('headers')) {
-            Object.assign(params.headers, headers);
+            Object.assign(headers, params.headers);
         }
 
         let body = null;
@@ -36,10 +39,15 @@ export const useHttp = () => {
             }
         } else if (params.hasOwnProperty('body')) {
             body = JSON.stringify(params.body);
+        } else if (params.hasOwnProperty('form')) {
+            body = params.form
         }
 
         const fetchParams = { method, body, headers };
 
+        if (params.hasOwnProperty('signal') && params.signal) {
+            fetchParams.signal = params.signal;
+        }
         if (params.hasOwnProperty('credentials') && params.credentials) {
             fetchParams.credentials = 'include';
         }
@@ -47,7 +55,8 @@ export const useHttp = () => {
         try {
             const response = await fetch(url, fetchParams);
             const data = await response.json();
-            await setStatus(response.status);
+
+            setStatus(response.status);
 
             if (!response.ok) {
                 if (response.status === 422) {
@@ -62,9 +71,9 @@ export const useHttp = () => {
 
             return data
         } catch (e) {
-            console.log(error, status);
+            console.log('error',e, status);
             setError(e.message);
-            //throw e;
+            throw e;
         } finally {
             console.log(error, status);
             await setLoading(false);

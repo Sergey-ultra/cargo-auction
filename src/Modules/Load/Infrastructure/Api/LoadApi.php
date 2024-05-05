@@ -15,10 +15,12 @@ use App\ApiGateway\DTO\LoadCreateDTO;
 use App\ApiGateway\DTO\LoadDTO;
 use App\ApiGateway\DTO\LoadFilter;
 use App\ApiGateway\DTO\LoadingDTO;
+use App\ApiGateway\DTO\LoadInnerDTO;
 use App\ApiGateway\DTO\LocationDTO;
 use App\ApiGateway\DTO\RateDTO;
 use App\ApiGateway\DTO\RatingDTO;
 use App\ApiGateway\DTO\RouteDTO;
+use App\ApiGateway\DTO\TruckDTO;
 use App\ApiGateway\DTO\UnloadingDTO;
 use App\Modules\Chat\Infrastructure\Adapter\UserAdapter;
 use App\Modules\City\Infrastructure\DTO\CityCoordinatesDTO;
@@ -74,7 +76,7 @@ final readonly class LoadApi
 
     public function getBodyTypes(): array
     {
-        return array_column(BodyType::BODY_TYPES, 'Name');
+        return BodyType::TYPES;
     }
 
     public function getLoadingTypes(): array
@@ -207,10 +209,7 @@ final readonly class LoadApi
         $companyDto = null;
         if ($isAuth) {
             /** @var CompanyShowDTO $company */
-            $company = $this->companyAdapter->getById($load->getCompanyId());
-            /** @var User[] $companyContacts */
-            $companyContacts = $this->userAdapter->getByCompanyId($load->getCompanyId());
-            $companyDto = $this->buildCompanyDTO($company, $companyContacts);
+            $companyDto = $this->buildCompanyDTOByCompanyId($load->getCompanyId());
         }
 
 
@@ -286,10 +285,15 @@ final readonly class LoadApi
                 ),
                 $item->getUnloadingTypeName(),
             ),
-            $item->getCargoTypeName(),
-            $item->getBodyTypeName(),
-            $item->getWeight(),
-            $item->getVolume(),
+            new TruckDTO(
+                $item->getBodyTypeName(),
+                $item->getBodyTypeShortNames(),
+            ),
+            new LoadInnerDTO(
+                $item->getCargoTypeName(),
+                $item->getWeight(),
+                $item->getVolume(),
+            ),
             new RateDTO(
                 $item->getPriceType(),
                 $item->getPriceWithoutTax(),
@@ -308,20 +312,22 @@ final readonly class LoadApi
         );
     }
 
+    public function buildCompanyDTOByCompanyId(int $companyId): CompanyWithContactsDTO
+    {
+        $company = $this->companyAdapter->getById($companyId);
+        /** @var User[] $companyContacts */
+        $companyContacts = $this->userAdapter->getByCompanyId($companyId);
+        return $this->buildCompanyDTO($company, $companyContacts);
+    }
+
+    /**
+     * @var CompanyShowDTO $company
+     * @var User[] $companyContacts
+     * @return CompanyWithContactsDTO
+     */
     private function buildCompanyDTO(CompanyShowDTO $company, array $companyContacts): CompanyWithContactsDTO
     {
-        /** @var ContactDTO[] $contacts */
-        $contacts = [];
-        /**  @var User $userContact  */
-        foreach($companyContacts as $companyContact) {
-            $contacts[] = new ContactDTO(
-                $companyContact->getId(),
-                $companyContact->getName(),
-                $companyContact->getPhone()?->getPhone(),
-                $companyContact->getPhone()?->getMobilePhone(),
-                $companyContact->getEmail(),
-            );
-        }
+        $contacts = $this->buildContacts($companyContacts);
 
         $companyCity = null !== $company->cityId
             ? $this->cityAdapter->getCityById($company->cityId)
@@ -337,6 +343,38 @@ final readonly class LoadApi
             ),
             $contacts,
         );
+    }
+
+    /**
+     * @var int $companyId
+     * @return ContactDTO[]
+     */
+    public function buildContactsByCompanyId(int $companyId): array
+    {
+        $companyContacts = $this->userAdapter->getByCompanyId($companyId);
+        return $this->buildContacts($companyContacts);
+    }
+
+    /**
+     * @var User[] $companyContacts
+     * @return ContactDTO[]
+     */
+    protected function buildContacts(array $companyContacts): array
+    {
+        /** @var ContactDTO[] $contacts */
+        $contacts = [];
+        /**  @var User $userContact  */
+        foreach($companyContacts as $companyContact) {
+            $contacts[] = new ContactDTO(
+                $companyContact->getId(),
+                $companyContact->getName(),
+                $companyContact->getPhone()?->getPhone(),
+                $companyContact->getPhone()?->getMobilePhone(),
+                $companyContact->getEmail(),
+            );
+        }
+
+        return $contacts;
     }
 
     public function getLoadDraftMessageById(int $id): string
@@ -370,7 +408,7 @@ final readonly class LoadApi
             ->setPriceWithTax((int)$createDto->priceWithTax)
             ->setPriceCash((int)$createDto->priceCash)
             ->setCargoType((int)$createDto->cargoType)
-            ->setBodyType((int)$createDto->bodyType)
+            ->setBodyTypes((int)$createDto->bodyType)
             ->setDownloadingType((int)$createDto->downloadingType)
             ->setUnloadingType((int)$createDto->unloadingType)
             ->setUser($user)

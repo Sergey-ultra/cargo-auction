@@ -214,8 +214,7 @@ function TransportItem({
                         </Fragment>
                     ) || ''}
 
-                    <Tooltip title="Написать комментарий. Он будет виден только вам и сотрудникам компании"
-                             placement="top">
+                    <Tooltip title="Написать комментарий. Он будет виден только вам и сотрудникам компании" placement="top">
                         <div className="icon icon-note" onClick={() => toggleAddingComment(transport.id)}>
                             <svg fill="#ffffff" stroke="#ffffff" strokeWidth="0" data-qa="icon" viewBox="0 0 12 12"
                                  width="12" height="12">

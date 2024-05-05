@@ -53,13 +53,16 @@ function LoadItem({
                 }
             </div>
             <div className="table__item">
-                {load.bodyType}
+                <Tooltip title={load.truck.bodyType} placement="top">
+                    <span>{load.truck.bodyTypeShort}</span>
+                </Tooltip>
                 <div>
-                    <span className="text-gray">загр/выгр: </span><span>{load.loading.downloadingType}</span>
+                    <span className="text-gray">загр/выгр: </span>
+                    <span>{load.loading.downloadingType}</span>
                 </div>
             </div>
             <div className="table__item">
-                {load.weight}т. {load.volume}м3 {load.cargoType}
+                {load.load.weight}т. {load.load.volume}м3 {load.load.cargoType}
             </div>
             <div className="table__item table__item-route route">
                 <div className={`location ${load.loading.location.street ? 'map' : ''}`}>

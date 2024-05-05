@@ -11,6 +11,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Attribute\MapQueryString;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Authorization\Voter\AuthenticatedVoter;
 
 #[Route('/api', name: 'api_')]
 class ListController extends AbstractController
@@ -44,6 +45,13 @@ class ListController extends AbstractController
                     'downloadingDateStatuses' => $loadApi->getDownloadingDateTitles(),
                     'priceTypes' => $loadApi->getPriceTypes(),
                 ];
+
+                if ($this->isGranted(AuthenticatedVoter::IS_AUTHENTICATED_FULLY)) {
+                    $companyId = $this->getUser()->getCompanyId();
+                    if ($companyId) {
+                        $result['availableContacts'] = $loadApi->buildContactsByCompanyId($companyId);
+                    }
+                }
             }
         }
 

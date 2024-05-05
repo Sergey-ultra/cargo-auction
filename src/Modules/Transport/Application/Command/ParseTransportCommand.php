@@ -184,9 +184,9 @@ final class ParseTransportCommand extends Command
         $this->logger->info(sprintf("Вставлено строк %d транспорта", $count));
     }
 
-    private function getBodyType(int $catType): ?int
+    private function getBodyType(int $carType): ?int
     {
-        $bodyTypeKey = array_search($catType, array_column(BodyType::BODY_TYPES, 'TypeId'));
+        $bodyTypeKey = array_search($carType, array_column(BodyType::TYPES, 'dictionary_item_id'));
 
         if (false !== $bodyTypeKey) {
             return (int)$bodyTypeKey;
