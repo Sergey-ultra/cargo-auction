@@ -10,5 +10,6 @@ final readonly class FilterTypeDTO
 {
     public function __construct(
         public FilterType $type,
-    ){}
+    ){
+    }
 }

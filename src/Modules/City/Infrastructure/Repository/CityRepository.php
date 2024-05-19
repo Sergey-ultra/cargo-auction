@@ -20,9 +20,39 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class CityRepository extends ServiceEntityRepository implements CityRepositoryInterface
 {
+    public const MAIN_CITIES_IDS = [
+        155074,
+        142168,
+        155208,
+        154835,
+        97364,
+        148459,
+        109764,
+        155179,
+        154735,
+        97584
+    ];
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, City::class);
+    }
+
+    public function getMainCities(): array
+    {
+        $list = $this->findBy(['id' => self::MAIN_CITIES_IDS]);
+
+        $result = [];
+        foreach (self::MAIN_CITIES_IDS as $id) {
+            foreach ($list as $key => $city) {
+                if ($city->getId() === $id) {
+                    $result[] = $city;
+                    unset($list[$key]);
+                }
+            }
+        }
+
+        return $result;
     }
 
     public function searchByName(string $name): array

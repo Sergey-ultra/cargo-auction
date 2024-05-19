@@ -8,10 +8,9 @@ use App\ApiGateway\DTO\BidDTO;
 use App\ApiGateway\DTO\BidsDTO;
 use App\ApiGateway\DTO\CommentShowDTO;
 use App\ApiGateway\DTO\CompanyShowDTO;
+use App\ApiGateway\DTO\CompanyWithContactsDTO;
 use App\ApiGateway\DTO\ContactDTO;
 use App\ApiGateway\DTO\ListDTO;
-use App\ApiGateway\DTO\CompanyWithContactsDTO;
-use App\ApiGateway\DTO\LoadCreateDTO;
 use App\ApiGateway\DTO\LoadDTO;
 use App\ApiGateway\DTO\LoadFilter;
 use App\ApiGateway\DTO\LoadingDTO;
@@ -19,6 +18,7 @@ use App\ApiGateway\DTO\LoadInnerDTO;
 use App\ApiGateway\DTO\LocationDTO;
 use App\ApiGateway\DTO\RateDTO;
 use App\ApiGateway\DTO\RatingDTO;
+use App\ApiGateway\DTO\Request\LoadCreateDTO;
 use App\ApiGateway\DTO\RouteDTO;
 use App\ApiGateway\DTO\TruckDTO;
 use App\ApiGateway\DTO\UnloadingDTO;
@@ -76,12 +76,12 @@ final readonly class LoadApi
 
     public function getBodyTypes(): array
     {
-        return BodyType::TYPES;
+        return BodyType::getTransformedTypes();
     }
 
     public function getLoadingTypes(): array
     {
-        return LoadingType::LOADING_TYPES;
+        return LoadingType::getTransformedTypes();
     }
 
     public function getDownloadingDateTitles(): array
@@ -250,6 +250,18 @@ final readonly class LoadApi
 
         $transitTime = $item->getDistance() / self::KM_PER_HOUR;
 
+        $loadingTime = $item->getLoadingStartTime()?->format('H:i');
+
+        if ($loadingTime && $item->getLoadingEndTime()?->format('H:i')) {
+            $loadingTime .= '-' . $item->getLoadingEndTime()->format('H:i');
+        }
+
+        $unloadingTime = $item->getUnloadingStartTime()?->format('H:i');
+
+        if ($unloadingTime && $item->getUnloadingEndTime()?->format('H:i')) {
+            $unloadingTime .= '-' . $item->getUnloadingEndTime()->format('H:i');
+        }
+
         return new LoadDTO(
             $item->getId(),
             new RouteDTO(
@@ -270,9 +282,9 @@ final readonly class LoadApi
                     $item->getFromLongitude(),
                     $item->getFromLatitude(),
                 ),
-                $item->getDownloadingDateStatus(),
-                $item->getDownloadingDate()->format('d M'),
-                $item->getDownloadingTypeName(),
+                $item->getLoadingType(),
+                $this->generateLoadingDate($item),
+                $loadingTime,
             ),
             new UnloadingDTO(
                 new LocationDTO(
@@ -283,16 +295,22 @@ final readonly class LoadApi
                     $item->getToLongitude(),
                     $item->getToLatitude(),
                 ),
-                $item->getUnloadingTypeName(),
+                $item->getUnloadingDate()?->format('d M'),
+                $unloadingTime,
             ),
             new TruckDTO(
                 $item->getBodyTypeName(),
                 $item->getBodyTypeShortNames(),
+                $item->getTruckLoadingTypeName(),
+                $item->getTruckLoadingTypeShortNames(),
+                $item->getTruckUnloadingTypeName(),
+                $item->getTruckUnloadingTypeShortNames(),
             ),
             new LoadInnerDTO(
                 $item->getCargoTypeName(),
                 $item->getWeight(),
                 $item->getVolume(),
+                $item->getLoadType(),
             ),
             new RateDTO(
                 $item->getPriceType(),
@@ -310,6 +328,26 @@ final readonly class LoadApi
             $item->getUpdatedAt()?->format('d M'),
             $companyDto,
         );
+    }
+
+    private function generateLoadingDate(Load $item): string
+    {
+        $loadingDate = $item->getLoadingFirstDate()->format('d');
+        if (
+            ($item->getLoadingLastDate() && (
+                $item->getLoadingFirstDate()->format('M') !== $item->getLoadingLastDate()->format('M') ||
+                $item->getLoadingFirstDate()->format('d M') === $item->getLoadingLastDate()->format('d M')
+                )
+            )
+            || !$item->getLoadingLastDate()
+        ) {
+            $loadingDate .= ' ' . $item->getLoadingFirstDate()->format('M');
+        }
+        if ($item->getLoadingLastDate() && $item->getLoadingFirstDate()->format('d M') !== $item->getLoadingLastDate()->format('d M')) {
+            $loadingDate .= '-' . $item->getLoadingLastDate()->format('d M');
+        }
+
+        return $loadingDate;
     }
 
     public function buildCompanyDTOByCompanyId(int $companyId): CompanyWithContactsDTO
@@ -395,31 +433,51 @@ final readonly class LoadApi
     {
         $load = new Load();
         $load
-            ->setDownloadingDateStatus($createDto->downloadingDateStatus)
-            ->setDownloadingDate(new DateTime($createDto->downloadingDate))
-            ->setFromCityId($createDto->fromCityId)
-            ->setFromAddress($createDto->fromAddress)
-            ->setToCityId($createDto->toCityId)
-            ->setToAddress($createDto->toAddress)
-            ->setWeight($createDto->weight)
-            ->setVolume($createDto->volume)
-            ->setPriceType($createDto->priceType)
-            ->setPriceWithoutTax((int)$createDto->priceWithoutTax)
-            ->setPriceWithTax((int)$createDto->priceWithTax)
-            ->setPriceCash((int)$createDto->priceCash)
-            ->setCargoType((int)$createDto->cargoType)
-            ->setBodyTypes((int)$createDto->bodyType)
-            ->setDownloadingType((int)$createDto->downloadingType)
-            ->setUnloadingType((int)$createDto->unloadingType)
+            ->setCargoType($createDto->loading->cargos->type)
+            ->setWeight($createDto->loading->cargos->weight)
+            ->setVolume($createDto->loading->cargos->volume)
+            ->setLoadType($createDto->truck->loadType)
+            ->setLoadTemperatureFrom($createDto->truck->temperatureFrom)
+            ->setLoadTemperatureTo($createDto->truck->temperatureTo)
+            ->setLoadingType($createDto->loading->dates->type)
+            ->setLoadingFirstDate($createDto->loading->dates->firstDate)
+            ->setLoadingLastDate($createDto->loading->dates->lastDate)
+            ->setLoadingPeriodicity($createDto->loading->dates->periodicity)
+            ->setLoadingStartTime($createDto->loading->dates->time->start)
+            ->setLoadingEndTime($createDto->loading->dates->time->end)
+            ->setUnloadingDate($createDto->unloading->dates->firstDate)
+            ->setUnloadingStartTime($createDto->unloading->dates->time->start)
+            ->setUnloadingEndTime($createDto->unloading->dates->time->end)
+            ->setFromCityId($createDto->loading->location->cityId)
+            ->setFromAddress($createDto->loading->location->address)
+            ->setToCityId($createDto->unloading->location->cityId)
+            ->setToAddress($createDto->unloading->location->address)
+            ->setBodyTypes($createDto->truck->bodyTypes)
+            ->setTruckLoadingTypes($createDto->truck->loadingTypes)
+            ->setTruckUnloadingTypes($createDto->truck->unloadingTypes)
+            ->setPriceType($createDto->payment->type)
+            ->setPriceWithoutTax((int)$createDto->payment->priceWithoutTax)
+            ->setPriceWithTax((int)$createDto->payment->priceWithTax)
+            ->setPriceCash((int)$createDto->payment->priceCash)
+            ->setPaymentOnCard($createDto->payment->onCard)
+            ->setHideCounterOffers($createDto->payment->hideCounterOffers)
+            ->setAcceptBidsWithVat($createDto->payment->acceptBidsWithVat)
+            ->setAcceptBidsWithoutVat($createDto->payment->acceptBidsWithoutVat)
+            ->setContactIds($createDto->contactIds)
+            ->setFiles($createDto->files)
+            ->setNote($createDto->note)
             ->setUser($user)
             ->setCompanyId($user->getCompanyId())
             ->setCreatedAt()
             ->setUpdatedAt();
 
-        $routeCities = $this->cityAdapter->getCitiesByIds([$createDto->fromCityId, $createDto->toCityId]);
+        $routeCities = $this->cityAdapter->getCitiesByIds([
+            $createDto->loading->location->cityId,
+            $createDto->unloading->location->cityId,
+        ]);
 
-        $fromCity = $routeCities->get($createDto->fromCityId);
-        $toCity = $routeCities->get($createDto->toCityId);
+        $fromCity = $routeCities->get($createDto->loading->location->cityId);
+        $toCity = $routeCities->get( $createDto->unloading->location->cityId);
 
         $this->loadService->save($load, $fromCity, $toCity);
         return $load->getId();

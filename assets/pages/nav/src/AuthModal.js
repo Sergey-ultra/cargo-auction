@@ -70,15 +70,15 @@ export default function AuthModal({ onClose, isOpen, showMode, showLogin, showRe
                 {isRequiredEmailVerification
                     ?
                     <div>
-                        <div className="form-group">
+                        <div className="flex">
                             <span>Необходимо подтверждение email</span>
                         </div>
-                        <div className="form-group">
+                        <div className="flex">
                             <Button className="btn" onClick={resendVerificationEmail}>
                                 Повторно выслать подтверждение аккаунта
                             </Button>
                         </div>
-                        <div className="form-group">
+                        <div className="flex">
                             <Button className="btn" onClick={closeRequiredEmailVerification}>Понятно</Button>
                         </div>
                     </div>

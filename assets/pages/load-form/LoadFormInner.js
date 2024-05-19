@@ -1,4 +1,7 @@
 import React, {Fragment, useEffect, useState} from "react";
+import { useTranslation } from 'react-i18next';
+import dayjs from 'dayjs'
+import updateLocale from 'dayjs/plugin/updateLocale'
 import {useHttp} from "../../hooks/api";
 import {
     Autocomplete,
@@ -10,21 +13,32 @@ import {
     Select,
     TextField, Tooltip
 } from "@mui/material";
-import {useHandleSelectOptions} from "../../hooks/handleSelectOptions";
+import {useHandleSelectOptions, transformToTree} from "../../hooks/handleSelectOptions";
 import AutocompleteAddress from "../../components/AutocompleteAddress";
 import CustomTabs from "../../components/custom-tabs/CustomTabs";
 import { DatePicker } from '@mui/x-date-pickers';
-import dayjs from "dayjs";
 import {useForm} from "react-hook-form";
 import './form.scss';
 import GreenButton from "../../components/buttons/GreenButton";
-import ContactList from "./src/ContactList";
+import ContactList from "./src/contact-list/ContactList";
 import FileUploader from "../../components/file-upload/FileUploader";
-import {DownloadingDateStatus, PeriodicityOptions} from "./src/enums";
+import {DownloadingDateStatus, PeriodicityOptions, LoadingTypes, BodyTypes, FixedDurations} from "./src/enums";
+import MultipleCheckbox from "./src/multiple-checkbox";
+import TreeCheckbox from "./src/tree-checkbox";
+import InfoIcon from "../../components/icons/InfoIcon";
+import MapIcon from "../../components/icons/MapIcon";
 
 function LoadForm() {
     const isAuth = window.authData && window.authData.userId;
-    const { request, isLoading, error, status } = useHttp();
+    const {request, isLoading, error, status} = useHttp();
+    const {t} = useTranslation();
+
+
+    dayjs.extend(updateLocale)
+    dayjs.updateLocale('en', {
+        weekStart: 1,
+    })
+
     const {
         watch,
         setValue,
@@ -33,69 +47,149 @@ function LoadForm() {
         reset,
         handleSubmit,
         setError,
-        formState: { errors, isSubmitting, isSubmitted }
+        formState: {errors, isSubmitting, isSubmitted, isDirty, isValidating}
     } = useForm({
         defaultValues: {
-            fromCityId : '',
-            fromAddress: '',
-            toCityId: '',
-            toAddress: '',
-            cargoType: '',
-            bodyType: '',
-            downloadingType: '',
-            downloadingDate: dayjs(),
-            downloadingDateStatus: DownloadingDateStatus.FROM_DATE,
-            periodicity: 'everyday',
-            unloadingType: '',
-            priceType: 'negotiable',
-            priceWithoutTax: '',
-            priceWithTax: '',
-            priceCash: '',
-            volume: '',
-            weight: ''
+            loading: {
+                cargos: {
+                    type: '',
+                    volume: '',
+                    weight: '',
+                },
+                dates: {
+                    type: DownloadingDateStatus.FROM_DATE,
+                    periodicity: 'everyday',
+                    firstDate: dayjs(),
+                    lastDate: dayjs(),
+                    time: {
+                        type: "bounded",
+                        start: null,
+                        end: null,
+                    }
+                },
+                location: {
+                    cityId: null,
+                    address: null,
+                },
+            },
+            unloading: {
+                location:  {
+                    cityId: '',
+                    address: '',
+                },
+                dates: {
+                    firstDate: null,
+                    time: {
+                        type: "bounded",
+                        start: null,
+                        end: null,
+                    },
+                },
+            },
+
+            truck: {
+                bodyTypes: [],
+                loadingTypes: [],
+                unloadingTypes: [],
+                loadType: 'ftl',
+                temperatureFrom: null,
+                temperatureTo: null,
+            },
+            payment: {
+                type:'negotiable',
+                priceWithoutTax: '',
+                priceWithTax: '',
+                priceCash: '',
+                rateWithVatAvailable: true,
+                cashAvailable: true,
+                rateWithoutVatAvailable: true,
+                onCard: false,
+                hideCounterOffers: false,
+                acceptBidsWithVat: true,
+                acceptBidsWithoutVat: false,
+                vatPercents: 20,
+                bidStep: 0,
+                auctionDuration: {
+                    fixedDuration: '4h',
+                    countFromFirstBid: false,
+                }
+            },
+            contactIds: [],
+            note: '',
+            files: [],
         }
     });
-    const { handleSelectOptions } = useHandleSelectOptions();
-
-    const [requestError, setRequestError] = useState([]);
 
     const [isShowLoadingTime, setIsShowLoadingTime] = useState(false);
     const [isShowUnloadingDatetime, setIsShowUnloadingDatetime] = useState(false);
-    const [isShowAddPhoto, setIsShowAddPhoto] = useState(false);
+    const [isShowAddTemperature, setIsShowAddTemperature] = useState(false);
+    const [isShowAddFiles, setIsShowAddFiles] = useState(false);
 
-    const obj = register('cargoType', {
-        required: 'Укажите тип груза'
+    register('loading.cargos.type', {
+        required: t('validation.cargoType'),
     });
+
+    register('truck.bodyTypes', {
+        required: true,
+    });
+
+    register('contactIds', {
+        required: true,
+    });
+
+    register('loading.dates.firstDate', {
+        required: t('validation.downloadingDate')
+    });
+
+    register('unloading.dates.firstDate');
+
+
+    const [daysAfterLoading, setDaysAfterLoading] = useState(0);
+
+    const updateDaysAfterLoading = value => {
+        setDaysAfterLoading(value)
+    }
+
+    const updateDownloadingDate = value => {
+        setValue('loading.dates.firstDate', value);
+    }
+
+    useEffect(() => {
+        const currentDate = getValues('loading.dates.firstDate');
+
+        setValue('loading.dates.lastDate', currentDate.add(daysAfterLoading, "day"));
+
+    }, [watch('loading.dates.firstDate'), daysAfterLoading]);
+
+
     const [files, setFiles] = useState([]);
     const allowedExtensions = ['.pdf', '.doc', '.docx', '.xml', '.xlsx', '.xls', '.ods', '.odt', '.rar', '.zip', '.mp3', '.aac', '.wma', '.jpeg', '.jpg', '.tiff', '.bmp', '.gif', '.png', '.jp2', '.raw'];
 
-    const closeFileUploader = () => {
-        setIsShowAddPhoto(false);
-    }
+    useEffect(() => {
+        setValue('files', files);
+    }, [files]);
 
-    const datePickerStyle = {
-        height: 28,
-    };
 
     const [availableContacts, setAvailableContacts] = useState([]);
-
     const [cargoTypes, setCargoTypes] = useState([]);
     const [priceTypes, setPriceTypes] = useState([]);
     const [bodyTypes, setBodyTypes] = useState([]);
     const [loadingTypes, setLoadingTypes] = useState([]);
     const [downloadingDateStatuses, setDownloadingDateStatuses] = useState([]);
 
-    const setFromCity = cityObj => setValue('fromCityId', cityObj.id);
-    const setToCity = cityObj => setValue('toCityId', cityObj.id);
-    const setPriceType = value => setValue('priceType', value);
+    const setFromCity = cityObj => setValue('loading.location.cityId', cityObj.id);
+    const setToCity = cityObj => setValue('unloading.location.cityId', cityObj.id);
+    const setPriceType = value => setValue('payment.type', value);
+
 
     const saveLoad = async formData => {
-
-        const { data } = await request('/api/load/create', 'POST', { body: formData });
+        formData.loading.cargos.weight = Number.parseFloat(formData.loading.cargos.weight);
+        formData.loading.cargos.volume = Number.parseFloat(formData.loading.cargos.volume);
+        const {data} = await request('/api/load/create', 'POST', {body: formData});
         console.log(error, status, isLoading);
         if (error && status === 422) {
 
-            setRequestError(error);
+            console.log(error);
         }
         if (status === 200) {
             reset();
@@ -103,6 +197,30 @@ function LoadForm() {
     }
 
 
+    const [bodyTypeValue, setBodyTypeValue] = useState([]);
+    const changeBodyTypeValue = value => {
+        setBodyTypeValue(prev => {
+            if (prev.length === 0 && value.length) {
+                setValue('truck.unloadingTypes', [LoadingTypes.DEFAULT_LOADING_TYPE]);
+                setValue('truck.loadingTypes', [LoadingTypes.DEFAULT_LOADING_TYPE]);
+            }
+            return value;
+        });
+
+        if (value.filter(type => BodyTypes.HAS_TEMPERATURE.includes(type)).length) {
+            setIsShowAddTemperature(true);
+        } else {
+            setIsShowAddTemperature(false);
+        }
+
+        setValue('truck.bodyTypes', value, {
+            shouldValidate: isSubmitting && isDirty,
+            shouldTouch: true,
+            shouldDirty: true,
+        });
+    }
+
+    const { handleSelectOptions } = useHandleSelectOptions();
     useEffect(() => {
         const fetchFormLists = async() => {
             const { data } = await request(
@@ -115,7 +233,13 @@ function LoadForm() {
                 }
             );
             if (data.cargoTypes) {
-                setCargoTypes(data.cargoTypes);
+                const options = data.cargoTypes.map((item, index) => {
+                    return {
+                        label : item,
+                        id: index,
+                    }
+                });
+                setCargoTypes(options);
             }
 
             if (data.priceTypes) {
@@ -123,13 +247,23 @@ function LoadForm() {
             }
             if (data.availableContacts) {
                 setAvailableContacts(data.availableContacts);
-                setValue('contact_ids', data.availableContacts.map(el => el.id))
+                setValue('contactIds', data.availableContacts.map(el => el.id))
             }
             if (data.bodyTypes) {
-                setBodyTypes(data.bodyTypes);
+                const list = transformToTree(data.bodyTypes, 'typeId', 'parentTypeId')
+                    .sort((a, b) => a.position - b.position);
+
+                setBodyTypes([...list]);
             }
             if (data.loadingTypes) {
-                setLoadingTypes(data.loadingTypes);
+                const options = data.loadingTypes.map((item, index) => {
+                    return {
+                        title: item.name,
+                        value: item.typeId,
+                    }
+                });
+
+                setLoadingTypes(options);
             }
             if (data.downloadingDateStatuses) {
                 setDownloadingDateStatuses(handleSelectOptions(data.downloadingDateStatuses));
@@ -142,7 +276,7 @@ function LoadForm() {
         <Fragment>
             {!isAuth &&
                 <div className="alert">
-                    <div>Для продолжения необходимо авторизоваться на сайте.</div>
+                    <div>{t('notAuth')}</div>
                 </div>
             }
 
@@ -153,113 +287,123 @@ function LoadForm() {
                             <div className="fieldset">
                                 <div className="form__block">
                                     <div className="form__inner">
-                                        <div className="form-group">
-                                            <div className="form__label text-bold">Груз</div>
-                                            <div className="input">
-                                                <Autocomplete
-                                                    sx={{width: 232}}
-                                                    options={cargoTypes}
-                                                    onChange={(event, newValue) => {
-                                                        setValue('cargoType', newValue);
-                                                    }}
-                                                    size="small"
-                                                    disablePortal
-                                                    renderInput={(params) => <TextField  {...params}
-                                                                                         error={!!errors.cargoType}
-                                                                                         helperText={errors.cargoType?.message}
-                                                                                         label="Тип груза"/>}
-                                                />
-                                            </div>
-                                            <div className="input">
-                                                <TextField
-                                                    sx={{width: 84}}
-                                                    type="number"
-                                                    name="volume"
-                                                    size="small"
-                                                    label="Объём (на одну машину)"
-                                                    {...register('volume', {
-                                                        required: 'Укажите объем'
-                                                    })}
-                                                    error={!!errors.volume}
-                                                    helperText={errors.volume?.message}
-                                                    onChange={e => setValue('volume', Number.parseFloat(e.target.value))}/>
-                                            </div>
-                                            <div className="input">
-                                                <TextField
-                                                    sx={{width: 84}}
-                                                    type="number"
-                                                    name="weight"
-                                                    size="small"
-                                                    label="Вес (на одну машину)"
-                                                    {...register('weight', {
-                                                        required: 'Укажите вес'
-                                                    })}
-                                                    error={!!errors.weight}
-                                                    helperText={errors.weight?.message}
-                                                    onChange={e => setValue('weight', Number.parseFloat(e.target.value))}/>
-                                            </div>
+                                        <div className="flex">
+                                            <div className="form__label text-bold">{t('block.cargo')}</div>
+                                            <Autocomplete
+                                                sx={{width: 232}}
+                                                options={cargoTypes}
+                                                onChange={(event, newValue) => {
+                                                    setValue('loading.cargos.type', newValue.id, {shouldValidate: true});
+                                                }}
+                                                size="small"
+                                                disablePortal
+                                                renderInput={(params) => <TextField  {...params}
+                                                                                     error={!!errors.loading?.cargos?.cargoType}
+                                                                                     helperText={errors.loading?.cargos?.cargoType?.message}
+                                                                                     label={t('label.cargoType')}/>}
+                                            />
+
+                                            <TextField
+                                                sx={{width: 100}}
+                                                size="small"
+                                                type="number"
+                                                label={t('label.volume')}
+                                                {...register('loading.cargos.volume', {
+                                                    required: t('validation.volume')
+                                                })}
+                                                error={!!errors.loading?.cargos?.volume}
+                                                helperText={errors.loading?.cargos?.volume?.message}
+                                                onChange={e => setValue('loading.cargos.volume', Number.parseFloat(e.target.value), {shouldValidate: true})}/>
+
+                                            <TextField
+                                                sx={{width: 100}}
+                                                size="small"
+                                                type="number"
+                                                label={t('label.weight')}
+                                                {...register('loading.cargos.weight', {
+                                                    required: t('validation.weight')
+                                                })}
+                                                error={!!errors.loading?.cargos?.weight}
+                                                helperText={errors.loading?.cargos?.weight?.message}
+                                                onChange={e => setValue('loading.cargos.weight', Number.parseFloat(e.target.value))}/>
                                         </div>
                                     </div>
                                 </div>
 
                                 <div className="form__block">
                                     <div className="form__inner">
-                                        <div className="form-group">
-                                            <div className="form__label text-bold">Когда</div>
-                                            <div className="input">
-                                                <FormControl sx={{minWidth: 232}} size="small" error={!!errors.downloadingDateStatus}>
-                                                    <InputLabel>Тип загрузки</InputLabel>
+                                        <div className="flex">
+                                            <div className="form__label text-bold">{t('block.when')}</div>
+
+                                            <FormControl sx={{width: 200}} size="small"
+                                                         error={!!errors.loading?.dates?.type}>
+                                                <InputLabel>{t('label.downloadingDateStatus')}</InputLabel>
+                                                <Select
+                                                    defaultValue={getValues('loading.dates.type')}
+                                                    label={t('label.downloadingDateStatus')}
+                                                    name="downloadingDateStatus"
+                                                    {...register('loading.dates.type', {
+                                                        required: t('validation.downloadingDateStatus')
+                                                    })}>
+                                                    {downloadingDateStatuses.map(status =>
+                                                        <MenuItem key={status.value} value={status.value}
+                                                                  selected={watch('loading.dates.type') === status.value}>
+                                                            {status.title}
+                                                        </MenuItem>
+                                                    )}
+                                                </Select>
+                                                {errors.loading?.dates?.type &&
+                                                    <FormHelperText>{errors.loading?.dates?.type?.message}</FormHelperText>}
+                                            </FormControl>
+
+                                            {watch('loading.dates.type') === DownloadingDateStatus.FROM_DATE &&
+                                                <Fragment>
+                                                    <DatePicker
+                                                        minDate={dayjs()}
+                                                        name="loading.dates.firstDate"
+                                                        sx={{width: 200}}
+                                                        defaultValue={getValues('loading.dates.firstDate')}
+                                                        slotProps={{textField: {size: 'small'}}}
+                                                        onChange={value => updateDownloadingDate(value)}
+                                                    />
+                                                    <span>+</span>
                                                     <Select
-                                                        defaultValue={getValues('downloadingDateStatus')}
-                                                        label="Тип загрузки"
-                                                        name="downloadingDateStatus"
-                                                        {...register('downloadingDateStatus', {
-                                                            required: 'Необходимо ввести тип загрузки'
-                                                        })}>
-                                                        {downloadingDateStatuses.map(status =>
-                                                            <MenuItem key={status.value} value={status.value}
-                                                                      selected={watch('downloadingDateStatus') === status.value}>
-                                                                {status.title}
+                                                        size="small"
+                                                        defaultValue={0}
+                                                        onChange={e => updateDaysAfterLoading(e.target.value)}>
+                                                        {[...Array(10).keys()].map(option =>
+                                                            <MenuItem key={option} value={option} selected={daysAfterLoading === option}>
+                                                                {option} {t('dayShort')}
                                                             </MenuItem>
                                                         )}
                                                     </Select>
-                                                    {errors.downloadingDateStatus &&
-                                                        <FormHelperText>{errors.downloadingDateStatus.message}</FormHelperText>}
-                                                </FormControl>
-                                            </div>
-                                            {watch('downloadingDateStatus') === DownloadingDateStatus.FROM_DATE &&
-                                                <div>
-                                                    <DatePicker
-                                                        defaultValue={getValues('downloadingDate')}
-                                                        slotProps={{ textField: { size: 'small' } }}
-                                                        {...register('downloadingDate', {
-                                                            required: 'Необходимо ввести дату загрузки'
-                                                        })} />
-                                                </div>
+                                                    <span className="description">
+                                                        {t('to')} {watch('loading.dates.lastDate').format()}{t('periodicityDescription')}
+                                                    </span>
+                                                </Fragment>
                                             }
-                                            {watch('downloadingDateStatus') === DownloadingDateStatus.PERMANENTLY &&
+                                            {watch('loading.dates.type') === DownloadingDateStatus.PERMANENTLY &&
                                                 <Fragment>
                                                     <div>
                                                         <Select
                                                             size="small"
-                                                            defaultValue={getValues('periodicity')}
-                                                            name="periodicity"
-                                                            {...register('periodicity')}>
+                                                            defaultValue={getValues('loading.dates.periodicity')}
+                                                            {...register('loading.dates.periodicity')}>
                                                             {PeriodicityOptions.map(option =>
-                                                                <MenuItem key={option.value} value={option.value} selected={watch('periodicity') === option.value}>
-                                                                    {option.title}
+                                                                <MenuItem key={option.value} value={option.value} selected={watch('loading.dates.periodicity') === option.value}>
+                                                                    {t(option.title)}
                                                                 </MenuItem>
                                                             )}
                                                         </Select>
                                                     </div>
                                                     <span className="periodicity-description">
-                                                        до 04 июл., затем переместится в архив
+                                                        {t('to')} {dayjs().add(30, "day").format()}{t('periodicityDescription')}
                                                     </span>
                                                 </Fragment>
                                             }
-                                            {watch('downloadingDateStatus') === DownloadingDateStatus.REQUEST &&
+                                            {watch('loading.dates.type') === DownloadingDateStatus.REQUEST &&
                                                 <span className="periodicity-description">
-                                                        до 04 июл., затем переместится в архив
+                                                        {t('to')} {dayjs().add(30, "day").format()}{t('periodicityDescription')}
                                                 </span>
                                             }
                                         </div>
@@ -267,58 +411,54 @@ function LoadForm() {
                                 </div>
 
                                 <div className="form__block">
-                                <div className="relative">
+                                    <div className="relative">
                                         <div className="route__container">
-                                            <div className="route form__item form-group">
+                                            <div className="route form__item flex">
                                                 <div className="route__point"></div>
-                                                <div className="form__label text-bold">Загрузка</div>
-                                                <div className="form-group">
+                                                <div className="form__label text-bold">{t('label.load')}</div>
+                                                <div className="flex">
                                                     <div className="input">
                                                         <AutocompleteAddress
-                                                            {...register('fromCityId')}
+                                                            {...register('loading.location.cityId')}
                                                             setCityObject={setFromCity}
-                                                            label="Населенный пункт"/>
+                                                            label={t('label.locality')}/>
 
                                                     </div>
                                                     <div className="input">
                                                         <TextField
-                                                            name="fromAddress"
                                                             size="small"
-                                                            error={!!errors.fromAddress}
-                                                            helperText={errors.fromAddress?.message}
-                                                            {...register('fromAddress', {
-                                                                required: 'Введите адрес населенного пункта загрузки',
+                                                            error={!!errors.loading?.location?.address}
+                                                            helperText={errors.loading?.location?.address?.message}
+                                                            {...register('loading.location.address', {
+                                                                required: t('validation.fromAddress'),
                                                             })}
-                                                            placeholder="Адрес в населенном пункте"/>
+                                                            placeholder={t('placeholder.address')}/>
                                                     </div>
+                                                    <MapIcon/>
                                                 </div>
                                             </div>
 
-                                            {[DownloadingDateStatus.PERMANENTLY, DownloadingDateStatus.FROM_DATE].includes(watch('downloadingDateStatus')) &&
-                                                <div className="route form__item form-group route__withoutBottom">
+                                            {[DownloadingDateStatus.PERMANENTLY, DownloadingDateStatus.FROM_DATE].includes(watch('loading.dates.type')) &&
+                                                <div className="route form__item flex route__withoutBottom">
                                                     <div className="route__inner">
                                                         {isShowLoadingTime
                                                             ?
                                                             <div className="datetime">
                                                                 <div className="datetime__inner">
                                                                     <div className="datetime__label">
-                                                                        <Tooltip title="Скрыть поле" placement="top">
+                                                                        <Tooltip title={t('hideField')} placement="top">
                                                                             <div className="close-button form__close"
                                                                                  onClick={() => setIsShowLoadingTime(false)}></div>
                                                                         </Tooltip>
-                                                                        Время загрузки
+                                                                        {t('label.loadTime')}
                                                                     </div>
                                                                     <div className="datetime__content">
                                                                         <div className="datetime__fields">
-                                                                            <div
-                                                                                className="datetime__item datetime__item-first timeInputStart">
-                                                                                <input
-                                                                                    type="time" {...register('loading_time_from')}/>
+                                                                            <div className="datetime__item datetime__item-first timeInputStart">
+                                                                                <input type="time" {...register('loading.dates.time.start')}/>
                                                                             </div>
-                                                                            <div
-                                                                                className="datetime__item datetime__item-first">
-                                                                                <input
-                                                                                    type="time" {...register('loading_time_to')}/>
+                                                                            <div className="datetime__item datetime__item-first">
+                                                                                <input type="time" {...register('loading.dates.time.end')}/>
                                                                             </div>
                                                                         </div>
                                                                     </div>
@@ -327,7 +467,7 @@ function LoadForm() {
                                                             :
                                                             <div className="chips-button">
                                                                 <GreenButton onClick={() => setIsShowLoadingTime(true)}>
-                                                                    Время загрузки
+                                                                    {t('label.loadTime')}
                                                                 </GreenButton>
                                                             </div>
                                                         }
@@ -335,54 +475,58 @@ function LoadForm() {
                                                 </div>
                                             }
 
-                                            <div className="route form__item form-group">
+                                            <div className="route form__item flex">
                                                 <div className="route__point"></div>
-                                                <div className="form__label text-bold">Разгрузка</div>
-                                                <div className="form-group">
+                                                <div className="form__label text-bold">{t('label.downloading')}</div>
+                                                <div className="flex">
                                                     <div className="input">
                                                         <AutocompleteAddress
-                                                            {...register('toCityId')}
+                                                            {...register('unloading.location.cityId')}
                                                             setCityObject={setToCity}
-                                                            label="Населенный пункт"/>
+                                                            label={t('label.locality')}/>
                                                     </div>
                                                     <div className="input">
                                                         <TextField
                                                             name="toAddress"
                                                             size="small"
-                                                            error={!!errors.toAddress}
-                                                            helperText={errors.toAddress?.message}
-                                                            {...register('toAddress', {
-                                                                required: 'Введите адрес населенного пункта разгрузки',
+                                                            error={!!errors.unloading?.location?.address}
+                                                            helperText={errors.unloading?.location?.address?.message}
+                                                            {...register('unloading.location.address', {
+                                                                required: t('validation.toAddress'),
                                                             })}
-                                                            placeholder="Адрес в населенном пункте"/>
+                                                            placeholder={t('placeholder.address')}/>
                                                     </div>
+                                                    <MapIcon/>
                                                 </div>
                                             </div>
 
-                                            {[DownloadingDateStatus.PERMANENTLY, DownloadingDateStatus.FROM_DATE].includes(watch('downloadingDateStatus')) &&
-                                                <div className="form-group route form__item route__withoutBottom">
+                                            {[DownloadingDateStatus.PERMANENTLY, DownloadingDateStatus.FROM_DATE].includes(watch('loading.dates.type')) &&
+                                                <div className="flex route form__item route__withoutBottom">
                                                     <div className="route__inner">
                                                         {isShowUnloadingDatetime
                                                             ?
                                                             <div className="datetime">
                                                                 <div className="datetime__inner">
                                                                     <div className="datetime__label">
-                                                                        <Tooltip title="Скрыть поле" placement="top">
+                                                                        <Tooltip title={t('hideField')} placement="top">
                                                                             <div className="close-button form__close"
                                                                                  onClick={() => setIsShowUnloadingDatetime(false)}></div>
                                                                         </Tooltip>
-                                                                        Дата и время
+                                                                        {t('label.unloadingDateAndTime')}
                                                                     </div>
                                                                     <div className="datetime__content">
                                                                         <div className="datetime__fields">
                                                                             <DatePicker
-                                                                                label="Выберите дату"
+                                                                                minDate={dayjs()}
+                                                                                label={t('chooseDate')}
                                                                                 slotProps={{textField: {size: 'small'}}}
-                                                                                {...register('unloadingDate')} />
-                                                                            <div
-                                                                                className="datetime__item datetime__item-first">
-                                                                                <input
-                                                                                    type="time" {...register('unloading_time_from')}/>
+                                                                                onChange={value => setValue('unloading.dates.firstDate', value)}
+                                                                            />
+                                                                            <div className="datetime__item datetime__item-first">
+                                                                                <input type="time" {...register('unloading.dates.time.start')}/>
+                                                                            </div>
+                                                                            <div className="datetime__item">
+                                                                                <input type="time" {...register('unloading.dates.time.end')}/>
                                                                             </div>
                                                                         </div>
                                                                     </div>
@@ -392,7 +536,7 @@ function LoadForm() {
                                                             <div className="chips-button">
                                                                 <GreenButton
                                                                     onClick={() => setIsShowUnloadingDatetime(true)}>
-                                                                    Дата и время
+                                                                    {t('label.unloadingDateAndTime')}
                                                                 </GreenButton>
                                                             </div>
                                                         }
@@ -404,219 +548,338 @@ function LoadForm() {
                                 </div>
 
                                 <div className="form__block">
-                                <div className="form__inner">
-                                        <div className="form-group">
+                                    <div className="form__inner">
+                                        <div className="flex">
                                             <div className="car__block">
-                                                <div className="form__label text-bold">Кузов</div>
-                                                <div className="car__selector">
-                                                    <FormControl sx={{minWidth: 232}} size="small"
-                                                                 error={!!errors.bodyType}>
-                                                        <InputLabel>Кузов</InputLabel>
-                                                        <Select
-                                                            label="Кузов"
-                                                            name="bodyType"
-                                                            {...register('bodyType', {
-                                                                required: 'Выбор кузова обязателен'
-                                                            })}>
-                                                            {bodyTypes.map(bodyType =>
-                                                                <MenuItem key={bodyType} value={bodyType}
-                                                                          selected={watch('bodyType') === bodyType}>
-                                                                    {bodyType}
-                                                                </MenuItem>
-                                                            )}
-                                                        </Select>
-                                                        {errors.bodyType &&
-                                                            <FormHelperText>{errors.bodyType.message}</FormHelperText>}
-                                                    </FormControl>
+                                                <div className="form__label text-bold">{t('label.body')}</div>
+                                                <div className={`car__selector  ${errors.truck?.bodyTypes ? 'error' : ''}`}>
+                                                    <TreeCheckbox
+                                                        options={bodyTypes}
+                                                        itemText="name"
+                                                        itemValue="typeId"
+                                                        value={watch('truck.bodyTypes')}
+                                                        onChange={changeBodyTypeValue}/>
                                                 </div>
                                             </div>
 
                                             <div className="car__block">
-                                                <div className="form__label">Загрузка</div>
+                                                <div className="form__label">{t('label.load')}</div>
                                                 <div className="car__selector">
-                                                    <FormControl sx={{minWidth: 232}} size="small"
-                                                                 error={!!errors.downloadingType}>
-                                                        <InputLabel>Загрузка</InputLabel>
-                                                        <Select
-                                                            {...register('downloadingType', {
-                                                                required: 'Выберите тип загрузки'
-                                                            })}
-                                                            label="Загрузка"
-                                                            name="downloadingType">
-                                                            {loadingTypes.map(downloadingType =>
-                                                                <MenuItem key={downloadingType} value={downloadingType}
-                                                                          selected={watch(downloadingType) === downloadingType}>
-                                                                    {downloadingType}
-                                                                </MenuItem>
-                                                            )}
-                                                        </Select>
-                                                        {errors.downloadingType &&
-                                                            <FormHelperText>{errors.downloadingType.message}</FormHelperText>}
-                                                    </FormControl>
+                                                    <MultipleCheckbox
+                                                        disabled={!watch('truck.bodyTypes').length}
+                                                        options={loadingTypes}
+                                                        itemText="title"
+                                                        itemValue="value"
+                                                        value={watch('truck.loadingTypes')}
+                                                        onChange={value => setValue('truck.loadingTypes', value)}/>
                                                 </div>
                                             </div>
                                             <div className="car__block">
-                                                <div className="form__label">Выгрузка</div>
+                                                <div className="form__label">{t('label.unloading')}</div>
                                                 <div className="car__selector">
-                                                    <div className="car__list">
-                                                        {loadingTypes.map(unloadingType =>
-                                                            <li className="car__item">
-                                                                <Checkbox size="small" key={unloadingType} value={unloadingType}
-                                                                          selected={watch(unloadingType) === unloadingType}>
-                                                                    {unloadingType}
-                                                                </Checkbox>
-                                                            </li>
-                                                        )}
+                                                    <MultipleCheckbox
+                                                        disabled={!watch('truck.bodyTypes').length}
+                                                        options={loadingTypes}
+                                                        itemText="title"
+                                                        itemValue="value"
+                                                        value={watch('truck.unloadingTypes')}
+                                                        onChange={value => setValue('truck.unloadingTypes', value)}/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="flex">
+                                            <div className="form__label">{t('label.load')}</div>
+                                            <div>
+                                                <div className="loading">
+                                                    <label className="radio">
+                                                        <input type="radio" {...register('truck.loadType')} value="ftl"/>
+                                                        <span>
+                                                            <span>{t('ftl')}</span>
+                                                            <Tooltip title={t('ftlDescription')} placement="top">
+                                                                <span>
+                                                                    <InfoIcon/>
+                                                                </span>
+                                                            </Tooltip>
+                                                        </span>
+                                                    </label>
+                                                </div>
+                                                <div className="loading">
+                                                    <label className="radio">
+                                                        <input type="radio" {...register('truck.loadType')} value="dont-care"/>
+                                                        <span>{t('ltl')}</span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {isShowAddTemperature &&
+                                        <div className="form__inner">
+                                            <div className="flex flex-end">
+                                                <div className="form__label">{t('temperature')}</div>
+                                                <div className="flex">
+                                                    <div className="flex flex-center">
+                                                        <span>{t('from')}</span>
+                                                        <TextField
+                                                            sx={{width: 100}}
+                                                            size="small"
+                                                            {...register('truck.temperatureFrom')}
+                                                            placeholder="°C"/>
+                                                    </div>
+                                                    <div className="flex flex-center">
+                                                        <span>{t('to')}</span>
+                                                        <TextField
+                                                            sx={{width: 100}}
+                                                            size="small"
+                                                            {...register('truck.temperatureTo')}
+                                                            placeholder="°C"/>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                </div>
-
+                                    }
                                 </div>
 
                                 <div className="form__block">
                                     <div className="form__inner">
-                                        <div className="form-group">
-                                            <CustomTabs defaultValue="negotiable" tabs={priceTypes}
-                                                        onChange={setPriceType}/>
+                                        <div className="flex">
+                                            <CustomTabs defaultValue="negotiable" tabs={priceTypes} onChange={setPriceType}/>
                                         </div>
 
-                                        {['negotiable', 'fix'].includes(watch('priceType')) &&
+                                        {['negotiable', 'fix'].includes(watch('payment.type')) &&
                                             <Fragment>
-                                                <div className="form__label text-bold">Ставка</div>
-                                                {watch('priceType') === 'negotiable' &&
-                                                    <p>Участники увидят, что возможен торг, и смогут предложить свою
-                                                        ставку</p>
+                                                <div className="form__label text-bold">{t('label.bid')}</div>
+                                                {watch('payment.type') === 'negotiable' &&
+                                                    <p>{t('negotiablePriceType')}</p>
                                                 }
-                                                {watch('priceType') === 'fix' &&
-                                                    <p>Участники смогут предлагать свои услуги только по вашей
-                                                        ставке</p>
+                                                {watch('payment.type') === 'fix' &&
+                                                    <p>{t('fixPriceType')}</p>
                                                 }
-                                                {isSubmitted && !watch('priceWithoutTax') && !watch('priceWithTax') && !watch('priceCash') &&
-                                                    <div className="text-description text-red">Укажите хотя бы одну
-                                                        ставку</div>
+                                                {isSubmitted && !watch('payment.priceWithoutTax') && !watch('payment.priceWithTax') && !watch('payment.priceCash') &&
+                                                    <div className="text-description text-red">{t('validation.bid')}</div>
                                                 }
-                                                <div id="priceBlock">
-                                                    <div className="form-group">
-                                                        <span className="form__label">С НДС, безнал</span>
-                                                        <TextField
-                                                            type="number"
-                                                            name="priceWithoutTax"
-                                                            size="small"
-                                                            error={!!errors.priceWithoutTax}
-                                                            helperText={errors.priceWithoutTax?.message}
-                                                            {...register('priceWithoutTax')}/> руб
-                                                    </div>
-                                                    <div className="form-group">
-                                                        <span className="form__label">Без НДС, безнал</span>
-                                                        <TextField
-                                                            type="number"
-                                                            name="priceWithTax"
-                                                            size="small"
-                                                            error={!!errors.priceWithTax}
-                                                            helperText={errors.priceWithTax?.message}
-                                                            {...register('priceWithTax')}/> руб
-                                                    </div>
-                                                    <div className="form-group">
-                                                        <span className="form__label">Наличными</span>
-                                                        <TextField
-                                                            type="number"
-                                                            name="priceCash"
-                                                            size="small"
-                                                            error={!!errors.priceCash}
-                                                            helperText={errors.priceCash?.message}
-                                                            {...register('priceCash')}/> руб
-                                                    </div>
-                                                    <div className="form-group">
-                                                        <div className="form__label"></div>
-                                                        <FormControlLabel
-                                                            {...register('on_card')}
-                                                            control={<Checkbox size="small"/>}
-                                                            label="Наличные"/>
-                                                    </div>
-                                                    <div className="form-group">
-                                                        <div className="form__label">Встречные предложения</div>
-                                                        <FormControlLabel
-                                                            {...register('hide_counter_offers')}
-                                                            control={<Checkbox size="small"/>}
-                                                            label="Видны только вам"/>
+
+                                                <div className="flex">
+                                                    <span className="form__label">{t('withVatNonCash')}</span>
+                                                    <TextField
+                                                        type="number"
+                                                        size="small"
+                                                        {...register('payment.priceWithoutTax')}/> {t('ruble')}
+                                                </div>
+                                                <div className="flex">
+                                                    <span className="form__label">{t('withoutVatNonCash')}</span>
+                                                    <TextField
+                                                        type="number"
+                                                        size="small"
+                                                        {...register('payment.priceWithTax')}/> {t('ruble')}
+                                                </div>
+                                                <div className="flex">
+                                                    <span className="form__label">{t('cash')}</span>
+                                                    <TextField
+                                                        type="number"
+                                                        size="small"
+                                                        {...register('payment.priceCash')}/> {t('ruble')}
+                                                </div>
+                                                <div className="flex">
+                                                    <div className="form__label"></div>
+                                                    <div className="checkbox loading">
+                                                        <label className="checkbox__wrapper">
+                                                            <input type="checkbox" {...register('payment.onCard')}/>
+                                                            <span>{t('onCard')}</span>
+                                                        </label>
                                                     </div>
                                                 </div>
                                             </Fragment>
                                         }
-                                        {watch('priceType') === 'request' &&
-                                            <div className="form-label">
-                                                <p>Участники смогут предложить свою ставку</p>
-                                                <div>
-                                                    <FormControlLabel control={<Checkbox defaultChecked/>}
-                                                                      label="С НДС, безнал"/>
-                                                    <FormControlLabel control={<Checkbox defaultChecked/>}
-                                                                      label="Без НДС, безнал"/>
-                                                    <FormControlLabel control={<Checkbox defaultChecked/>}
-                                                                      label="Наличными"/>
+                                        {watch('payment.type') === 'request' &&
+                                            <Fragment>
+                                                <p>{t('requestPriceType')}</p>
+                                                <div className="flex">
+                                                    <div className="form-label">{t('canBeOffered')}</div>
+                                                    <div>
+                                                        <div className="checkbox payment__row">
+                                                            <label className="checkbox__wrapper">
+                                                                <input type="checkbox"{...register('payment.rateWithVatAvailable')}/>
+                                                                <span>{t('withVatNonCash')}</span>
+                                                            </label>
+                                                        </div>
+                                                        <div className="checkbox payment__row">
+                                                            <label className="checkbox__wrapper">
+                                                                <input type="checkbox" {...register('payment.rateWithoutVatAvailable')}/>
+                                                                <span>{t('withoutVatNonCash')}</span>
+                                                            </label>
+                                                        </div>
+                                                        <div className="checkbox payment__row">
+                                                            <label className="checkbox__wrapper">
+                                                                <input type="checkbox"{...register('payment.cashAvailable')}/>
+                                                                <span>{t('cash')}</span>
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </Fragment>
+                                        }
+                                        {['negotiable', 'fix', 'request'].includes(watch('payment.type')) &&
+                                            <div className="flex counterOffer">
+                                                <div className="form__label">{t('counterOffers')}</div>
+                                                <div className="checkbox loading">
+                                                    <label className="checkbox__wrapper">
+                                                        <input type="checkbox" {...register('payment.hideCounterOffers')}/>
+                                                        <span>{t('visiblyOnlyToYou')}</span>
+                                                    </label>
                                                 </div>
                                             </div>
                                         }
-                                        {watch('priceType') === 'auction' &&
-                                            <div className="form-label">
-                                                <p>Участники  будут соревноваться, предлагая наиболее выгодную ставку</p>
-                                            </div>
+                                        {watch('payment.type') === 'auction' &&
+                                            <Fragment>
+                                                <p>{t('auctionPriceType')}</p>
+                                                <div className="flex payment__row">
+                                                    <div className="form__label">{t('startingBid')}</div>
+                                                    <div>
+                                                        <div className="payment__item">
+                                                            <Select
+                                                                size="small"
+                                                                defaultValue={getValues('payment.acceptBidsWithVat')}
+                                                                {...register('payment.acceptBidsWithVat')}>
+                                                                <MenuItem value={true} selected={watch('payment.acceptBidsWithVat')}>
+                                                                    {t('withVat')}
+                                                                </MenuItem>
+                                                                <MenuItem value={false} selected={!watch('payment.acceptBidsWithVat')}>
+                                                                    {t('withoutVat')}
+                                                                </MenuItem>
+                                                            </Select>
+                                                        </div>
+                                                        <div className="payment__item">
+                                                            <TextField
+                                                                sx={{width:100}}
+                                                                size="small"
+                                                                {...register('payment.startRate') }/>
+                                                        </div>
+
+                                                        <span className="payment__item">{t('ruble')}</span>
+                                                    </div>
+                                                </div>
+
+                                                {watch('payment.acceptBidsWithVat') &&
+                                                    <div className="flex payment__row">
+                                                        <div className="form__label"></div>
+                                                        <div className="flex flex-center">
+                                                            <div className="checkbox payment__row">
+                                                                <label className="checkbox__wrapper">
+                                                                    <input
+                                                                        type="checkbox"{...register('payment.acceptBidsWithoutVat')}/>
+                                                                    <span>{t('acceptRatesWithoutVAT')}</span>
+                                                                </label>
+                                                            </div>
+                                                            {watch('payment.acceptBidsWithoutVat') &&
+                                                                <div className="flex flex-center">
+                                                                    <TextField
+                                                                        sx={{width: 100}}
+                                                                        size="small"
+                                                                        {...register('payment.vatPercents')}/>
+                                                                    <div className="description">
+                                                                        {t('carriersWillBeAbleToChoose')}
+                                                                    </div>
+                                                                </div>
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                }
+                                                <div className="flex payment__row">
+                                                    <div className="form__label">{t('step')}</div>
+                                                    <div className="flex flex-center">
+                                                        <TextField
+                                                            sx={{width:180}}
+                                                            size="small"
+                                                            {...register('payment.bidStep') }/>
+                                                        <div className="description">
+                                                            {t('rateReduced')}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="flex">
+                                                    <div className="form__label">{t('tradesDuration')}</div>
+                                                    <div className="payment__item">
+                                                        <Select
+                                                            size="small"
+                                                            defaultValue={getValues('payment.auctionDuration.fixedDuration')}
+                                                            {...register('payment.auctionDuration.fixedDuration')}>
+                                                            {FixedDurations.map((option, index) =>
+                                                                <MenuItem key={index} value={option.value}
+                                                                          selected={watch('payment.auctionDuration.fixedDuration') === option.value}>
+                                                                    {t(option.title)}
+                                                                </MenuItem>
+                                                            )}
+                                                        </Select>
+                                                    </div>
+                                                    <div className="payment__item">
+                                                        <Select
+                                                            size="small"
+                                                            defaultValue={getValues('payment.auctionDuration.countFromFirstBid')}
+                                                            {...register('payment.auctionDuration.countFromFirstBid')}>
+                                                            <MenuItem value={false} selected={!watch('payment.auctionDuration.countFromFirstBid')}>
+                                                                    {t('fixedDurations.countFromFirstBid.false')}
+                                                            </MenuItem>
+                                                            <MenuItem value={true} selected={watch('payment.auctionDuration.countFromFirstBid')}>
+                                                                    {t('fixedDurations.countFromFirstBid.true')}
+                                                            </MenuItem>
+                                                        </Select>
+                                                    </div>
+                                                </div>
+                                            </Fragment>
                                         }
-
-
                                     </div>
                                 </div>
 
                                 <div className="form__block form__block-last">
-                                    <div className="form__item form-group">
+                                    <div className="form__item flex">
                                         <div className="form__label"></div>
-                                        <div>укажите, к кому обратиться по объявлению</div>
+                                        <div className={`${errors.contactIds ? 'text-red' : ''}`}>
+                                            {t('contactIndicate')}
+                                        </div>
                                     </div>
-                                    <div className="form__item form-group">
-                                        <div className="form__label text-bold">Контакты</div>
+                                    <div className="form__item flex">
+                                        <div className="form__label text-bold">{t('contacts')}</div>
                                         <ContactList
-                                            availableContacts={availableContacts}
-                                            selectedContacts={watch('contact_ids')}
-                                            setSelectedContacts={ids =>  setValue('contact_ids', ids)}
+                                            options={availableContacts}
+                                            selectedContacts={watch('contactIds')}
+                                            setSelectedContacts={ids => setValue('contactIds', ids)}
                                         />
                                     </div>
-                                    <div className="form__item form-group">
-                                        <div className="form__label text-bold">Примечание</div>
+                                    <div className="form__item flex">
+                                        <div className="form__label text-bold">{t('note')}</div>
                                         <div className="note">
                                             <TextField
                                                 className="note__item"
-                                                name="note"
                                                 size="small"
                                                 {...register('note')}/>
                                         </div>
                                     </div>
-                                    {isShowAddPhoto &&
-                                        <div className="form__item form-group">
+                                    {isShowAddFiles &&
+                                        <div className="form__item flex">
                                             <div className="form__label">
                                                 <div className="relative">
-                                                    <Tooltip title="Скрыть поле" placement="top">
-                                                        <div className="close-button form__close" onClick={closeFileUploader}></div>
+                                                    <Tooltip title={t('hideField')} placement="top">
+                                                        <div className="close-button form__close" onClick={() => setIsShowAddFiles(false)}></div>
                                                     </Tooltip>
-                                                    Фото груза и документов
+                                                    {t('photosOfCargoAndDocuments')}
                                                 </div>
                                             </div>
 
                                             <FileUploader
                                                 entity="load"
                                                 files={files}
-                                                setFiles={setFiles}
                                                 allowedMaxFiles="10"
                                                 allowedExtensions={allowedExtensions}
                                                 multiple="true"
-                                                update={value => setFiles(value)}/>
+                                                setFiles={setFiles}/>
                                         </div>
                                     }
-                                    {!isShowAddPhoto &&
-                                        <div className="form__item form-group">
-                                            <div className="form__label text-bold">Добавить</div>
+                                    {!isShowAddFiles &&
+                                        <div className="form__item flex">
+                                            <div className="form__label text-bold">{t('add')}</div>
                                             <div className="input">
-                                                <GreenButton onClick={() => setIsShowAddPhoto(true)}>Фото</GreenButton>
+                                                <GreenButton onClick={() => setIsShowAddFiles(true)}>{t('photo')}</GreenButton>
                                             </div>
                                         </div>
                                     }
@@ -624,8 +887,9 @@ function LoadForm() {
                             </div>
 
                             <div className="buttons">
-                                <Button variant="contained" type="submit" className="button"
-                                        disabled={!isAuth || isSubmitting}>Добавить</Button>
+                                <Button variant="contained" type="submit" className="button" disabled={!isAuth || isSubmitting}>
+                                    {t('add')}
+                                </Button>
                             </div>
                         </form>
                     </div>

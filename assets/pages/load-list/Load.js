@@ -4,6 +4,7 @@ import LoadList from "./src/LoadList";
 import MyFilters from "../../components/MyFilters";
 import {useFilter} from "../../hooks/filter";
 import {FilterContext} from "../../context/filter.context";
+import "./cargo-index.css";
 
 function Load() {
     const [tab, setTab] = useState('one');
@@ -13,7 +14,7 @@ function Load() {
     const setLoadListTab = () => setTab("one");
 
     return (
-        <FilterContext.Provider value={{ filter, setFilter, clearFilter, changeFilterAddresses }}>
+        <FilterContext.Provider value={{filter, setFilter, clearFilter, changeFilterAddresses}}>
             <Tabs
                 value={tab}
                 onChange={handleTab}

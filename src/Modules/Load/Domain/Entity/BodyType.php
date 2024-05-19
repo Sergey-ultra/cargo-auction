@@ -764,8 +764,8 @@ class BodyType
         [
             "dictionary_item_id" => 59000,
             "attributes_dictionary" => [
-                "car_type" => "Раздвижной полуприцеп 20'/40'",
-                "short" => "Раздв. полу. 20'/40'",
+                "car_type" => "раздвижной полуприцеп 20'/40'",
+                "short" => "раздв. полу. 20'/40'",
                 "base_type" => "0",
                 "type_order" => "490",
                 "attribs" => "0",
@@ -773,6 +773,39 @@ class BodyType
             ]
         ]
     ];
+
+    public static function getTransformedTypes(): array
+    {
+        return array_map(
+            static function (array $item) {
+                $result = [
+                    'id' => $item['attributes_dictionary']['mask'],
+                    'attribs' => $item['attributes_dictionary']['attribs'] ?? null,
+                    'name' => $item['attributes_dictionary']['car_type'],
+                    'position' => (int)$item['attributes_dictionary']['type_order'],
+                    'short_name' => $item['attributes_dictionary']['short'],
+                    'typeId' => (int)$item['dictionary_item_id'],
+                    'parentTypeId' => (int)$item['attributes_dictionary']['base_type'],
+                ];
+
+                if (in_array($item['dictionary_item_id'], [400, 30000, 50000] ,true)) {
+                    $result['hasIsoterm'] = in_array($item['dictionary_item_id'], [30000, 50000],true);
+                }
+
+                return $result;
+            },
+            self::TYPES
+        );
+    }
+
+    public static function getSortedItems(): array
+    {
+        $sortOrderArray = array_column(array_column(self::TYPES, 'attributes_dictionary'), 'type_order');
+
+        $result = self::TYPES;
+        array_multisort( $sortOrderArray, $result);
+        return $result;
+    }
 
     public static function getTypesMapByMask(): array
     {

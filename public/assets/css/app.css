@@ -10,6 +10,7 @@
     --glz-color-neutral-tone-3: #b5babf;
     --glz-color-warning-tone-3: #fef7e7;
     --glz-color-neutral-tone-4: #838b94;
+    --glz-color-neutral: #f1f1f1;
 }
 html {
     height: 100%;
@@ -135,6 +136,16 @@ body {
 .row-end {
      justify-content: end;
  }
+.flex {
+    display: flex;
+    gap: 10px;
+}
+.flex-center {
+    align-items: center;
+}
+.flex-end {
+    align-items: end;
+}
 .fieldset {
     background-color: #fff;
     margin-bottom: 1.5em;
@@ -143,15 +154,11 @@ body {
     border-radius: 8px;
 }
 .form__inner {
-    padding: 10px 16px 4px 24px;
+    padding: 10px 16px 8px 24px;
     position: relative;
 }
 .form-margin {
     margin-bottom: 24px;
-}
-.form-group {
-    display: flex;
-    gap: 10px;
 }
 .control-label {
     display: inline-block;

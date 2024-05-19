@@ -26,6 +26,7 @@ class Company
     private int $ownershipId;
     #[ORM\Column]
     private int $typeId;
+
     #[ORM\Column(nullable: true)]
     private ?string $description;
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'companies')]

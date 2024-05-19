@@ -16,6 +16,9 @@ final readonly class CityApi
 
     public function searchCitiesByName(string $name): array
     {
+        if ($name === "") {
+            return $this->cityRepository->getMainCities();
+        }
         return $this->cityRepository->searchByName($name);
     }
 

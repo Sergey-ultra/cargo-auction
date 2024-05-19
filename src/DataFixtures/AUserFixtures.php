@@ -12,7 +12,7 @@ use Faker\Factory;
 use Faker\Generator;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-class UserFixtures extends Fixture implements DependentFixtureInterface
+class AUserFixtures extends Fixture
 {
     public const REFERENCE = 'user';
 
@@ -24,7 +24,6 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
     }
     public function load(ObjectManager $manager): void
     {
-        $company = $this->getReference(CompanyFixtures::REFERENCE .'_1');
         $user = (new User());
 
         $user
@@ -32,20 +31,17 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
             ->setName('Morozov Sergey')
             ->setRoles(['owner', 'expeditor'])
             ->setPassword($this->userPasswordHasher->hashPassword($user, '12345678'))
-            ->setCompanyId($company->getId())
         ;
 
         $this->addReference(self::REFERENCE . '_1', $user);
         $manager->persist($user);
 
         for ($i = 2; $i <= 10; $i++) {
-            $company = $this->getReference(CompanyFixtures::REFERENCE .'_' . ($i % 5) + 1);
             $user = (new User())
                 ->setEmail($this->faker->email)
                 ->setName($this->faker->name)
                 ->setRoles($this->faker->randomElements(['owner', 'expeditor', 'carrier'], 2))
                 ->setPassword($this->userPasswordHasher->hashPassword($user, '12345678'))
-                ->setCompanyId($company->getId())
             ;
 
             $this->addReference(self::REFERENCE .'_'. $i, $user);
@@ -54,12 +50,5 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
 
         $manager->persist($user);
         $manager->flush();
-    }
-
-    public function getDependencies(): array
-    {
-        return [
-            CompanyFixtures::class,
-        ];
     }
 }

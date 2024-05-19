@@ -130,7 +130,9 @@
 }
 .route {
     display: flex;
-    justify-content: space-between;
+}
+.location {
+    width: 50%;
 }
 .map:hover .city {
     color: var(--glz-color-primary-tone-1);
@@ -141,6 +143,10 @@
     margin-left: 5px;
     font-size: 12px;
     line-height: 16px;
+}
+.small-font {
+    line-height: 12px;
+    font-size: 14px;
 }
 .table__distance {
     color: var(--glz-color-success-tone-2);

@@ -6,8 +6,8 @@ namespace App\ApiGateway\Controller\Api;
 
 use App\ApiGateway\DTO\CommentDTO;
 use App\ApiGateway\DTO\CommentSaveDTO;
-use App\ApiGateway\DTO\LoadCreateDTO;
 use App\ApiGateway\DTO\LoadFilter;
+use App\ApiGateway\DTO\Request\LoadCreateDTO;
 use App\Modules\Load\Infrastructure\Api\CommentApi;
 use App\Modules\Load\Infrastructure\Api\LoadApi;
 use Symfony\Component\HttpFoundation\JsonResponse;

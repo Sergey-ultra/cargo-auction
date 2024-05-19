@@ -10,6 +10,7 @@ final readonly class LoadInnerDTO
         public string $cargoType,
         public float $weight,
         public float $volume,
+        public string $type,
     )
     {
     }

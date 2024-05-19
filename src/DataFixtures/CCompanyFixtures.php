@@ -13,7 +13,7 @@ use Doctrine\Persistence\ObjectManager;
 use Faker\Factory;
 use Faker\Generator;
 
-class CompanyFixtures extends Fixture
+class CCompanyFixtures extends Fixture
 {
     public const REFERENCE = 'company';
 
@@ -33,6 +33,7 @@ class CompanyFixtures extends Fixture
                 ->setTypeId($this->faker->randomElement(array_keys(CompanyType::COMPANY_TYPES)))
                 ->setOwnershipId($this->faker->randomElement(array_keys(Ownership::OWNERSHIP_NAMES)))
                 ->setDescription('Text')
+                ->setUser($this->getReference(AUserFixtures::REFERENCE . '_' . $i))
                 ;
 
             $this->addReference(self::REFERENCE .'_'. $i, $company);
@@ -41,5 +42,12 @@ class CompanyFixtures extends Fixture
 
         $manager->persist($company);
         $manager->flush();
+    }
+
+    public function getDependencies(): array
+    {
+        return [
+            AUserFixtures::class,
+        ];
     }
 }

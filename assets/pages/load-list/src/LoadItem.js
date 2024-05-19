@@ -3,6 +3,7 @@ import {Button, TextField, Tooltip} from "@mui/material";
 import PrecisionRating from "../../../components/rating/Rating";
 import EditIcon from "../../../components/icons/EditIcon";
 import EditSmallIcon from "../../../components/icons/EditSmallIcon";
+import MapIcon from "../../../components/icons/MapIcon";
 
 function LoadItem({
                       load,
@@ -52,17 +53,28 @@ function LoadItem({
                     <div className="table__distance">{load.route.totalDistance} км</div>
                 }
             </div>
-            <div className="table__item">
+            <div className="table__item small-font">
                 <Tooltip title={load.truck.bodyType} placement="top">
                     <span>{load.truck.bodyTypeShort}</span>
                 </Tooltip>
                 <div>
                     <span className="text-gray">загр/выгр: </span>
-                    <span>{load.loading.downloadingType}</span>
+                    <Tooltip
+                        title={load.truck.loadingType + `${load.truck.loadingType !== load.truck.unloadingType ? '/' + load.truck.unloadingType : ''}`}
+                        placement="top">
+                        <span>{load.truck.loadingTypeShort}</span>
+                        {load.truck.loadingTypeShort !== load.truck.unloadingTypeShort &&
+                            <span>/{load.truck.unloadingTypeShort}</span>
+                        }
+                    </Tooltip>
                 </div>
+                {load.load.type === 'ftl'
+                    ? <div>отд.машина</div>
+                    : <div>возм.догруз</div>
+                }
             </div>
             <div className="table__item">
-                {load.load.weight}т. {load.load.volume}м3 {load.load.cargoType}
+                <span className="text-bold">{load.load.weight}т. {load.load.volume}м3</span> {load.load.cargoType}
             </div>
             <div className="table__item table__item-route route">
                 <div className={`location ${load.loading.location.street ? 'map' : ''}`}>
@@ -79,62 +91,92 @@ function LoadItem({
                         </div>
                         <div>{load.loading.location.street}</div>
                     </div>
-                    {load.loading.downloadingDateStatus === 'permanently' && <div className="text-bold">Постоянно</div>
-                        || load.loading.downloadingDateStatus === 'ready' &&
-                        <div className="text-bold">готов {load.loading.downloadingDate}.</div>}
+                    {load.loading.type === 'permanently' && <div className="text-bold">постоянно</div>
+                        || load.loading.type === 'from-date' &&
+                        <span>
+                            <span className="text-bold">готов {load.loading.date}</span>
+                            {load.loading.time &&
+                                <span>{load.loading.time}</span>
+                            }
+                        </span>
+                    }
                 </div>
                 <div className={`location ${load.loading.location.street ? 'map' : ''}`}>
                     <div className="city">
                         <div className="text-bold">
                             {load.unloading.location.city}
-                            {load.unloading.location.street &&
-                                <svg height="12" viewBox="0 0 8 12" width="8" xmlns="http://www.w3.org/2000/svg">
-                                    <path
-                                        d="M 4 0 C 1.79 0 0 1.8 0 4.03 C 0 6.13 1.81 8.84 3.02 10.16 C 3.47 10.65 4 11.32 4 11.32 C 4 11.32 4.57 10.65 5.05 10.14 C 6.26 8.88 8 6.34 8 4.03 C 8 1.8 6.21 0 4 0 Z M 4 6.22 C 5.23 6.22 6.22 5.23 6.22 4 C 6.22 2.77 5.23 1.78 4 1.78 C 2.77 1.78 1.78 2.77 1.78 4 C 1.78 5.23 2.77 6.22 4 6.22 Z M 4 6.22"
-                                        fill="var(--glz-color-primary)" fillRule="evenodd"></path>
-                                </svg>
-                            }
+                            {load.unloading.location.street && <MapIcon/>}
                         </div>
                         <div>{load.unloading.location.street}</div>
                     </div>
+                    {load.unloading.date &&
+                        <span>
+                            <span className="text-bold">готов {load.unloading.date}</span>
+                            {load.unloading.time &&
+                                <span>{load.unloading.time}</span>
+                            }
+                        </span>
+                    }
                 </div>
             </div>
 
             <div className="table__item table__item-bid">
-                    {!userId && (<span className="text-gray">скрыто</span>)
-                        || (load.rate.priceType === 'fix' || load.rate.priceType === 'negotiable') &&
+                    {!userId && (<span className="text-gray">скрыто</span>) ||
                         <Fragment>
-                            <div>
-                                {load.rate.priceWithoutTax &&
-                                    <div className="price__item">
-                                        <div>
-                                            <span className="text-bold">{load.rate.priceWithoutTax} руб</span>
-                                            <span className="text-gray"> без НДС </span>
-                                        </div>
-                                        <div>
-                                            <span className="text-bold">{ load.rate.priceWithoutTaxPerKm }</span> руб/км
-                                        </div>
-                                    </div>
-                                }
+                            {load.rate.priceType !== 'request' &&
+                                <Fragment>
+                                    <div className="small-font">
+                                        {!!load.rate.priceCash &&
+                                            <div className="price__item">
+                                                <div>
+                                                    <span className="text-bold">{load.rate.priceCash} руб</span>
+                                                    <span className="text-gray"> нал</span>
+                                                </div>
+                                                <div>
+                                                    <span className="text-bold">{ load.rate.priceCashPerKm }</span> руб/км
+                                                </div>
+                                            </div>
+                                        }
 
-                                {load.rate.priceWithTax &&
-                                    <div className="price__item">
-                                        <div>
-                                            <span className="text-bold">{load.rate.priceWithTax} руб</span>
-                                            <span className="text-gray"> c НДС </span>
-                                        </div>
-                                        <div>
-                                            <span className="text-bold">{ load.rate.priceWithTaxPerKm }</span> руб/км
-                                        </div>
+                                        {!!load.rate.priceWithoutTax &&
+                                            <div className="price__item">
+                                                <div>
+                                                    <span className="text-bold">{load.rate.priceWithoutTax} руб</span>
+                                                    <span className="text-gray"> без НДС</span>
+                                                </div>
+                                                <div>
+                                                    <span className="text-bold">{ load.rate.priceWithoutTaxPerKm }</span> руб/км
+                                                </div>
+                                            </div>
+                                        }
+
+                                        {!!load.rate.priceWithTax &&
+                                            <div className="price__item">
+                                                <div>
+                                                    <span className="text-bold">{load.rate.priceWithTax} руб</span>
+                                                    <span className="text-gray"> c НДС</span>
+                                                </div>
+                                                <div>
+                                                    <span className="text-bold">{ load.rate.priceWithTaxPerKm }</span> руб/км
+                                                </div>
+                                            </div>
+                                        }
                                     </div>
-                                }
-                        </div>
-                        {load.rate.priceType === 'negotiable'
-                            ? <Tooltip title={`Отправить встречное предложение. ${load.bids.count > 0 
-                                ? `Встречных предложений: ${load.bids.count} ${load.bids.maxValue} руб` 
+
+                                    {load.rate.priceType !== 'fix'
+                                        ? <div className="text-bold">торг</div>
+                                        : <div className="text-gray">без торга</div>
+                                    }
+                                </Fragment>
+                                ||
+                                <div className="text-gray">запрос ставки</div>
+                            }
+                            <Tooltip title={`Отправить встречное предложение. ${load.bids.count > 0
+                                ? `Встречных предложений: ${load.bids.count} ${load.bids.maxValue} руб`
                                 : 'Нет встречных предложений.'}`}
-                                       placement="bottom">
-                                <button className={`send-bid ${load.bids.count > 0 ? 'send-bid-bold' : ''}`} id="sendBid" onClick={() => openSendBidModal(load.id)}>
+                                     placement="bottom">
+                                <button className={`send-bid ${load.bids.count > 0 ? 'send-bid-bold' : ''}`}
+                                        id="sendBid" onClick={() => openSendBidModal(load.id)}>
                                     <svg fill="#ffffff" stroke="#ffffff" strokeWidth="0"
                                          data-qa="icon" viewBox="0 0 15 15" width="15" height="15"
                                          className="arrow-svg">
@@ -149,13 +191,8 @@ function LoadItem({
                                     {load.bids.count > 0 && <span> ({load.bids.count})</span>}
                                 </button>
                             </Tooltip>
-                            : <span className="text-gray">без торга</span>
-                        }
                         </Fragment>
-
-                        || (<span className="text-gray">запрос ставки</span>)
                     }
-
             </div>
 
             <div className="table-bottom">
@@ -180,7 +217,7 @@ function LoadItem({
                                     }
                                     <div className="contact">
                                         <a className="contact_send" href={`/company/${load.company.id}`}>
-                                            <span>{load.company.fullName}</span>
+                                            <span>{load.company.fullName.toUpperCase()}</span>
                                         </a>
                                         <span>Код: {load.company.id}, </span>
                                         <span>{load.company.cityName}, </span>

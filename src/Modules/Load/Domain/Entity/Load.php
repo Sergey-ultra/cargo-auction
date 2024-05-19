@@ -47,10 +47,24 @@ class Load
     private ?User $user;
     #[ORM\Column(length: 100)]
     #[Groups(['load'])]
-    private string $downloadingDateStatus;
+    private string $loadingType;
     #[ORM\Column(type: 'datetime')]
     #[Groups(['load'])]
-    private DateTimeInterface $downloadingDate;
+    private DateTimeInterface $loadingFirstDate;
+    #[ORM\Column(type: 'datetime')]
+    private ?DateTimeInterface $loadingLastDate;
+    #[ORM\Column(type: 'time')]
+    private ?DateTimeInterface $loadingStartTime;
+    #[ORM\Column(type: 'time')]
+    private ?DateTimeInterface $loadingEndTime;
+    #[ORM\Column(type: 'datetime')]
+    private ?DateTimeInterface $unloadingDate;
+    #[ORM\Column]
+    private ?string $periodicity;
+    #[ORM\Column(type: 'time')]
+    private ?DateTimeInterface $unloadingStartTime;
+    #[ORM\Column(type: 'time')]
+    private ?DateTimeInterface $unloadingEndTime;
     #[ORM\Column]
     private int $fromCityId;
     #[ORM\Column]
@@ -88,6 +102,12 @@ class Load
     #[ORM\Column]
     #[Groups(['load'])]
     private float $volume;
+    #[ORM\Column(length: 50, options: ['default' => 'ftl'])]
+    private string $loadType = 'ftl';
+    #[ORM\Column]
+    private ?int $temperatureFrom;
+    #[ORM\Column]
+    private ?int $temperatureTo;
     #[ORM\Column(length: 50)]
     #[Groups(['load'])]
     private string $priceType;
@@ -101,6 +121,14 @@ class Load
     #[Groups(['load'])]
     private ?int $priceCash;
     #[ORM\Column]
+    private bool $paymentOnCard = false;
+    #[ORM\Column]
+    private bool $hideCounterOffers = false;
+    #[ORM\Column]
+    private bool $acceptBidsWithVat = false;
+    #[ORM\Column]
+    private bool $acceptBidsWithoutVat = false;
+    #[ORM\Column]
     #[Groups(['load'])]
     private int $cargoType;
     #[ORM\Column]
@@ -108,10 +136,14 @@ class Load
     private array $bodyTypes = [];
     #[ORM\Column]
     #[Groups(['load'])]
-    private int $downloadingType;
+    private array $truckLoadingTypes;
     #[ORM\Column]
     #[Groups(['load'])]
-    private int $unloadingType;
+    private array $truckUnloadingTypes;
+    #[ORM\Column]
+    private array $contactIds;
+    #[ORM\Column]
+    private array $files = [];
     #[ORM\Column]
     private ?string $note;
     #[ORM\Column(name: 'created_at', type: 'datetime', options: ['default' => "CURRENT_TIMESTAMP"])]
@@ -140,25 +172,108 @@ class Load
         return $this;
     }
 
-    public function getDownloadingDateStatus(): string
+    public function getLoadingType(): string
     {
-        return $this->downloadingDateStatus;
+        return $this->loadingType;
     }
 
-    public function setDownloadingDateStatus(string $downloadingDateStatus): self
+    public function setLoadingType(string $loadingType): self
     {
-        $this->downloadingDateStatus = $downloadingDateStatus;
+        $this->loadingType = $loadingType;
         return $this;
     }
 
-    public function getDownloadingDate(): DateTimeInterface
+    public function getLoadingFirstDate(): DateTimeInterface
     {
-        return $this->downloadingDate;
+        return $this->loadingFirstDate;
     }
 
-    public function setDownloadingDate(DateTimeInterface $downloadingDate): self
+    public function setLoadingFirstDate(DateTimeInterface $loadingFirstDate): self
     {
-        $this->downloadingDate = $downloadingDate;
+        $this->loadingFirstDate = $loadingFirstDate;
+        return $this;
+    }
+
+    public function getLoadingLastDate(): ?DateTimeInterface
+    {
+        return $this->loadingLastDate;
+    }
+
+    public function setLoadingLastDate(?DateTimeInterface $loadingLastDate): self
+    {
+        $this->loadingLastDate = $loadingLastDate;
+        return $this;
+    }
+
+    public function getLoadingPeriodicity(): ?string
+    {
+        return $this->periodicity;
+    }
+
+    public function setLoadingPeriodicity(?string $periodicity): self
+    {
+        $this->periodicity = $periodicity;
+
+        return $this;
+    }
+
+    public function getLoadingStartTime(): ?DateTimeInterface
+    {
+        return $this->loadingStartTime;
+    }
+
+    public function setLoadingStartTime(?DateTimeInterface $time): self
+    {
+        $this->loadingStartTime = $time;
+
+        return $this;
+    }
+
+    public function getLoadingEndTime(): ?DateTimeInterface
+    {
+        return $this->loadingEndTime;
+    }
+
+    public function setLoadingEndTime(?DateTimeInterface $time): self
+    {
+        $this->loadingEndTime = $time;
+
+        return $this;
+    }
+
+    public function getUnloadingDate(): ?DateTimeInterface
+    {
+        return $this->unloadingDate;
+    }
+
+    public function setUnloadingDate(?DateTimeInterface $unloadingDate): self
+    {
+        $this->unloadingDate = $unloadingDate;
+
+        return $this;
+    }
+
+    public function getUnloadingStartTime(): ?DateTimeInterface
+    {
+        return $this->unloadingStartTime;
+    }
+
+    public function setUnloadingStartTime(?DateTimeInterface $time): self
+    {
+        $this->unloadingStartTime = $time;
+
+        return $this;
+    }
+
+    public function getUnloadingEndTime(): ?DateTimeInterface
+    {
+        return $this->unloadingEndTime;
+    }
+
+    public function setUnloadingEndTime(?DateTimeInterface $time): self
+    {
+        $this->unloadingEndTime = $time;
+
         return $this;
     }
 
@@ -305,6 +420,41 @@ class Load
         return $this;
     }
 
+    public function getLoadType(): string
+    {
+        return $this->loadType;
+    }
+
+    public function setLoadType(string $loadType): self
+    {
+        $this->loadType = $loadType;
+
+        return $this;
+    }
+
+    public function getLoadTemperatureFrom(): ?int
+    {
+        return $this->temperatureFrom;
+    }
+
+    public function setLoadTemperatureFrom(?int $temperature): self
+    {
+        $this->temperatureFrom = $temperature;
+        return $this;
+    }
+
+    public function getLoadTemperatureTo(): ?int
+    {
+        return $this->temperatureTo;
+    }
+
+    public function setLoadTemperatureTo(?int $temperatureTo): self
+    {
+        $this->temperatureTo = $temperatureTo;
+
+        return $this;
+    }
+
     public function getPriceType(): string
     {
         return $this->priceType;
@@ -349,6 +499,52 @@ class Load
         return $this;
     }
 
+    public function getPaymentOnCard(): bool
+    {
+        return $this->paymentOnCard;
+    }
+
+    public function setPaymentOnCard(bool $onCard): self
+    {
+        $this->paymentOnCard = $onCard;
+        return $this;
+    }
+
+    public function getHideCounterOffers(): bool
+    {
+        return $this->hideCounterOffers;
+    }
+
+    public function setHideCounterOffers(bool $hideCounterOffers): self
+    {
+        $this->hideCounterOffers = $hideCounterOffers;
+        return $this;
+    }
+
+    public function getAcceptBidsWithVat(): bool
+    {
+        return $this->acceptBidsWithVat;
+    }
+
+    public function setAcceptBidsWithVat(bool $acceptBidsWithVat): self
+    {
+       $this->acceptBidsWithVat = $acceptBidsWithVat;
+
+       return $this;
+    }
+
+    public function getAcceptBidsWithoutVat(): bool
+    {
+        return $this->acceptBidsWithoutVat;
+    }
+
+    public function setAcceptBidsWithoutVat(bool $acceptBidsWithoutVat): self
+    {
+        $this->acceptBidsWithoutVat = $acceptBidsWithoutVat;
+
+        return $this;
+    }
+
     public function getCargoType(): int
     {
         return $this->cargoType;
@@ -371,35 +567,58 @@ class Load
         return $this;
     }
 
-    public function getDownloadingType(): int
+    public function getTruckLoadingType(): array
     {
-        return $this->downloadingType;
+        return $this->truckLoadingTypes;
     }
 
-    public function getDownloadingTypeName(): string
+    public function getTruckLoadingTypeName(): string
     {
-        return LoadingType::LOADING_TYPES[$this->downloadingType];
+        $typesMapById = LoadingType::getTypesMapById();
+        $names = array_map(fn(int $id) => $typesMapById[$id]['name'], $this->truckLoadingTypes);
+
+        return implode(', ', $names);
     }
 
-    public function setDownloadingType(int $downloadingType): self
+    public function getTruckLoadingTypeShortNames(): string
     {
-        $this->downloadingType = $downloadingType;
+        $typesMapById = LoadingType::getTypesMapById();
+        $names = array_map(fn(int $id) => $typesMapById[$id]['short'], $this->truckLoadingTypes);
+
+        return implode(', ', $names);
+    }
+
+    public function setTruckLoadingTypes(array $truckLoadingTypes): self
+    {
+        $this->truckLoadingTypes = $truckLoadingTypes;
+
         return $this;
     }
 
-    public function getUnloadingType(): int
+    public function getTruckUnloadingTypes(): array
     {
-        return $this->unloadingType;
+        return $this->truckUnloadingTypes;
     }
 
-    public function getUnloadingTypeName(): string
+    public function getTruckUnloadingTypeName(): string
     {
-        return LoadingType::LOADING_TYPES[$this->unloadingType];
+        $typesMapById = LoadingType::getTypesMapById();
+        $names = array_map(fn(int $id) => $typesMapById[$id]['name'], $this->truckUnloadingTypes);
+
+        return implode(', ', $names);
     }
 
-    public function setUnloadingType(int $unloadingType): self
+    public function getTruckUnloadingTypeShortNames(): string
     {
-        $this->unloadingType = $unloadingType;
+        $typesMapById = LoadingType::getTypesMapById();
+        $names = array_map(fn(int $id) => $typesMapById[$id]['short'], $this->truckUnloadingTypes);
+
+        return implode(', ', $names);
+    }
+
+    public function setTruckUnloadingTypes(array $truckUnloadingTypes): self
+    {
+        $this->truckUnloadingTypes = $truckUnloadingTypes;
         return $this;
     }
     public function getCompanyId(): int
@@ -421,6 +640,30 @@ class Load
     public function setUser(?UserInterface $user): self
     {
         $this->user = $user;
+        return $this;
+    }
+
+    public function getContactIds(): array
+    {
+        return $this->contactIds;
+    }
+
+    public function setContactIds(array $contactIds): self
+    {
+        $this->contactIds = $contactIds;
+
+        return $this;
+    }
+
+    public function getFiles(): array
+    {
+        return $this->files;
+    }
+
+    public function setFiles(array $files): self
+    {
+        $this->files = $files;
+
         return $this;
     }
 

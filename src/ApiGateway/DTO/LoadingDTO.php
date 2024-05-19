@@ -8,9 +8,9 @@ final readonly class LoadingDTO
 {
     public function __construct(
         public LocationDTO $location,
-        public string $downloadingDateStatus,
-        public ?string $downloadingDate,
-        public string $downloadingType,
+        public string $type,
+        public ?string $date,
+        public ?string $time,
     )
     {
     }

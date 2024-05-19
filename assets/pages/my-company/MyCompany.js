@@ -35,19 +35,19 @@ function MyCompany() {
     return (
         <div className="fieldset">
             <form onSubmit={saveCompany}>
-                <div className="form-group">
+                <div className="flex">
                     <label className="label">Месторасположение центрального офиса или город юридической регистрации*</label>
                     <AutocompleteAddress
                         value={company.cityId}
                         setAddressValue={setCityId}
                         label="Откуда"/>
                 </div>
-                <div className="form-group">
+                <div className="flex">
                     <label className="label">Правовая форма и название</label>
                     <TextField size="small" value={company.name} onChange={e => setCompany({...company, name: e.target.value})}/>
                     <span>например: ООО АльфаТранс</span>
                 </div>
-                <div className="form-group">
+                <div className="flex">
                     <label className="label">Описание компании</label>
                     <TextField size="small" value={company.description} onChange={e => setCompany({...company, description: e.target.value})}/>
                 </div>
