@@ -38,6 +38,7 @@ use App\Modules\Load\Infrastructure\DTO\FilterDTO;
 use App\Modules\Load\Infrastructure\Repository\LoadRepository;
 use App\Modules\Transport\Infrastructure\Adapter\CompanyAdapter;
 use App\Modules\User\Domain\Entity\User;
+use App\ValueObject\Point;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -50,7 +51,6 @@ final readonly class LoadApi
 
     public function __construct(
         private LoadRepository $loadRepository,
-        private LoadService $loadService,
         private CityAdapter $cityAdapter,
         private CompanyAdapter $companyAdapter,
         private UserAdapter $userAdapter,
@@ -450,8 +450,24 @@ final readonly class LoadApi
             ->setUnloadingEndTime($createDto->unloading->dates->time->end)
             ->setFromCityId($createDto->loading->location->cityId)
             ->setFromAddress($createDto->loading->location->address)
+            ->setToLatitude($createDto->loading->location->coordinates->latitude)
+            ->setToLongitude($createDto->loading->location->coordinates->longitude)
+            ->setToPoint(
+                new Point(
+                $createDto->loading->location->coordinates->latitude,
+                    $createDto->loading->location->coordinates->longitude
+                )
+            )
             ->setToCityId($createDto->unloading->location->cityId)
             ->setToAddress($createDto->unloading->location->address)
+            ->setToLatitude($createDto->unloading->location->coordinates->latitude)
+            ->setToLongitude($createDto->unloading->location->coordinates->longitude)
+            ->setToPoint(
+                new Point(
+                    $createDto->unloading->location->coordinates->latitude,
+                    $createDto->unloading->location->coordinates->longitude
+                )
+            )
             ->setBodyTypes($createDto->truck->bodyTypes)
             ->setTruckLoadingTypes($createDto->truck->loadingTypes)
             ->setTruckUnloadingTypes($createDto->truck->unloadingTypes)
@@ -471,15 +487,17 @@ final readonly class LoadApi
             ->setCreatedAt()
             ->setUpdatedAt();
 
-        $routeCities = $this->cityAdapter->getCitiesByIds([
-            $createDto->loading->location->cityId,
-            $createDto->unloading->location->cityId,
-        ]);
+//        $routeCities = $this->cityAdapter->getCitiesByIds([
+//            $createDto->loading->location->cityId,
+//            $createDto->unloading->location->cityId,
+//        ]);
+//
+//        $fromCity = $routeCities->get($createDto->loading->location->cityId);
+//        $toCity = $routeCities->get( $createDto->unloading->location->cityId);
+//
+//        $this->loadService->save($load, $fromCity, $toCity);
 
-        $fromCity = $routeCities->get($createDto->loading->location->cityId);
-        $toCity = $routeCities->get( $createDto->unloading->location->cityId);
-
-        $this->loadService->save($load, $fromCity, $toCity);
+        $this->loadRepository->save($load);
         return $load->getId();
     }
 }

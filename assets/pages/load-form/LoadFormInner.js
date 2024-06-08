@@ -25,8 +25,10 @@ import FileUploader from "../../components/file-upload/FileUploader";
 import {DownloadingDateStatus, PeriodicityOptions, LoadingTypes, BodyTypes, FixedDurations} from "./src/enums";
 import MultipleCheckbox from "./src/multiple-checkbox";
 import TreeCheckbox from "./src/tree-checkbox";
+import MapModal from "./src/map-modal";
 import InfoIcon from "../../components/icons/InfoIcon";
 import MapIcon from "../../components/icons/MapIcon";
+
 
 function LoadForm() {
     const isAuth = window.authData && window.authData.userId;
@@ -70,12 +72,20 @@ function LoadForm() {
                 location: {
                     cityId: null,
                     address: null,
+                    coordinates: {
+                        longitude: '',
+                        latitude: '',
+                    },
                 },
             },
             unloading: {
                 location:  {
                     cityId: '',
                     address: '',
+                    coordinates: {
+                        longitude: '',
+                        latitude: '',
+                    },
                 },
                 dates: {
                     firstDate: null,
@@ -120,10 +130,19 @@ function LoadForm() {
         }
     });
 
+    const [isOpenMapModal, setIsOpenMapModal] = useState(false);
+    const [mapLocation, setMapLocation] = useState({});
     const [isShowLoadingTime, setIsShowLoadingTime] = useState(false);
     const [isShowUnloadingDatetime, setIsShowUnloadingDatetime] = useState(false);
     const [isShowAddTemperature, setIsShowAddTemperature] = useState(false);
     const [isShowAddFiles, setIsShowAddFiles] = useState(false);
+
+    const closeMapModal = () => setIsOpenMapModal(false);
+    const openMapModal = location => {
+        setMapLocation(location);
+        setIsOpenMapModal(true);
+    }
+
 
     register('loading.cargos.type', {
         required: t('validation.cargoType'),
@@ -177,8 +196,16 @@ function LoadForm() {
     const [loadingTypes, setLoadingTypes] = useState([]);
     const [downloadingDateStatuses, setDownloadingDateStatuses] = useState([]);
 
-    const setFromCity = cityObj => setValue('loading.location.cityId', cityObj.id);
-    const setToCity = cityObj => setValue('unloading.location.cityId', cityObj.id);
+    const setFromCity = cityObj => {
+        setValue('loading.location.cityId', cityObj.id);
+        setValue('loading.location.coordinates.longitude', cityObj.lon);
+        setValue('loading.location.coordinates.latitude', cityObj.lat);
+    }
+    const setToCity = cityObj => {
+        setValue('unloading.location.cityId', cityObj.id);
+        setValue('unloading.location.coordinates.longitude', cityObj.lon);
+        setValue('unloading.location.coordinates.latitude', cityObj.lat);
+    }
     const setPriceType = value => setValue('payment.type', value);
 
 
@@ -281,6 +308,7 @@ function LoadForm() {
             }
 
             <div className={!isAuth ? 'overlay-box' : ''}>
+                <MapModal isOpen={isOpenMapModal} onClose={closeMapModal} location={mapLocation}/>
                 <div className="form__container">
                     <div className="form__main">
                         <form name="load" onSubmit={handleSubmit(saveLoad)}>
@@ -434,7 +462,9 @@ function LoadForm() {
                                                             })}
                                                             placeholder={t('placeholder.address')}/>
                                                     </div>
-                                                    <MapIcon/>
+                                                    <div className="open-map" onClick={() => openMapModal(watch('loading.location.coordinates'))}>
+                                                        <MapIcon/>
+                                                    </div>
                                                 </div>
                                             </div>
 
@@ -496,7 +526,9 @@ function LoadForm() {
                                                             })}
                                                             placeholder={t('placeholder.address')}/>
                                                     </div>
-                                                    <MapIcon/>
+                                                    <div className="open-map" onClick={() => openMapModal(watch('unloading.location.coordinates'))}>
+                                                        <MapIcon/>
+                                                    </div>
                                                 </div>
                                             </div>
 

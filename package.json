@@ -31,6 +31,7 @@
         "@fortawesome/fontawesome-free": "^6.5.2",
         "@mui/material": "^5.15.5",
         "@mui/x-date-pickers": "^7.1.1",
+        "@pbe/react-yandex-maps": "^1.2.5",
         "centrifuge": "^5.0.1",
         "dayjs": "^1.11.10",
         "i18next": "^23.11.4",

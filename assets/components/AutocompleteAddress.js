@@ -23,15 +23,13 @@ function AutocompleteAddress({value, setCityObject, label, initialList = []}) {
 
     const onFocus = async() => {
         await getSuggest();
+        console.log(citiesList);
     }
 
 
     const changeAddressValue = async (e) => {
         setLocalValue(e.target.value);
-
-        if (e.target.value.length > 1) {
-            await getSuggest(e.target.value);
-        }
+        await getSuggest(e.target.value);
     }
 
     return  <Autocomplete

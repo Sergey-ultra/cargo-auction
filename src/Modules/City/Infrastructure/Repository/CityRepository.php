@@ -61,6 +61,7 @@ class CityRepository extends ServiceEntityRepository implements CityRepositoryIn
             ->andWhere('c.name LIKE :name')
             ->setParameter('name', '%' .$name. '%')
             ->getQuery()
+            ->setMaxResults(10)
             ->execute();
     }
 
