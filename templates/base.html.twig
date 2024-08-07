@@ -15,6 +15,7 @@
             <link href="{{ asset('assets/css/app.css') }}" rel="stylesheet"/>
         {% endblock %}
         <script>
+            window.locale = '{{ app.request.locale }}';
             {% if is_granted('IS_AUTHENTICATED_FULLY') %}
                 window.authData = {
                     userId: {{ app.user.id }},
@@ -96,6 +97,11 @@
                         </div>
 
                         <div id="nav"></div>
+{#                        {{ app.request.locale|locale_name(app.request.locale) }}#}
+                        <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdown-language">
+                            <li><a class="dropdown-item" href="{{ path('homepage', {_locale: 'en'}) }}">En</a></li>
+                            <li><a class="dropdown-item" href="{{ path('homepage', {_locale: 'ru'}) }}">Ru</a></li>
+                        </ul>
                     </div>
                 </div>
             </nav>

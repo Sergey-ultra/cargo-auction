@@ -22,7 +22,7 @@ const Load = () => {
         id: '',
         route: {
             country: '',
-            diistance: ''
+            distance: ''
         },
         bids: {
             count: 0,

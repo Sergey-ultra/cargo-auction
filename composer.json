@@ -15,7 +15,7 @@
         "fzaninotto/faker": "^1.5",
         "hwi/oauth-bundle": "^2.2",
         "jsor/doctrine-postgis": "^2.2",
-        "lexik/jwt-authentication-bundle": "^2.20",
+        "lexik/jwt-authentication-bundle": "^2.21",
         "php-amqplib/rabbitmq-bundle": "^2.14",
         "phpdocumentor/reflection-docblock": "^5.3",
         "phpstan/phpdoc-parser": "^1.24",
@@ -50,6 +50,7 @@
         "symfonycasts/verify-email-bundle": "^1.15",
         "textalk/websocket": "^1.5",
         "twig/extra-bundle": "^2.12|^3.0",
+        "twig/intl-extra": "^3.8",
         "twig/twig": "^2.12|^3.0"
     },
     "config": {
