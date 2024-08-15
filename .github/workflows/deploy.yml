@@ -20,5 +20,5 @@ jobs:
             cd /var/www/html/cargo-auction/
             git pull origin main
             composer install --ignore-platform-reqs
-            npm ci
-            npm run build
+#            npm ci
+#            npm run build
