@@ -444,7 +444,7 @@ function LoadForm() {
                                             <div className="route form__item flex">
                                                 <div className="route__point"></div>
                                                 <div className="form__label text-bold">{t('label.load')}</div>
-                                                <div className="flex">
+                                                <div className="flex flex-center">
                                                     <div className="input">
                                                         <AutocompleteAddress
                                                             {...register('loading.location.cityId')}
@@ -508,7 +508,7 @@ function LoadForm() {
                                             <div className="route form__item flex">
                                                 <div className="route__point"></div>
                                                 <div className="form__label text-bold">{t('label.downloading')}</div>
-                                                <div className="flex">
+                                                <div className="flex flex-center">
                                                     <div className="input">
                                                         <AutocompleteAddress
                                                             {...register('unloading.location.cityId')}

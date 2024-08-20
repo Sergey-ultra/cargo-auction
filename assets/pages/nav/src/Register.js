@@ -191,7 +191,7 @@ export default function Register({ showLogin, setIsRequiredEmailVerification }) 
             }
             <p className="auth__hint">
                 Уже есть аккаунт?
-                <span className="auth__hintText login" onClick={showLogin}>Регистрация</span>
+                <span className="auth__hintText login" onClick={showLogin}>Вход</span>
             </p>
         </form>
     );

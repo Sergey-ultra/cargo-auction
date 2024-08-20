@@ -16,7 +16,7 @@ export default function RightNav() {
     const showRegister = () => setShowMode('register');
 
     const showRegisterModal = () => {
-        openAuthModal();
+        setOpenAuthModal(true);
         showRegister();
     }
 
@@ -42,7 +42,7 @@ export default function RightNav() {
             <GreenButton onClick={showRegisterModal}>
                 Регистрация
             </GreenButton>
-            <AuthModal isOpen={isOpenAuthModal} onClose={closeAuthModal} showMode={showMode} showLogin={showLogin} showRegister={showRegister}/>
+            <AuthModal isOpen={isOpenAuthModal} onClose={closeAuthModal} showMode={showMode}/>
             <LocalChoice/>
         </div>
     );

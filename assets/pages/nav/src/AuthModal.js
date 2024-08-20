@@ -9,7 +9,7 @@ import "./auth.scss"
 
 
 
-export default function AuthModal({ onClose, isOpen, showMode, showLogin, showRegister }) {
+export default function AuthModal({ onClose, isOpen, showMode}) {
     const { request, error, clearError } = useHttp();
     const {
         getValues,
@@ -26,6 +26,9 @@ export default function AuthModal({ onClose, isOpen, showMode, showLogin, showRe
 
 
     const [isRequiredEmailVerification, setIsRequiredEmailVerification] = useState(false);
+    const [showModeLocal, setShowModeLocal] = useState('login');
+    const showLogin = () => setShowModeLocal('login');
+    const showRegister = () => setShowModeLocal('register');
 
     const closeRequiredEmailVerification = () => {
         onClose();
@@ -39,7 +42,11 @@ export default function AuthModal({ onClose, isOpen, showMode, showLogin, showRe
             });
             clearError();
         }
-    },[error])
+    },[error]);
+
+    useEffect(() => {
+        setShowModeLocal(showMode);
+    }, [showMode]);
 
     const login = async data => {
         const response = await request('/api/sign-in', 'POST', {body: {...data}});
@@ -65,7 +72,7 @@ export default function AuthModal({ onClose, isOpen, showMode, showLogin, showRe
 
     return (
         <Dialog onClose={onClose} open={isOpen}>
-            <DialogTitle>{showMode === 'login' ? 'Войдите с помощью' : 'Регистрация'}</DialogTitle>
+            <DialogTitle>{showModeLocal === 'login' ? 'Войдите с помощью' : 'Регистрация'}</DialogTitle>
             <DialogContent>
                 {isRequiredEmailVerification
                     ?
@@ -85,7 +92,7 @@ export default function AuthModal({ onClose, isOpen, showMode, showLogin, showRe
 
                     :
                     <div className="auth">
-                        {showMode === 'login' &&
+                        {showModeLocal === 'login' &&
                             <div>
                                 {errors?.root &&
                                     <Alert severity="error" sx={{ marginBottom: 3 }}>{errors.root.message}</Alert>
@@ -162,7 +169,7 @@ export default function AuthModal({ onClose, isOpen, showMode, showLogin, showRe
                                 </p>
                             </div>
                         }
-                        {showMode === 'register' && <Register
+                        {showModeLocal === 'register' && <Register
                             showLogin={showLogin}
                             setIsRequiredEmailVerification={setIsRequiredEmailVerification}
                         />}

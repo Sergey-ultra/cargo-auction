@@ -5,13 +5,17 @@ ENV PHP_XDEBUG_ENABLED=1
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 #COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
-#RUN install-php-extensions sockets
+#RUN install-php-extensions intl
 
 RUN set -ex \
-    	&& apk --no-cache add $PHPIZE_DEPS postgresql-dev\
+    	&& apk --no-cache add $PHPIZE_DEPS postgresql-dev icu-dev\
     	&& docker-php-ext-install pdo pdo_pgsql
 
 #RUN pecl install redis && docker-php-ext-enable redis
+
+RUN docker-php-ext-configure intl \
+    && docker-php-ext-install intl \
+    && docker-php-ext-enable intl
 
 #AMQP
 

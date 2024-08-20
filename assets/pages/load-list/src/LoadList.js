@@ -177,7 +177,7 @@ function LoadList(callback, deps) {
                 isOpen={isOpenSendBidModal}
                 currentLoadId={currentLoadId}/>
             <SaveFilterModal handleClose={closeSaveFilterModal} isOpen={isOpenSaveFilterModal} saveFilter={saveFilter}/>
-            <AuthModal isOpen={isOpenAuthModal} onClose={closeAuthModal}/>
+            <AuthModal isOpen={isOpenAuthModal} onClose={closeAuthModal} showMode='login'/>
 
             <Filter/>
 
