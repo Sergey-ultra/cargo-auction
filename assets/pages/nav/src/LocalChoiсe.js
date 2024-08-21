@@ -17,7 +17,7 @@ export default function LocalChoice({}) {
                 value={currentLocal}
                 label="Local"
                 onChange={setLocal}>
-                <MenuItem value='en' onClick={closeDrop}>
+                <MenuItem value='en'>
                     <svg className="-f-icon-l" width="16" height="16" viewBox="0 0 28 18">
                         <path
                             d="M0 15.5v-13L1.75 0h8.75l3.5.5 3.5-.5h8.75L28 2.5v13L26.25 18H17.5l-3.5-.5-3.5.5H1.75L0 15.5Z"

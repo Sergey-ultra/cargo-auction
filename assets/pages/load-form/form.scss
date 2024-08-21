@@ -188,6 +188,29 @@
 .open-map {
     cursor: pointer;
 }
+.mapStyle {
+    width: 680px;
+    height: 630px;
+}
+.mapWrapper {
+    position: relative;
+    width: 680px;
+    height:630px;
+}
+.mapMap {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+}
+.mapDragger {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+}
+.mapDragger svg {
+    z-index: 100;
+    transform: translate(-50%,-50%);
+}
 
 .datetime {
     background-color: #fff !important;
