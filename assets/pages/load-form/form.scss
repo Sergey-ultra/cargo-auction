@@ -211,7 +211,15 @@
     z-index: 100;
     transform: translate(-50%,-50%);
 }
-
+.mapBottom {
+    background-color: #fff;
+    z-index: 100;
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 50px;
+    bottom: 0;
+}
 .datetime {
     background-color: #fff !important;
     margin-bottom: 16px;

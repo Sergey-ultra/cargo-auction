@@ -22,7 +22,7 @@ Encore
      */
     .addEntry('app', './assets/index.js')
     .addEntry('loadList', './assets/load-list.js')
-    .addEntry('loadForm', './assets/load-form.js')
+    .addEntry('loadForm', './assets/load-form.tsx')
     .addEntry('load', './assets/load.js')
     .addEntry('transportList', './assets/transport-list.js')
     .addEntry('messages', './assets/messages.js')
@@ -66,7 +66,11 @@ Encore
 
 
     // uncomment if you use TypeScript
-    .enableTypeScriptLoader()
+    .enableTypeScriptLoader(function (typeScriptConfigOptions) {
+        typeScriptConfigOptions.transpileOnly = true;
+        typeScriptConfigOptions.configFile = 'tsconfig.json';
+    })
+    //.enableForkedTypeScriptTypesChecking()
 
     // uncomment if you use React
     .enableReactPreset()

@@ -16,6 +16,7 @@
         {% endblock %}
         <script>
             window.locale = '{{ app.request.locale }}';
+            window.yandexMapApikey = '{{ yandexMapApikey }}'
             {% if is_granted('IS_AUTHENTICATED_FULLY') %}
                 window.authData = {
                     userId: {{ app.user.id }},

@@ -1,6 +1,6 @@
 import { FileOrigin, FileStatus } from './enums';
 
-function getFileExtension(filename) {
+function getFileExtension(filename: string): string {
     let ext = (/\.tar\.gz$|\.[^.]+$/).exec(filename);
 
     if (ext) {
@@ -10,12 +10,20 @@ function getFileExtension(filename) {
     return '';
 }
 
-function getFileTitle(filename) {
+function getFileTitle(filename: string): string {
     return filename.replace(getFileExtension(filename), '');
 }
 
 export default class FileConstructor {
-    constructor(file, optionsArg = {}) {
+    cancelController: AbortController;
+    status: string;
+    origin: string;
+    error: null|string;
+    bin: null|File;
+    url: null|string;
+    size: number;
+
+    constructor(file: File|FileConstructor, optionsArg = {}) {
         if (file instanceof FileConstructor) {
             // eslint-disable-next-line no-constructor-return
             return file;

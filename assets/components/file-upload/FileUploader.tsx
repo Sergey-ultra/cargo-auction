@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useState} from "react";
+import React, {ChangeEvent, FC, useEffect, useMemo, useState} from "react";
 import GreenButton from "../buttons/GreenButton";
 import './file.scss';
 import FileConstructor from "./src/FileConstructor";
@@ -6,6 +6,18 @@ import { FileStatus, FileOrigin, FileError } from './src/enums';
 import {useHttp} from "../../hooks/api";
 import FileItem from "./src/FileItem";
 import '@fortawesome/fontawesome-free/css/all.min.css';
+
+interface FileUploadProps {
+    files: FileConstructor[],
+    setFiles: (files: FileConstructor[]) => void,
+    entity: string,
+    allowedExtensions: string[],
+    allowedMaxFiles: number,
+    multiple: boolean,
+    allowedSize: number,
+    disabled: boolean,
+    emitAborted: () => void,
+}
 
 export default function FileUploader({
                                          files,
@@ -17,9 +29,9 @@ export default function FileUploader({
                                          allowedSize = 0,
                                          disabled = false,
                                          emitAborted = () => {}
-                                     }) {
+                                     }: FileUploadProps): FC {
     const { request, isLoading, error, status } = useHttp();
-    const unloadedFiles = useMemo(() =>  files.filter(file => file.status === FileStatus.IDLE), [files]);
+    const unloadedFiles: FileConstructor[] = useMemo(() =>  files.filter((file: FileConstructor) => file.status === FileStatus.IDLE), [files]);
 
     useEffect(() => {
         if (unloadedFiles.length) {
@@ -35,18 +47,23 @@ export default function FileUploader({
         return false;
     }, [multiple, allowedMaxFiles, files]);
 
-    const isDisabled = disabled || isFileLimit;
+    const isDisabled: boolean = disabled || isFileLimit;
 
-    const saveFile = async (event) => {
+    const saveFile = async (event: ChangeEvent<HTMLInputElement>): Promise<void> => {
         if (!isDisabled) {
-            let uploadingFiles = event.target.files || event.dataTransfer.files
+            const uploadingFiles: FileList|null = event.target.files;
+                //|| event.dataTransfer.files
             // for (const file of files) {
             //     let reader = new FileReader();
             //     reader.readAsDataURL(file);
             //     reader.onload = e => previewImages.files.push(e.target.result);
             // }
 
-            let newFiles = [];
+            if (uploadingFiles === null) {
+                return;
+            }
+
+            let newFiles: File[]|FileConstructor[] = [];
 
             if (multiple) {
                 newFiles = allowedMaxFiles
@@ -57,15 +74,15 @@ export default function FileUploader({
             }
 
 
-            newFiles = newFiles
-                .map(file => new FileConstructor(file, {origin: FileOrigin.INPUT}))
+            let newFileConstructorList: FileConstructor[] = newFiles
+                .map((file: File) => new FileConstructor(file, {origin: FileOrigin.INPUT}))
                 .map(validators);
 
-            setFiles(prev => [...prev, ...newFiles]);
+            setFiles((prev: FileConstructor[]): FileConstructor[] => [...prev, ...newFileConstructorList]);
         }
     }
 
-    const validators = (file) => {
+    const validators = (file: FileConstructor): FileConstructor => {
         validateSize(file);
         validateExtension(file);
 
@@ -76,26 +93,26 @@ export default function FileUploader({
         return file;
     }
 
-    const validateSize = (file) => {
+    const validateSize = (file: FileConstructor) => {
         if (allowedSize && file.size > allowedSize) {
             file.setError(FileError.SIZE);
         }
     }
 
-    const validateExtension = (file) => {
+    const validateExtension = (file: FileConstructor) => {
         if (allowedExtensions && allowedExtensions.length && !allowedExtensions.includes(file.extension)) {
             file.setError(FileError.EXTENSION);
         }
     }
 
-    const setFile = (file) => {
-        setFiles(prev => {
-            return [...prev.map(item => item.name === file.name ? file : item)];
+    const setFile = (file: FileConstructor): void => {
+        setFiles((prev: FileConstructor[]): FileConstructor[] => {
+            return [...prev.map((item: FileConstructor): FileConstructor => item.name === file.name ? file : item)];
         });
     }
 
-    const uploadFile = async (file) => {
-        let form = new FormData();
+    const uploadFile = async (file: FileConstructor) => {
+        let form: FormData = new FormData();
         form.append('entity', entity);
         form.append('file', file.bin);
 
@@ -122,18 +139,18 @@ export default function FileUploader({
         }
     }
 
-    const removeFile = file => {
+    const removeFile = (file: FileConstructor): void => {
         if (file.status === FileStatus.LOADING) {
             file.setAbort();
             //emitAborted(file);
         }
-        setFiles(prev => [...prev.filter(item => item !== file)]);
+        setFiles((prev: FileConstructor[]): FileConstructor[] => [...prev.filter((item: FileConstructor): boolean => item !== file)]);
     }
 
     return (
         <div>
             <label className="file">
-                <input type="file" className="file__input" multiple name="file" onChange={e => saveFile(e, 'load')}/>
+                <input type="file" className="file__input" multiple name="file" onChange={(e: ChangeEvent<HTMLInputElement>): Promise<void> => saveFile(e, 'load')}/>
                 <div>
                     <GreenButton className="file__button">Загрузить</GreenButton>
                 </div>

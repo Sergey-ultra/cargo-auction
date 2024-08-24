@@ -7,6 +7,7 @@ import {NotificationContext} from "../../context/notification.context";
 import {useCookie} from "../../hooks/cookie";
 import CookieModal from "./src/CookieModal";
 import {useHttp} from "../../hooks/api";
+import LocalChoice from "./src/LocalChoiсe";
 
 
 function Nav() {
@@ -83,6 +84,7 @@ function Nav() {
             <CookieModal handleClose={() => setIsOpenWasModal(false)} isOpen={isOpenWasModal}/>
             <Notification/>
             <RightNav/>
+            <LocalChoice/>
         </NotificationContext.Provider>
     );
 }

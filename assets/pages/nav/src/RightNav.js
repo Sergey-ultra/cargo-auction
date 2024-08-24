@@ -2,7 +2,6 @@ import React, {useState} from "react";
 import MenuUser from "./MenuUser";
 import {Button} from "@mui/material";
 import AuthModal from "./AuthModal";
-import LocalChoice from "./LocalChoiсe";
 import GreenButton from "../../../components/buttons/GreenButton";
 
 export default function RightNav() {
@@ -43,7 +42,6 @@ export default function RightNav() {
                 Регистрация
             </GreenButton>
             <AuthModal isOpen={isOpenAuthModal} onClose={closeAuthModal} showMode={showMode}/>
-            <LocalChoice/>
         </div>
     );
 }

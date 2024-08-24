@@ -4,4 +4,4 @@ import LoadFormForm from "./pages/load-form/LoadForm";
 import './i18n';
 
 const form = ReactDOM.createRoot(document.getElementById('load-form'));
-form.render(<LoadFormForm />);
+form.render(<LoadFormForm/>);

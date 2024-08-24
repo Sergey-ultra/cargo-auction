@@ -1,6 +1,6 @@
 import React, {Fragment, useEffect, useState} from "react";
 import { useTranslation } from 'react-i18next';
-import dayjs from 'dayjs'
+import dayjs, {Dayjs} from 'dayjs'
 import updateLocale from 'dayjs/plugin/updateLocale'
 import {useHttp} from "../../hooks/api";
 import {
@@ -28,6 +28,12 @@ import TreeCheckbox from "./src/tree-checkbox";
 import MapModal from "./src/map-modal";
 import InfoIcon from "../../components/icons/InfoIcon";
 import MapIcon from "../../components/icons/MapIcon";
+
+export interface coordinates  {
+    longitude: number,
+    latitude: number
+}
+
 
 
 function LoadForm() {
@@ -131,16 +137,25 @@ function LoadForm() {
     });
 
     const [isOpenMapModal, setIsOpenMapModal] = useState(false);
-    const [mapLocation, setMapLocation] = useState({});
+    const [mapCoordinates, setMapCoordinates] = useState({});
+    const [mapControl, setMapControl] = useState('');
+
     const [isShowLoadingTime, setIsShowLoadingTime] = useState(false);
     const [isShowUnloadingDatetime, setIsShowUnloadingDatetime] = useState(false);
     const [isShowAddTemperature, setIsShowAddTemperature] = useState(false);
     const [isShowAddFiles, setIsShowAddFiles] = useState(false);
 
-    const closeMapModal = () => setIsOpenMapModal(false);
-    const openMapModal = location => {
-        setMapLocation(location);
+    const closeMapModal = () => {
+        setIsOpenMapModal(false);
+    }
+    const openMapModal = ({coordinates, control}): void => {
+        setMapControl(control);
+        setMapCoordinates(coordinates);
         setIsOpenMapModal(true);
+    }
+
+    const setLocation = (coordinates: coordinates): void => {
+        setValue(mapControl, coordinates);
     }
 
 
@@ -163,18 +178,18 @@ function LoadForm() {
     register('unloading.dates.firstDate');
 
 
-    const [daysAfterLoading, setDaysAfterLoading] = useState(0);
+    const [daysAfterLoading, setDaysAfterLoading] = useState<number>(0);
 
-    const updateDaysAfterLoading = value => {
+    const updateDaysAfterLoading = (value: number): void => {
         setDaysAfterLoading(value)
     }
 
-    const updateDownloadingDate = value => {
+    const updateDownloadingDate = (value: Dayjs): void => {
         setValue('loading.dates.firstDate', value);
     }
 
     useEffect(() => {
-        const currentDate = getValues('loading.dates.firstDate');
+        const currentDate: Dayjs = getValues('loading.dates.firstDate');
 
         setValue('loading.dates.lastDate', currentDate.add(daysAfterLoading, "day"));
 
@@ -308,7 +323,7 @@ function LoadForm() {
             }
 
             <div className={!isAuth ? 'overlay-box' : ''}>
-                <MapModal isOpen={isOpenMapModal} onClose={closeMapModal} location={mapLocation}/>
+                <MapModal isOpen={isOpenMapModal} onClose={closeMapModal} coordinates={mapCoordinates} setLocation={setLocation}/>
                 <div className="form__container">
                     <div className="form__main">
                         <form name="load" onSubmit={handleSubmit(saveLoad)}>
@@ -462,7 +477,10 @@ function LoadForm() {
                                                             })}
                                                             placeholder={t('placeholder.address')}/>
                                                     </div>
-                                                    <div className="open-map" onClick={() => openMapModal(watch('loading.location.coordinates'))}>
+                                                    <div className="open-map" onClick={() => openMapModal({
+                                                        coordinates: watch('loading.location.coordinates'),
+                                                        control: 'loading.location.coordinates'
+                                                    })}>
                                                         <MapIcon/>
                                                     </div>
                                                 </div>
@@ -526,7 +544,10 @@ function LoadForm() {
                                                             })}
                                                             placeholder={t('placeholder.address')}/>
                                                     </div>
-                                                    <div className="open-map" onClick={() => openMapModal(watch('unloading.location.coordinates'))}>
+                                                    <div className="open-map" onClick={() => openMapModal({
+                                                        coordinates: watch('unloading.location.coordinates'),
+                                                        control: 'unloading.location.coordinates'
+                                                        })}>
                                                         <MapIcon/>
                                                     </div>
                                                 </div>
