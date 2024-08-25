@@ -14,7 +14,7 @@ import {
     TextField, Tooltip
 } from "@mui/material";
 import {useHandleSelectOptions, transformToTree} from "../../hooks/handleSelectOptions";
-import AutocompleteAddress from "../../components/AutocompleteAddress";
+import AutocompleteAddress, {City} from "../../components/AutocompleteAddress";
 import CustomTabs from "../../components/custom-tabs/CustomTabs";
 import { DatePicker } from '@mui/x-date-pickers';
 import {useForm} from "react-hook-form";
@@ -29,12 +29,22 @@ import MapModal from "./src/map-modal";
 import InfoIcon from "../../components/icons/InfoIcon";
 import MapIcon from "../../components/icons/MapIcon";
 
-export interface coordinates  {
+export interface coordinates {
     longitude: number,
     latitude: number
 }
 
-
+export interface BodyOption {
+    id: number,
+    name: string,
+    attribs: number,
+    parentId: number,
+    children: BodyOption[],
+    hasIsoterm: boolean,
+    position: number,
+    short_name: string,
+    typeId: number
+}
 
 function LoadForm() {
     const isAuth = window.authData && window.authData.userId;
@@ -137,7 +147,10 @@ function LoadForm() {
     });
 
     const [isOpenMapModal, setIsOpenMapModal] = useState(false);
-    const [mapCoordinates, setMapCoordinates] = useState({});
+    const [mapCoordinates, setMapCoordinates] = useState<coordinates>({
+        latitude: 0,
+        longitude: 0
+    });
     const [mapControl, setMapControl] = useState('');
 
     const [isShowLoadingTime, setIsShowLoadingTime] = useState(false);
@@ -154,7 +167,7 @@ function LoadForm() {
         setIsOpenMapModal(true);
     }
 
-    const setLocation = (coordinates: coordinates): void => {
+    const setCoordinates = (coordinates: coordinates): void => {
         setValue(mapControl, coordinates);
     }
 
@@ -207,16 +220,16 @@ function LoadForm() {
     const [availableContacts, setAvailableContacts] = useState([]);
     const [cargoTypes, setCargoTypes] = useState([]);
     const [priceTypes, setPriceTypes] = useState([]);
-    const [bodyTypes, setBodyTypes] = useState([]);
+    const [bodyTypes, setBodyTypes] = useState<BodyOption[]>([]);
     const [loadingTypes, setLoadingTypes] = useState([]);
     const [downloadingDateStatuses, setDownloadingDateStatuses] = useState([]);
 
-    const setFromCity = cityObj => {
+    const setFromCity = (cityObj: City): void => {
         setValue('loading.location.cityId', cityObj.id);
         setValue('loading.location.coordinates.longitude', cityObj.lon);
         setValue('loading.location.coordinates.latitude', cityObj.lat);
     }
-    const setToCity = cityObj => {
+    const setToCity = (cityObj: City): void => {
         setValue('unloading.location.cityId', cityObj.id);
         setValue('unloading.location.coordinates.longitude', cityObj.lon);
         setValue('unloading.location.coordinates.latitude', cityObj.lat);
@@ -239,9 +252,10 @@ function LoadForm() {
     }
 
 
-    const [bodyTypeValue, setBodyTypeValue] = useState([]);
-    const changeBodyTypeValue = value => {
-        setBodyTypeValue(prev => {
+    const [bodyTypeValue, setBodyTypeValue] = useState<number[]>([]);
+
+    const changeBodyTypeValue = (value: number[]): void => {
+        setBodyTypeValue((prev: number[]): number[] => {
             if (prev.length === 0 && value.length) {
                 setValue('truck.unloadingTypes', [LoadingTypes.DEFAULT_LOADING_TYPE]);
                 setValue('truck.loadingTypes', [LoadingTypes.DEFAULT_LOADING_TYPE]);
@@ -292,8 +306,7 @@ function LoadForm() {
                 setValue('contactIds', data.availableContacts.map(el => el.id))
             }
             if (data.bodyTypes) {
-                const list = transformToTree(data.bodyTypes, 'typeId', 'parentTypeId')
-                    .sort((a, b) => a.position - b.position);
+                const list: BodyOption[] = transformToTree(data.bodyTypes, 'typeId', 'parentTypeId').sort((a: BodyOption, b: BodyOption) => a.position - b.position);
 
                 setBodyTypes([...list]);
             }
@@ -323,7 +336,7 @@ function LoadForm() {
             }
 
             <div className={!isAuth ? 'overlay-box' : ''}>
-                <MapModal isOpen={isOpenMapModal} onClose={closeMapModal} coordinates={mapCoordinates} setLocation={setLocation}/>
+                <MapModal isOpen={isOpenMapModal} onClose={closeMapModal} coordinates={mapCoordinates} setCoordinates={setCoordinates}/>
                 <div className="form__container">
                     <div className="form__main">
                         <form name="load" onSubmit={handleSubmit(saveLoad)}>

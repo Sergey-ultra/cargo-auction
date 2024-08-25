@@ -1,6 +1,16 @@
-import React, {useEffect, useState} from 'react';
+import React, {ChangeEvent, useEffect, useState} from 'react';
 import "./index.scss";
 import {Checkbox, FormControlLabel} from "@mui/material";
+import {BodyOption} from "../../LoadFormInner";
+
+interface TreeCheckboxProps {
+    options: BodyOption[],
+    disabled: boolean,
+    itemText: string|undefined,
+    itemValue: string|undefined,
+    value: number[],
+    onChange: (value: number[]) => void
+}
 
 export default function TreeCheckbox({
                                          disabled = false,
@@ -9,20 +19,22 @@ export default function TreeCheckbox({
                                          options,
                                          value,
                                          onChange
-                                     }) {
-    const [checked, setChecked] = useState([]);
+                                     }: TreeCheckboxProps) {
+    const [checked, setChecked] = useState<number[]>([]);
 
-    const handleCheck = (event) => {
-        let updatedList = [...checked];
+    const handleCheck = (event: ChangeEvent<HTMLInputElement>): void => {
+        let updatedList: number[] = [...checked];
 
         const value = Number(event.target.value);
-        let childValues = [];
-        const obj = options.find(option => option[itemValue] === value);
+        let childValues: number[] = [];
+        const obj: BodyOption|undefined = options.find((option: BodyOption): boolean => option[itemValue] === value);
         if (obj) {
-            childValues = obj.children.map(option => option[itemValue]);
+            childValues = obj.children.map((option:BodyOption) => option[itemValue]);
             if (obj.hasIsoterm) {
-                const isothermOption = options.find(option => option.hasOwnProperty('hasIsoterm') && !option.hasIsoterm);
-                childValues.push(isothermOption[itemValue]);
+                const isothermOption: BodyOption|undefined = options.find((option: BodyOption) => option.hasOwnProperty('hasIsoterm') && !option.hasIsoterm);
+                if (isothermOption) {
+                    childValues.push(isothermOption[itemValue]);
+                }
             }
         }
 
@@ -32,18 +44,18 @@ export default function TreeCheckbox({
                 updatedList.push(...childValues);
             }
         } else {
-            updatedList = updatedList.filter(item => !childValues.includes(item) && value !== item);
+            updatedList = updatedList.filter((item: number): boolean => !childValues.includes(item) && value !== item);
         }
         onChange(updatedList);
     };
 
-    useEffect(() => {
+    useEffect((): void => {
         setChecked([...value]);
     },[value]);
 
     return (
         <ul className="multiple">
-            {options.map((option, index) =>
+            {options.map((option: BodyOption, index: number): JSX.Element =>
                 <li className="multiple__item" key={index}>
                     <div className="checkbox">
                         <label className="checkbox__wrapper">
@@ -59,8 +71,8 @@ export default function TreeCheckbox({
                     </div>
                     {option.children.length > 0 &&
                         <ul className="child-list">
-                            {option.children.map(child =>
-                                <li className="child-item">
+                            {option.children.map((child: BodyOption, childIndex: number): JSX.Element =>
+                                <li className="child-item" key={childIndex}>
                                     <div className="checkbox">
                                         <label className="checkbox__wrapper">
                                             <input

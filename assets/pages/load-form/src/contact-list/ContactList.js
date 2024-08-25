@@ -50,7 +50,7 @@ export default function ContactList({options, selectedContacts, setSelectedConta
             <div className="contact">
                 <div className="contact__description">
                     {list.map(contact =>
-                        <div className="contact__show contact__item">
+                        <div className="contact__show contact__item" key={contact.name}>
                             <span className="contact__name">{contact.name}</span>
                             <span className="contact__phone">{contact.phone}</span>
                             <Tooltip title={t('delete')} placement="top">
