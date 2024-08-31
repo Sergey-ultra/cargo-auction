@@ -10,40 +10,120 @@ import {
     FormHelperText,
     InputLabel,
     MenuItem,
-    Select,
+    Select, SelectChangeEvent,
     TextField, Tooltip
 } from "@mui/material";
 import {useHandleSelectOptions, transformToTree} from "../../hooks/handleSelectOptions";
 import AutocompleteAddress, {City} from "../../components/AutocompleteAddress";
 import CustomTabs from "../../components/custom-tabs/CustomTabs";
 import { DatePicker } from '@mui/x-date-pickers';
-import {useForm} from "react-hook-form";
+import {Controller, useForm} from "react-hook-form";
 import './form.scss';
 import GreenButton from "../../components/buttons/GreenButton";
 import ContactList from "./src/contact-list/ContactList";
 import FileUploader from "../../components/file-upload/FileUploader";
-import {DownloadingDateStatus, PeriodicityOptions, LoadingTypes, BodyTypes, FixedDurations} from "./src/enums";
+import {
+    DownloadingDateStatus,
+    PeriodicityOptions,
+    LoadingTypes,
+    BodyTypes,
+    FixedDurations,
+    DownloadingDateStatusType,
+    LoadType,
+    PaymentType, PeriodicityType
+} from "./src/enums";
 import MultipleCheckbox from "./src/multiple-checkbox";
 import TreeCheckbox from "./src/tree-checkbox";
 import MapModal from "./src/map-modal";
 import InfoIcon from "../../components/icons/InfoIcon";
 import MapIcon from "../../components/icons/MapIcon";
+import {BodyOption, Contact, LabelOption, LoadingOption, LoadingType, Option} from "./types";
+import FileConstructor from "../../components/file-upload/src/FileConstructor";
+import {FileStatus} from "../../components/file-upload/src/enums";
 
 export interface coordinates {
     longitude: number,
     latitude: number
 }
 
-export interface BodyOption {
-    id: number,
-    name: string,
-    attribs: number,
-    parentId: number,
-    children: BodyOption[],
-    hasIsoterm: boolean,
-    position: number,
-    short_name: string,
-    typeId: number
+interface LoadForm {
+    defaultValues: {
+        loading: {
+            cargos: {
+                type: number,
+                volume: number,
+                weight: number,
+            },
+            dates: {
+                type: DownloadingDateStatusType,
+                periodicity: PeriodicityType,
+                firstDate: dayjs.Dayjs|null,
+                lastDate: dayjs.Dayjs|null,
+                time: {
+                    type: "bounded",
+                    start: null,
+                    end: null,
+                }
+            },
+            location: {
+                cityId: number,
+                address: string,
+                coordinates: {
+                    longitude: number,
+                    latitude: number,
+                },
+            },
+        },
+        unloading: {
+            location:  {
+                cityId: number,
+                address: string,
+                coordinates: {
+                    longitude: number,
+                    latitude: number,
+                },
+            },
+            dates: {
+                firstDate: null,
+                time: {
+                    type: "bounded",
+                    start: null,
+                    end: null,
+                },
+            },
+        },
+
+        truck: {
+            bodyTypes: string[],
+            loadingTypes: number[],
+            unloadingTypes: number[],
+            loadType: LoadType,
+            temperatureFrom: number,
+            temperatureTo: number,
+        },
+        payment: {
+            type: PaymentType,
+            priceWithoutTax: number,
+            priceWithTax: number,
+            priceCash: number,
+            rateWithVatAvailable: boolean,
+            cashAvailable: boolean,
+            rateWithoutVatAvailable: boolean,
+            onCard: boolean,
+            hideCounterOffers: boolean,
+            acceptBidsWithVat: boolean,
+            acceptBidsWithoutVat: boolean,
+            vatPercents: number,
+            bidStep: number,
+            auctionDuration: {
+                fixedDuration: string,
+                countFromFirstBid: boolean,
+            }
+        },
+        contactIds: number[],
+        note: string,
+        files: string[],
+    }
 }
 
 function LoadForm() {
@@ -62,15 +142,16 @@ function LoadForm() {
         setValue,
         getValues,
         register,
+        control,
         reset,
         handleSubmit,
         setError,
         formState: {errors, isSubmitting, isSubmitted, isDirty, isValidating}
-    } = useForm({
+    } = useForm<LoadForm>({
         defaultValues: {
             loading: {
                 cargos: {
-                    type: '',
+                    type: null,
                     volume: '',
                     weight: '',
                 },
@@ -89,18 +170,18 @@ function LoadForm() {
                     cityId: null,
                     address: null,
                     coordinates: {
-                        longitude: '',
-                        latitude: '',
+                        longitude: 0,
+                        latitude: 0,
                     },
                 },
             },
             unloading: {
                 location:  {
-                    cityId: '',
+                    cityId: null,
                     address: '',
                     coordinates: {
-                        longitude: '',
-                        latitude: '',
+                        longitude: 0,
+                        latitude: 0,
                     },
                 },
                 dates: {
@@ -151,25 +232,26 @@ function LoadForm() {
         latitude: 0,
         longitude: 0
     });
-    const [mapControl, setMapControl] = useState('');
 
-    const [isShowLoadingTime, setIsShowLoadingTime] = useState(false);
-    const [isShowUnloadingDatetime, setIsShowUnloadingDatetime] = useState(false);
-    const [isShowAddTemperature, setIsShowAddTemperature] = useState(false);
-    const [isShowAddFiles, setIsShowAddFiles] = useState(false);
+    const [isShowLoadingTime, setIsShowLoadingTime] = useState<boolean>(false);
+    const [isShowUnloadingDatetime, setIsShowUnloadingDatetime] = useState<boolean>(false);
+    const [isShowAddTemperature, setIsShowAddTemperature] = useState<boolean>(false);
+    const [isShowAddFiles, setIsShowAddFiles] = useState<boolean>(false);
 
     const closeMapModal = () => {
         setIsOpenMapModal(false);
     }
-    const openMapModal = ({coordinates, control}): void => {
-        setMapControl(control);
+
+    const [coordinateFunction, setCoordinatesFunction] = useState<Function>(
+        () => (coordinates: coordinates, address: string) => {}
+    );
+
+    const openMapModal = ({coordinates, coordinateFunction}: {coordinates: coordinates, coordinateFunction: Function}): void => {
         setMapCoordinates(coordinates);
+        setCoordinatesFunction(() => (coord: coordinates, address: string) => coordinateFunction(coord, address));
         setIsOpenMapModal(true);
     }
 
-    const setCoordinates = (coordinates: coordinates): void => {
-        setValue(mapControl, coordinates);
-    }
 
 
     register('loading.cargos.type', {
@@ -190,7 +272,6 @@ function LoadForm() {
 
     register('unloading.dates.firstDate');
 
-
     const [daysAfterLoading, setDaysAfterLoading] = useState<number>(0);
 
     const updateDaysAfterLoading = (value: number): void => {
@@ -209,20 +290,24 @@ function LoadForm() {
     }, [watch('loading.dates.firstDate'), daysAfterLoading]);
 
 
-    const [files, setFiles] = useState([]);
+    const [files, setFiles] = useState<FileConstructor[]>([]);
     const allowedExtensions = ['.pdf', '.doc', '.docx', '.xml', '.xlsx', '.xls', '.ods', '.odt', '.rar', '.zip', '.mp3', '.aac', '.wma', '.jpeg', '.jpg', '.tiff', '.bmp', '.gif', '.png', '.jp2', '.raw'];
 
     useEffect(() => {
-        setValue('files', files);
+        const urls: string[] = files
+            .filter((file: FileConstructor): boolean => file.status === FileStatus.LOADED)
+            .map((file: FileConstructor): string => file.url);
+
+        setValue('files', urls);
     }, [files]);
 
 
-    const [availableContacts, setAvailableContacts] = useState([]);
-    const [cargoTypes, setCargoTypes] = useState([]);
-    const [priceTypes, setPriceTypes] = useState([]);
+    const [availableContacts, setAvailableContacts] = useState<Contact[]>([]);
+    const [cargoTypes, setCargoTypes] = useState<LabelOption[]>([]);
+    const [priceTypes, setPriceTypes] = useState<Option[]>([]);
     const [bodyTypes, setBodyTypes] = useState<BodyOption[]>([]);
-    const [loadingTypes, setLoadingTypes] = useState([]);
-    const [downloadingDateStatuses, setDownloadingDateStatuses] = useState([]);
+    const [loadingTypes, setLoadingTypes] = useState<LoadingOption[]>([]);
+    const [downloadingDateStatuses, setDownloadingDateStatuses] = useState<Option[]>([]);
 
     const setFromCity = (cityObj: City): void => {
         setValue('loading.location.cityId', cityObj.id);
@@ -234,16 +319,29 @@ function LoadForm() {
         setValue('unloading.location.coordinates.longitude', cityObj.lon);
         setValue('unloading.location.coordinates.latitude', cityObj.lat);
     }
-    const setPriceType = value => setValue('payment.type', value);
+
+    const setFromCityCoordinates = (coord: coordinates, address: string): void => {
+         setValue('loading.location.address', address);
+         setValue('loading.location.coordinates.longitude', coord.longitude);
+         setValue('loading.location.coordinates.latitude', coord.latitude);
+    }
+
+    const setToCityCoordinates = (coord: coordinates, address: string): void => {
+         setValue('unloading.location.address', address);
+         setValue('unloading.location.coordinates.longitude', coord.longitude);
+         setValue('unloading.location.coordinates.latitude', coord.latitude);
+    }
+
+    const setPriceType = (value: string): void => setValue('payment.type', value);
 
 
     const saveLoad = async formData => {
         formData.loading.cargos.weight = Number.parseFloat(formData.loading.cargos.weight);
         formData.loading.cargos.volume = Number.parseFloat(formData.loading.cargos.volume);
-        const {data} = await request('/api/load/create', 'POST', {body: formData});
+        const { data } = await request('/api/load/create', 'POST', {body: formData});
+
         console.log(error, status, isLoading);
         if (error && status === 422) {
-
             console.log(error);
         }
         if (status === 200) {
@@ -277,8 +375,8 @@ function LoadForm() {
     }
 
     const { handleSelectOptions } = useHandleSelectOptions();
-    useEffect(() => {
-        const fetchFormLists = async() => {
+    useEffect((): void => {
+        const fetchFormLists = async(): Promise<void> => {
             const { data } = await request(
                 '/api/list',
                 'GET',
@@ -289,9 +387,9 @@ function LoadForm() {
                 }
             );
             if (data.cargoTypes) {
-                const options = data.cargoTypes.map((item, index) => {
+                const options: LabelOption[] = data.cargoTypes.map((item: string, index: number): LabelOption => {
                     return {
-                        label : item,
+                        label: item,
                         id: index,
                     }
                 });
@@ -303,15 +401,16 @@ function LoadForm() {
             }
             if (data.availableContacts) {
                 setAvailableContacts(data.availableContacts);
-                setValue('contactIds', data.availableContacts.map(el => el.id))
+                setValue('contactIds', data.availableContacts.map((el: Contact) => el.id))
             }
             if (data.bodyTypes) {
-                const list: BodyOption[] = transformToTree(data.bodyTypes, 'typeId', 'parentTypeId').sort((a: BodyOption, b: BodyOption) => a.position - b.position);
+                const list: BodyOption[] = transformToTree(data.bodyTypes, 'typeId', 'parentTypeId')
+                    .sort((a: BodyOption, b: BodyOption) => a.position - b.position);
 
                 setBodyTypes([...list]);
             }
             if (data.loadingTypes) {
-                const options = data.loadingTypes.map((item, index) => {
+                const options: LoadingOption[] = data.loadingTypes.map((item: LoadingType): LoadingOption => {
                     return {
                         title: item.name,
                         value: item.typeId,
@@ -336,7 +435,7 @@ function LoadForm() {
             }
 
             <div className={!isAuth ? 'overlay-box' : ''}>
-                <MapModal isOpen={isOpenMapModal} onClose={closeMapModal} coordinates={mapCoordinates} setCoordinates={setCoordinates}/>
+                <MapModal isOpen={isOpenMapModal} onClose={closeMapModal} coordinates={mapCoordinates} setCoordinates={coordinateFunction}/>
                 <div className="form__container">
                     <div className="form__main">
                         <form name="load" onSubmit={handleSubmit(saveLoad)}>
@@ -348,15 +447,20 @@ function LoadForm() {
                                             <Autocomplete
                                                 sx={{width: 232}}
                                                 options={cargoTypes}
-                                                onChange={(event, newValue) => {
-                                                    setValue('loading.cargos.type', newValue.id, {shouldValidate: true});
+                                                onChange={(event, newValue: LabelOption|null): void => {
+                                                    if (newValue) {
+                                                        setValue('loading.cargos.type', newValue.id, {shouldValidate: true});
+                                                    }
                                                 }}
                                                 size="small"
                                                 disablePortal
-                                                renderInput={(params) => <TextField  {...params}
-                                                                                     error={!!errors.loading?.cargos?.cargoType}
-                                                                                     helperText={errors.loading?.cargos?.cargoType?.message}
-                                                                                     label={t('label.cargoType')}/>}
+                                                renderInput={(params) => (
+                                                    <TextField
+                                                        {...params}
+                                                        error={!!errors.loading?.cargos?.cargoType}
+                                                        helperText={errors.loading?.cargos?.cargoType?.message}
+                                                        label={t('label.cargoType')}/>
+                                                )}
                                             />
 
                                             <TextField
@@ -401,7 +505,7 @@ function LoadForm() {
                                                     {...register('loading.dates.type', {
                                                         required: t('validation.downloadingDateStatus')
                                                     })}>
-                                                    {downloadingDateStatuses.map(status =>
+                                                    {downloadingDateStatuses.map((status: Option) =>
                                                         <MenuItem key={status.value} value={status.value}
                                                                   selected={watch('loading.dates.type') === status.value}>
                                                             {status.title}
@@ -409,7 +513,8 @@ function LoadForm() {
                                                     )}
                                                 </Select>
                                                 {errors.loading?.dates?.type &&
-                                                    <FormHelperText>{errors.loading?.dates?.type?.message}</FormHelperText>}
+                                                    <FormHelperText>{errors.loading?.dates?.type?.message}</FormHelperText>
+                                                }
                                             </FormControl>
 
                                             {watch('loading.dates.type') === DownloadingDateStatus.FROM_DATE &&
@@ -426,8 +531,8 @@ function LoadForm() {
                                                     <Select
                                                         size="small"
                                                         defaultValue={0}
-                                                        onChange={e => updateDaysAfterLoading(e.target.value)}>
-                                                        {[...Array(10).keys()].map(option =>
+                                                        onChange={(e: SelectChangeEvent<number>) => updateDaysAfterLoading(Number(e.target.value))}>
+                                                        {[...Array(10).keys()].map((option: number) =>
                                                             <MenuItem key={option} value={option} selected={daysAfterLoading === option}>
                                                                 {option} {t('dayShort')}
                                                             </MenuItem>
@@ -445,7 +550,7 @@ function LoadForm() {
                                                             size="small"
                                                             defaultValue={getValues('loading.dates.periodicity')}
                                                             {...register('loading.dates.periodicity')}>
-                                                            {PeriodicityOptions.map(option =>
+                                                            {PeriodicityOptions.map((option: Option) =>
                                                                 <MenuItem key={option.value} value={option.value} selected={watch('loading.dates.periodicity') === option.value}>
                                                                     {t(option.title)}
                                                                 </MenuItem>
@@ -474,11 +579,19 @@ function LoadForm() {
                                                 <div className="form__label text-bold">{t('label.load')}</div>
                                                 <div className="flex flex-center">
                                                     <div className="input">
-                                                        <AutocompleteAddress
-                                                            {...register('loading.location.cityId')}
-                                                            setCityObject={setFromCity}
-                                                            label={t('label.locality')}/>
-
+                                                        <Controller
+                                                            control={control}
+                                                            name="loading.location.cityId"
+                                                            render={({ field }) => {
+                                                                const { onChange, onBlur, value } = field;
+                                                                return (
+                                                                    <AutocompleteAddress
+                                                                        value={value}
+                                                                        setCityObject={setFromCity}
+                                                                        label={t('label.locality')}
+                                                                        initialList={[]}/>
+                                                                );
+                                                            }}/>
                                                     </div>
                                                     <div className="input">
                                                         <TextField
@@ -492,7 +605,7 @@ function LoadForm() {
                                                     </div>
                                                     <div className="open-map" onClick={() => openMapModal({
                                                         coordinates: watch('loading.location.coordinates'),
-                                                        control: 'loading.location.coordinates'
+                                                        coordinateFunction: setFromCityCoordinates
                                                     })}>
                                                         <MapIcon/>
                                                     </div>
@@ -541,14 +654,23 @@ function LoadForm() {
                                                 <div className="form__label text-bold">{t('label.downloading')}</div>
                                                 <div className="flex flex-center">
                                                     <div className="input">
-                                                        <AutocompleteAddress
-                                                            {...register('unloading.location.cityId')}
-                                                            setCityObject={setToCity}
-                                                            label={t('label.locality')}/>
+                                                        <Controller
+                                                            control={control}
+                                                            name="unloading.location.cityId"
+                                                            render={({ field }) => {
+                                                                const { onChange, onBlur, value } = field;
+                                                                return (
+                                                                    <AutocompleteAddress
+                                                                        value={value}
+                                                                        setCityObject={setToCity}
+                                                                        label={t('label.locality')}
+                                                                        initialList={[]}/>
+                                                                );
+                                                            }}/>
                                                     </div>
                                                     <div className="input">
                                                         <TextField
-                                                            name="toAddress"
+                                                            //name="toAddress"
                                                             size="small"
                                                             error={!!errors.unloading?.location?.address}
                                                             helperText={errors.unloading?.location?.address?.message}
@@ -559,8 +681,8 @@ function LoadForm() {
                                                     </div>
                                                     <div className="open-map" onClick={() => openMapModal({
                                                         coordinates: watch('unloading.location.coordinates'),
-                                                        control: 'unloading.location.coordinates'
-                                                        })}>
+                                                        coordinateFunction: setToCityCoordinates
+                                                    })}>
                                                         <MapIcon/>
                                                     </div>
                                                 </div>
@@ -637,7 +759,7 @@ function LoadForm() {
                                                         itemText="title"
                                                         itemValue="value"
                                                         value={watch('truck.loadingTypes')}
-                                                        onChange={value => setValue('truck.loadingTypes', value)}/>
+                                                        onChange={(value: LoadingOption): void => setValue('truck.loadingTypes', value)}/>
                                                 </div>
                                             </div>
                                             <div className="car__block">
@@ -649,7 +771,7 @@ function LoadForm() {
                                                         itemText="title"
                                                         itemValue="value"
                                                         value={watch('truck.unloadingTypes')}
-                                                        onChange={value => setValue('truck.unloadingTypes', value)}/>
+                                                        onChange={(value: LoadingOption): void => setValue('truck.unloadingTypes', value)}/>
                                                 </div>
                                             </div>
                                         </div>
@@ -870,7 +992,7 @@ function LoadForm() {
                                                             size="small"
                                                             defaultValue={getValues('payment.auctionDuration.fixedDuration')}
                                                             {...register('payment.auctionDuration.fixedDuration')}>
-                                                            {FixedDurations.map((option, index) =>
+                                                            {FixedDurations.map((option: Option, index: number) =>
                                                                 <MenuItem key={index} value={option.value}
                                                                           selected={watch('payment.auctionDuration.fixedDuration') === option.value}>
                                                                     {t(option.title)}
@@ -909,7 +1031,7 @@ function LoadForm() {
                                         <ContactList
                                             options={availableContacts}
                                             selectedContacts={watch('contactIds')}
-                                            setSelectedContacts={ids => setValue('contactIds', ids)}
+                                            setSelectedContacts={(ids: number[]): void => setValue('contactIds', ids)}
                                         />
                                     </div>
                                     <div className="form__item flex">
@@ -935,9 +1057,9 @@ function LoadForm() {
                                             <FileUploader
                                                 entity="load"
                                                 files={files}
-                                                allowedMaxFiles="10"
+                                                allowedMaxFiles={10}
                                                 allowedExtensions={allowedExtensions}
-                                                multiple="true"
+                                                multiple={true}
                                                 setFiles={setFiles}/>
                                         </div>
                                     }

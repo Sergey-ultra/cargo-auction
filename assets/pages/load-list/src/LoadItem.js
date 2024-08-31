@@ -62,10 +62,12 @@ function LoadItem({
                     <Tooltip
                         title={load.truck.loadingType + `${load.truck.loadingType !== load.truck.unloadingType ? '/' + load.truck.unloadingType : ''}`}
                         placement="top">
-                        <span>{load.truck.loadingTypeShort}</span>
-                        {load.truck.loadingTypeShort !== load.truck.unloadingTypeShort &&
-                            <span>/{load.truck.unloadingTypeShort}</span>
-                        }
+                        <span>
+                            <span>{load.truck.loadingTypeShort}</span>
+                            {load.truck.loadingTypeShort !== load.truck.unloadingTypeShort &&
+                                <span>/{load.truck.unloadingTypeShort}</span>
+                            }
+                        </span>
                     </Tooltip>
                 </div>
                 {load.load.type === 'ftl'

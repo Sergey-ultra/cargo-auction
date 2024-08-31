@@ -13,7 +13,7 @@ import {useCookie} from "../../../../hooks/cookie";
 interface MapModalProps {    isOpen: boolean,
     onClose: () => void,
     coordinates: coordinates,
-    setCoordinates: (coordinates: coordinates) => void
+    setCoordinates: (coordinates: coordinates, address: string) => void
 }
 
 export default function MapModal({isOpen, onClose, coordinates, setCoordinates}: MapModalProps) {
@@ -25,13 +25,13 @@ export default function MapModal({isOpen, onClose, coordinates, setCoordinates}:
         longitude: coordinates.longitude || 37.573856
     };
 
-    const [isLoading, setIsLoading] = useState<boolean>(true);
+    //const [isLoading, setIsLoading] = useState<boolean>(true);
     const [map, setMap] = useState<YMapsApi|undefined>(undefined);
     const [address, setAddress] = useState<string>("");
     const [localCoordinates, setLocalCoordinates] = useState<coordinates>(startCoordinates);
 
 
-    const mapRef: MutableRefObject<ymaps.Map | undefined> = useRef(undefined);
+    //const mapRef: MutableRefObject<ymaps.Map | undefined> = useRef(undefined);
 
     const setAddressByCoordinates = async (): Promise<void> => {
         if (!map || !localCoordinates) {
@@ -55,23 +55,21 @@ export default function MapModal({isOpen, onClose, coordinates, setCoordinates}:
             latitude: coordinates[0],
             longitude: coordinates[1]
         });
-        let res: IGeocodeResult = await map.geocode(coordinates);
-        let geoObject: GeocodeResult = res.geoObjects.get(0);
+        const res: IGeocodeResult = await map.geocode(coordinates);
+        const geoObject: GeocodeResult = res.geoObjects.get(0);
         setAddress(geoObject.getAddressLine());
-
+        console.log(geoObject.getCountryCode())
         //setAddressByCoordinates();
     }
 
-    const save = () => {
-        setCoordinates(localCoordinates);
+    const save = (): void => {
+        setCoordinates(localCoordinates, address);
         onClose();
     }
 
     useEffect( () => {
         setAddressByCoordinates();
     },[map]);
-
-    //useEffect(() =>  setAddressByCoordinates(), [localCoordinates]);
 
     return(
         <Dialog onClose={onClose} open={isOpen} maxWidth="lg">
@@ -80,8 +78,9 @@ export default function MapModal({isOpen, onClose, coordinates, setCoordinates}:
                     <div className="mapControl">
                         <div className="mapBottom">
                             {address || '  Выбор адреса'}
-                            {localCoordinates?.latitude} - {localCoordinates?.longitude}
-                            <Button onClick={save}>Сохранить</Button>
+                            <div>Широта <span>{localCoordinates?.longitude}</span></div>
+                            <div>Долгота <span>{localCoordinates?.latitude}</span></div>
+                            <Button variant="contained" onClick={save}>Сохранить</Button>
                         </div>
                     </div>
                     <div className="mapWrapper">
@@ -92,7 +91,7 @@ export default function MapModal({isOpen, onClose, coordinates, setCoordinates}:
                                     //lang: currentLocal ==='en' ? 'en_US' : 'en_RU'
                                 }}>
                                 <Map
-                                    instanceRef={mapRef.current}
+                                    //instanceRef={mapRef.current}
                                     defaultState={{
                                         center: [localCoordinates.latitude, localCoordinates.longitude],
                                         zoom: 8,

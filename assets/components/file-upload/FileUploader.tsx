@@ -29,9 +29,12 @@ export default function FileUploader({
                                          allowedSize = 0,
                                          disabled = false,
                                          emitAborted = () => {}
-                                     }: FileUploadProps): FC {
+                                     }: FileUploadProps) {
     const { request, isLoading, error, status } = useHttp();
-    const unloadedFiles: FileConstructor[] = useMemo(() =>  files.filter((file: FileConstructor) => file.status === FileStatus.IDLE), [files]);
+    const unloadedFiles: FileConstructor[] = useMemo(
+        (): FileConstructor[] => files.filter((file: FileConstructor): boolean => file.status === FileStatus.IDLE),
+        [files]
+    );
 
     useEffect(() => {
         if (unloadedFiles.length) {
@@ -39,7 +42,7 @@ export default function FileUploader({
         }
     }, [files]);
 
-    const isFileLimit = useMemo(() => {
+    const isFileLimit: boolean = useMemo((): boolean => {
         if (multiple && allowedMaxFiles) {
             return files.length >= allowedMaxFiles;
         }
@@ -63,7 +66,7 @@ export default function FileUploader({
                 return;
             }
 
-            let newFiles: File[]|FileConstructor[] = [];
+            let newFiles: File[] = [];
 
             if (multiple) {
                 newFiles = allowedMaxFiles
@@ -111,7 +114,7 @@ export default function FileUploader({
         });
     }
 
-    const uploadFile = async (file: FileConstructor) => {
+    const uploadFile = async (file: FileConstructor): Promise<void> => {
         let form: FormData = new FormData();
         form.append('entity', entity);
         form.append('file', file.bin);
@@ -156,11 +159,11 @@ export default function FileUploader({
                 </div>
                 <div className="file__description">Фото или документы до 10 МБ. Не более 10 файлов</div>
             </label>
-            {files.map(file => <FileItem
-                key={file.name}
+            {files.map((file: FileConstructor, index: number) => <FileItem
+                key={index}
                 file={file}
-                remove={() => removeFile(file)}/>)
-            }
+                remove={(): void => removeFile(file)}/>
+            )}
         </div>
 
     );

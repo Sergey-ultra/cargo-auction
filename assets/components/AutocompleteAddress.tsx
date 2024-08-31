@@ -3,9 +3,9 @@ import {Autocomplete, TextField} from "@mui/material";
 import {useHttp} from "../hooks/api";
 
 export interface City {
+    id:  number|null,
     approx: boolean,
     district: string,
-    id:  number,
     lat: number,
     lon: number,
     name: string,
@@ -17,14 +17,14 @@ export interface City {
 interface AutocompleteAddressProps {
     setCityObject: (cityObj: City) => void,
     label: string,
-    value: string,
+    value: string|undefined|null,
     initialList: City[]
 }
 
 function AutocompleteAddress({value, setCityObject, label, initialList = []}: AutocompleteAddressProps) {
     const { request } = useHttp();
 
-    const [localValue, setLocalValue] = useState<string>(value);
+    const [localValue, setLocalValue] = useState<string>(value ?? '');
     const [citiesList, setCitiesList] = useState<City[]>([...initialList]);
 
     const local = window.local || 'RU';
