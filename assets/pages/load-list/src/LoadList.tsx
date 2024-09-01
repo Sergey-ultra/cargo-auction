@@ -10,24 +10,28 @@ import AuthModal from "../../nav/src/AuthModal";
 import Filter from "../../../components/filter/Filter";
 import {FilterContext} from "../../../context/filter.context";
 import {useHandleSelectOptions} from "../../../hooks/handleSelectOptions";
+import {FilterProvider} from "../../../hooks/filter";
+import {isAuthFunc} from "../../../hooks/isAuthFunc";
+import {Option} from "../../load-form/types";
 
 function LoadList(callback, deps) {
-    const { filter, setFilter, clearFilter, changeFilterAddresses } = useContext(FilterContext);
+    const { filter, clearFilter, convertToBackendFilter }: FilterProvider = useContext(FilterContext);
     const { request, isLoading, error, clearError } = useHttp();
     const { handleSelectOptions} = useHandleSelectOptions();
+    const isAuth: boolean = isAuthFunc();
 
     const isMy = window.location.pathname.match(/\/profile\/load-list/);
 
-    const [loadOptions, setLoadOptions] = useState([]);
+    const [loadOptions, setLoadOptions] = useState<Option[]>([]);
     const [perPageOptions, setPerPageOptions] = useState([]);
 
 
     const [list, setList] = useState([]);
     const [totalCount, setTotalCount] = useState(0);
-    const [orderBy, setOrderBy] = useState('created_at');
-    const [perPage, setPerPage] = useState(10);
-    const [page, setPage] = useState(1);
-    const [lastPage, setLastPage] = useState(1);
+    const [orderBy, setOrderBy] = useState<string>('created_at');
+    const [perPage, setPerPage] = useState<number>(10);
+    const [page, setPage] = useState<number>(1);
+    const [lastPage, setLastPage] = useState<number>(1);
 
     const [isOpenSaveFilterModal, setOpenSaveFilterModal] = useState(false);
     const openSaveFilterModal = () => setOpenSaveFilterModal(true);
@@ -42,7 +46,7 @@ function LoadList(callback, deps) {
         }
     }
 
-    const saveComment = async object=> {
+    const saveComment = async (object: Comment): Promise<number|null> => {
         let response;
         if (object.id) {
              response = await request(`/api/load/comment/${object.id}`, 'PUT', { body: object });
@@ -56,22 +60,22 @@ function LoadList(callback, deps) {
        return null;
     }
 
-    const deleteComment = async (id) => {
+    const deleteComment = async (id: number): Promise<void> => {
         await request(`/api/load/comment/${id}`, 'DELETE');
     }
 
-    const saveFilter = async(name) => {
-        const { data } = await request('/api/load-filter', 'POST', { body: {name, filter, type: 'load'}});
+    const saveFilter = async(name: string): Promise<void> => {
+        const localFilter = convertToBackendFilter(page, perPage, orderBy);
+        const { data } = await request('/api/load-filter', 'POST', { body: {name, filter: localFilter, type: 'load'}});
         if (data.status === 'ok') {
             closeSaveFilterModal();
         }
     }
 
-    const isShowSaveFilter = !!filter.fromAddress
 
     const [isOpenSendBidModal, setOpenSendBidModal] = useState(false);
-    const [currentLoadId, setCurrentLoadId] = useState(null);
-    const openSendBidModal = loadId => {
+    const [currentLoadId, setCurrentLoadId] = useState<number|null>(null);
+    const openSendBidModal = (loadId: number) => {
         setCurrentLoadId(loadId);
         setOpenSendBidModal(true);
     }
@@ -103,24 +107,8 @@ function LoadList(callback, deps) {
 
 
 
-
     const fetchLoadList = async() => {
-        const params = {
-            fromAddressId: filter.from.id,
-            fromAddress: filter.from.name,
-            fromRadius: filter.fromRadius,
-            toAddressId: filter.to.id,
-            toAddress: filter.to.name,
-            toRadius: filter.toRadius,
-            weightMin: filter.weightMin,
-            weightMax: filter.weightMax,
-            volumeMin: filter.volumeMin,
-            volumeMax: filter.volumeMax,
-            page,
-            perPage,
-            orderBy
-        };
-
+        const params = convertToBackendFilter(page, perPage, orderBy);
         if (isMy) {
             params.isMy = true;
         }
@@ -136,9 +124,6 @@ function LoadList(callback, deps) {
         setTotalCount(data.totalCount);
         setLastPage(data.lastPage);
     }
-
-
-
 
     const updateLoadList = async () => {
         setPage(1);
@@ -164,6 +149,7 @@ function LoadList(callback, deps) {
 
     useEffect(() => {
         fetchLoadList();
+        console.log(filter);
     },[filter, page, perPage, orderBy]);
 
 
@@ -183,7 +169,7 @@ function LoadList(callback, deps) {
 
             <div className="row row-end">
                 <Button onClick={clearFilter}>Очистить</Button>
-                {isShowSaveFilter && <Button onClick={openSaveFilterModal}>Сохранить как фильтр</Button>}
+                {isAuth && (!!filter.from.id || !!filter.to.id) && <Button onClick={openSaveFilterModal}>Сохранить как фильтр</Button>}
                 <Button variant="contained" className="button button-primary button-small" onClick={updateLoadList}>Найти</Button>
             </div>
 

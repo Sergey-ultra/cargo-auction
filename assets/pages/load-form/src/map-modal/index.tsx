@@ -1,13 +1,12 @@
 import React, {MutableRefObject, useEffect, useRef, useState} from 'react';
-import DialogTitle from "@mui/material/DialogTitle";
 import Dialog from "@mui/material/Dialog";
+import {useHttp} from "../../../../hooks/api";
 import {Button, CircularProgress, DialogContent} from "@mui/material";
 import {YMaps, Map, Placemark, ObjectManager, ZoomControl} from '@pbe/react-yandex-maps';
 import {coordinates} from "../../LoadFormInner";
 import {YMapsApi} from "@pbe/react-yandex-maps/typings/util/typing";
 import ymaps, {GeocodeResult, IGeoObject} from "yandex-maps";
 import {useCookie} from "../../../../hooks/cookie";
-
 
 
 interface MapModalProps {    isOpen: boolean,
@@ -20,15 +19,12 @@ export default function MapModal({isOpen, onClose, coordinates, setCoordinates}:
     const {getCookie} = useCookie();
     const currentLocal = getCookie('locale') ?? 'en';
 
-    const startCoordinates = {
-        latitude: coordinates.latitude || 55.751574,
-        longitude: coordinates.longitude || 37.573856
-    };
+    const {request, isLoading, error, status} = useHttp();
 
     //const [isLoading, setIsLoading] = useState<boolean>(true);
     const [map, setMap] = useState<YMapsApi|undefined>(undefined);
     const [address, setAddress] = useState<string>("");
-    const [localCoordinates, setLocalCoordinates] = useState<coordinates>(startCoordinates);
+    const [localCoordinates, setLocalCoordinates] = useState<coordinates>(coordinates);
 
 
     //const mapRef: MutableRefObject<ymaps.Map | undefined> = useRef(undefined);
@@ -62,7 +58,8 @@ export default function MapModal({isOpen, onClose, coordinates, setCoordinates}:
         //setAddressByCoordinates();
     }
 
-    const save = (): void => {
+    const save = async(): Promise<void> => {
+        await request('/api/city/suggest');
         setCoordinates(localCoordinates, address);
         onClose();
     }

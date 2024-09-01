@@ -247,7 +247,11 @@ function LoadForm() {
     );
 
     const openMapModal = ({coordinates, coordinateFunction}: {coordinates: coordinates, coordinateFunction: Function}): void => {
-        setMapCoordinates(coordinates);
+        const startCoordinates = {
+            latitude: coordinates.latitude || 55.751574,
+            longitude: coordinates.longitude || 37.573856
+        };
+        setMapCoordinates(startCoordinates);
         setCoordinatesFunction(() => (coord: coordinates, address: string) => coordinateFunction(coord, address));
         setIsOpenMapModal(true);
     }
@@ -586,7 +590,7 @@ function LoadForm() {
                                                                 const { onChange, onBlur, value } = field;
                                                                 return (
                                                                     <AutocompleteAddress
-                                                                        value={value}
+                                                                        initialValue={value}
                                                                         setCityObject={setFromCity}
                                                                         label={t('label.locality')}
                                                                         initialList={[]}/>
@@ -656,12 +660,13 @@ function LoadForm() {
                                                     <div className="input">
                                                         <Controller
                                                             control={control}
+                                                            //defaultValue={watch('unloading.location.coordinates')}
                                                             name="unloading.location.cityId"
                                                             render={({ field }) => {
                                                                 const { onChange, onBlur, value } = field;
                                                                 return (
                                                                     <AutocompleteAddress
-                                                                        value={value}
+                                                                        initialValue={value}
                                                                         setCityObject={setToCity}
                                                                         label={t('label.locality')}
                                                                         initialList={[]}/>

@@ -1,5 +1,5 @@
-import React, {useContext} from "react";
-import AutocompleteAddress from "../AutocompleteAddress";
+import React, {ChangeEventHandler, DetailedHTMLProps, InputHTMLAttributes, useContext} from "react";
+import AutocompleteAddress, {City} from "../AutocompleteAddress";
 import {FilterContext} from "../../context/filter.context";
 import {Tooltip} from "@mui/material";
 import InfoIcon from "../icons/InfoIcon";
@@ -7,12 +7,12 @@ import InfoIcon from "../icons/InfoIcon";
 
 function Filter() {
     const { filter, setFilter, changeFilterAddresses } = useContext(FilterContext);
-    const changeFilter = event => {
+    const changeFilter = (event: ChangeEventHandler<DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>>): void => {
         setFilter({...filter, [event.target.name]: event.target.value})
     }
 
-    const setFromAddressFilterValue = city => setFilter({...filter, from: {id: city.id, name: city.name}});
-    const setToAddressFilterValue = city => setFilter({...filter, to: {id: city.id, name: city.name}});
+    const setFromAddressFilterValue = (city: City) => setFilter({...filter, from: {id: city.id, name: city.name}});
+    const setToAddressFilterValue = (city: City) => setFilter({...filter, to: {id: city.id, name: city.name}});
 
     return (
     <form className="box" id="filter">
@@ -21,7 +21,7 @@ function Filter() {
                 <div className="filter__element">
                     <label className="filter__label text-bold">Откуда</label>
                     <AutocompleteAddress
-                        value={filter.fromAddress}
+                        initialValue={filter.fromAddress}
                         setCityObject={setFromAddressFilterValue}
                         label=""/>
                 </div>
@@ -49,7 +49,7 @@ function Filter() {
                 <div className="filter__element">
                     <label className="filter__label text-bold">Куда</label>
                     <AutocompleteAddress
-                        value={filter.to.address}
+                        initialValue={filter.to.address}
                         setCityObject={setToAddressFilterValue}
                         label=""
                     />

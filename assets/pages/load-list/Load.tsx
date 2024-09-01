@@ -2,19 +2,19 @@ import {Tab, Tabs} from "@mui/material";
 import React, {useState} from "react";
 import LoadList from "./src/LoadList";
 import MyFilters from "../../components/MyFilters";
-import {useFilter} from "../../hooks/filter";
+import {FilterProvider, useFilter} from "../../hooks/filter";
 import {FilterContext} from "../../context/filter.context";
 import "./cargo-index.css";
 
 function Load() {
-    const [tab, setTab] = useState('one');
-    const {filter, setFilter, clearFilter, changeFilterAddresses} = useFilter();
+    const [tab, setTab] = useState<string>('one');
+    const {filter, setFilter, clearFilter, changeFilterAddresses, convertToBackendFilter, convertFromBackendFilter}: FilterProvider = useFilter();
 
-    const handleTab = (event, newValue) => setTab(newValue);
-    const setLoadListTab = () => setTab("one");
+    const handleTab = (event, newValue: string): void => setTab(newValue);
+    const setLoadListTab = (): void => setTab("one");
 
     return (
-        <FilterContext.Provider value={{filter, setFilter, clearFilter, changeFilterAddresses}}>
+        <FilterContext.Provider value={{filter, setFilter, clearFilter, changeFilterAddresses, convertToBackendFilter, convertFromBackendFilter}}>
             <Tabs
                 value={tab}
                 onChange={handleTab}

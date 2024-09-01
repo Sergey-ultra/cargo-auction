@@ -15,7 +15,7 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route('/api', name: 'api_')]
 class CityController extends AbstractController
 {
-    #[Route('/city-suggest', name: 'city-suggest', methods:['get'] )]
+    #[Route('/city/suggest', name: 'city-suggest', methods:['get'] )]
     public function suggest(#[MapQueryString] ?CityFilterDTO $filter, CityApi $cityApi): JsonResponse
     {
         $cities = $cityApi->searchCitiesByName($filter->name);

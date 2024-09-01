@@ -38,7 +38,7 @@ function MyCompany() {
                 <div className="flex">
                     <label className="label">Месторасположение центрального офиса или город юридической регистрации*</label>
                     <AutocompleteAddress
-                        value={company.cityId}
+                        initialValue={company.cityId}
                         setAddressValue={setCityId}
                         label="Откуда"/>
                 </div>

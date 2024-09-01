@@ -33,13 +33,15 @@ class FilterController extends ApiController
     public function saveFilter(#[MapRequestPayload] FilterSaveDTO $filterDto, FilterApi $filterApi): JsonResponse
     {
         $user = $this->getUser();
-        $status = 'false';
 
-        if ($user) {
-            $filterApi->save($filterDto, $user);
-            $status = 'ok';
+        if (!$user) {
+            return $this->apiJson(['data' => ['status' => 'false', 'message' => 'You are not autorized']]);
         }
 
-        return $this->apiJson(['data' => ['status' => $status]], Response::HTTP_CREATED);
+        $filterApi->save($filterDto, $user);
+        $result = ['status' => 'ok'];
+
+
+        return $this->apiJson(['data' => $result], Response::HTTP_CREATED);
     }
 }

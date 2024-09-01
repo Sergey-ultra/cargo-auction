@@ -1,5 +1,5 @@
 import React, {ChangeEvent, SyntheticEvent, useState} from "react";
-import {Autocomplete, TextField} from "@mui/material";
+import {Autocomplete, AutocompleteRenderInputParams, TextField} from "@mui/material";
 import {useHttp} from "../hooks/api";
 
 export interface City {
@@ -17,20 +17,20 @@ export interface City {
 interface AutocompleteAddressProps {
     setCityObject: (cityObj: City) => void,
     label: string,
-    value: string|undefined|null,
+    initialValue: string|undefined|null,
     initialList: City[]
 }
 
-function AutocompleteAddress({value, setCityObject, label, initialList = []}: AutocompleteAddressProps) {
+function AutocompleteAddress({initialValue, setCityObject, label, initialList = []}: AutocompleteAddressProps) {
     const { request } = useHttp();
 
-    const [localValue, setLocalValue] = useState<string>(value ?? '');
+    const [localName, setLocalName] = useState<string>(initialValue ?? '');
     const [citiesList, setCitiesList] = useState<City[]>([...initialList]);
 
     const local = window.local || 'RU';
 
     const getSuggest = async(name: string = ''): Promise<void> => {
-        const { data }: {data:City[]} = await request('/api/city-suggest', 'GET', { params: {
+        const { data }: {data:City[]} = await request('/api/city/suggest', 'GET', { params: {
             name,
             lang: local,
             type: 1,
@@ -48,7 +48,7 @@ function AutocompleteAddress({value, setCityObject, label, initialList = []}: Au
 
 
     const changeAddressValue = async (e: ChangeEvent<HTMLInputElement>): Promise<void> => {
-        setLocalValue(e.target.value);
+        setLocalName(e.target.value);
         await getSuggest(e.target.value);
     }
 
@@ -59,19 +59,18 @@ function AutocompleteAddress({value, setCityObject, label, initialList = []}: Au
         getOptionKey={(option: City): number => option.id}
         onChange={(event: SyntheticEvent<Element>, newValue: City|null): void => {
             if (newValue && newValue.name) {
-                setLocalValue(newValue.name);
+                setLocalName(newValue.name);
                 setCityObject(newValue);
                 setCitiesList([]);
             }
         }}
-        inputValue={localValue}
+        inputValue={localName}
         size="small"
         disablePortal
-        renderInput={(params) =>
+        renderInput={(params: AutocompleteRenderInputParams) =>
             <TextField
                 {...params}
                 label={label}
-                name="fromAddress"
                 onFocus={onFocus}
                 onChange={changeAddressValue}/>}
     />

@@ -1,13 +1,23 @@
 import {useState,useCallback}  from'react';
-export const useHttp = () => {
-    const[isLoading, setLoading] = useState(false);
-    const[status, setStatus] = useState(0);
-    const[error, setError] = useState(null);
 
-    const request = useCallback(async (url, method ='GET', params = {}) => {
+type HTTPMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
+
+interface Params {
+    headers: Object|undefined,
+    params: Object|undefined,
+    body: Object|undefined,
+    form: Object|undefined,
+}
+
+export const useHttp = () => {
+    const[isLoading, setLoading] = useState<boolean>(false);
+    const[status, setStatus] = useState<number>(0);
+    const[error, setError] = useState<string|null>(null);
+
+    const request = useCallback(async (url: string, method: HTTPMethod ='GET', params: Params = {}): Promise<void> => {
         setLoading(true);
 
-        const headers = {
+        const headers: Object = {
             'Accept': 'application/json',
         }
 
@@ -23,7 +33,7 @@ export const useHttp = () => {
 
         if (method === 'GET') {
             if (params && params.hasOwnProperty('params')) {
-                let queryArray = []
+                let queryArray: string[] = [];
                 for (let [key, value] of Object.entries(params.params)) {
                     if (Array.isArray(value) && value.length) {
                         value.forEach(el => queryArray.push(`${key}[]=${el}`))
@@ -53,7 +63,7 @@ export const useHttp = () => {
         }
 
         try {
-            const response = await fetch(url, fetchParams);
+            const response: Response = await fetch(url, fetchParams);
             const data = await response.json();
 
             setStatus(response.status);

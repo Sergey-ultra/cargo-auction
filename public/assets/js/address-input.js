@@ -1,5 +1,5 @@
 async function getSuggest(name) {
-    const response = await fetch(`/api/city-suggest?name=${name}` , {
+    const response = await fetch(`/api/city/suggest?name=${name}` , {
         "Accept": "application/json",
         "Content-Type": "application/json",
     });

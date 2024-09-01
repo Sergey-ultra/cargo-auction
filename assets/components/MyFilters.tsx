@@ -1,23 +1,39 @@
 import React, {useContext, useEffect, useState} from "react";
 import {useHttp} from "../hooks/api";
-import {Card, CardActionArea, CardHeader, IconButton} from "@mui/material";
+import {Card, CardActionArea} from "@mui/material";
 import {FilterContext} from "../context/filter.context";
+import {BackendFilter, FilterProvider} from "../hooks/filter";
 
+interface MyFilterOption {
+    id: number,
+    type: string,
+    name: string,
+    filter: BackendFilter,
+    createdAt: string
+}
 
-function MyFilters({ setLoadListTab, type }) {
-    const { setFilter } = useContext(FilterContext);
+interface FetchFiltersResponse {
+    data: MyFilterOption[]
+}
+
+interface MyFiltersProps {
+    setLoadListTab: () => void,
+    type: string,
+}
+function MyFilters({ setLoadListTab, type }: MyFiltersProps) {
+    const { convertFromBackendFilter }: FilterProvider = useContext(FilterContext);
     const { request, isLoading, error, clearError } = useHttp();
-    const [filterList, setFilterList] = useState([]);
+    const [filterList, setFilterList] = useState<MyFilterOption[]>([]);
 
-    const fetchFilters = async() => {
-        const { data } = await request('/api/load-filter', 'GET', {params: {type}});
+    const fetchFilters = async(): Promise<void> => {
+        const { data }: Promise<FetchFiltersResponse> = await request('/api/load-filter', 'GET', {params: {type}});
         if (data && Array.isArray(data)) {
             setFilterList(data);
         }
     }
 
-    const setCurrentFilter = filter => {
-        setFilter({...filter.filter})
+    const setCurrentFilter = (filter: MyFilterOption) => {
+        convertFromBackendFilter(filter.filter);
         setLoadListTab();
     }
 
@@ -30,7 +46,7 @@ function MyFilters({ setLoadListTab, type }) {
 
     return (
         <div className="box">
-            {filterList.map(filter =>
+            {filterList.map((filter: MyFilterOption) =>
                 <Card sx={{ maxWidth: 345, padding: 2 }} key={filter.id} onClick={() => setCurrentFilter(filter)}>
                     <CardActionArea>
                         <span>

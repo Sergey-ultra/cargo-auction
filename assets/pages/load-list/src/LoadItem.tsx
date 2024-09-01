@@ -5,6 +5,12 @@ import EditIcon from "../../../components/icons/EditIcon";
 import EditSmallIcon from "../../../components/icons/EditSmallIcon";
 import MapIcon from "../../../components/icons/MapIcon";
 
+export interface Comment {
+    id: number|null,
+    comment: string,
+    entityId: number,
+}
+
 function LoadItem({
                       load,
                       openSendBidModal,
@@ -19,13 +25,13 @@ function LoadItem({
         userId = Number(userId);
     }
 
-    const [comment, setComment] = useState({
-        id: load.comment ? load.comment.id : null,
+    const [comment, setComment] = useState<Comment>({
+        id: load.comment ? load.comment?.id : null,
         comment: load.comment ? load.comment.comment : '',
         entityId: load.id,
     });
 
-    const sendComment = async () => {
+    const sendComment = async (): Promise<void> => {
         const id = await saveComment(comment);
         if (id) {
             setComment({ ...comment, id });
