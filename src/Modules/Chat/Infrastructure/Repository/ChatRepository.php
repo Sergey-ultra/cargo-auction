@@ -26,6 +26,7 @@ class ChatRepository extends ServiceEntityRepository implements ChatRepositoryIn
         parent::__construct($registry, Chat::class);
     }
 
+    /** @return Chat[] */
     public function getMyChats(UserInterface $owner, int $perPage): array
     {
         return $this->findBy(['owner' => $owner], null, $perPage);

@@ -79,6 +79,7 @@ final readonly class LoadApi
         return BodyType::getTransformedTypes();
     }
 
+    /** @return array<int, array{name: string, short_name: string, typeId: int} */
     public function getLoadingTypes(): array
     {
         return LoadingType::getTransformedTypes();

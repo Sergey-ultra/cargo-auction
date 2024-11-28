@@ -90,7 +90,7 @@ final readonly class TransportApi
 
         $result =  $this->transportRepository->getList($apiFilter, $page, $perPage, $orderOption, $byUser);
 
-        /** @var int[] $companyIds */
+        /** @var int[] $ids */
         $ids = [];
         /** @var int[] $companyIds */
         $companyIds = [];

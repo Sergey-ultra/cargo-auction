@@ -26,6 +26,7 @@ final readonly class ChatApi
     {
     }
 
+    /** @return Chat[] */
     public function getMyChats(UserInterface $owner, int $perPage): array
     {
         return $this->chatRepository->getMyChats($owner, $perPage);

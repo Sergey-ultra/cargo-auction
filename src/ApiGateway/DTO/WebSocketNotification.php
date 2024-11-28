@@ -11,6 +11,7 @@ readonly class WebSocketNotification
         public int $userId,
     ){}
 
+    /** @return array{message: string, userId: int} */
     public function toArray(): array
     {
         return (array)$this;

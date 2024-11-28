@@ -31,7 +31,7 @@ final readonly class UserAdapter
 
     /**
      * @param int[] $ids
-     * @return ArrayCollection<int, array>
+     * @return ArrayCollection<int, User[]>
      */
     public function getByCompanyIds(array $ids): ArrayCollection
     {

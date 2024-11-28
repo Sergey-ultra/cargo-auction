@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\City\Infrastructure\Api;
 
+use App\Modules\City\Domain\Entity\City;
 use App\Modules\City\Infrastructure\DTO\CityDTO;
 use App\Modules\City\Infrastructure\Repository\CityRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -14,6 +15,7 @@ final readonly class CityApi
     {
     }
 
+    /** @return City[] */
     public function searchCitiesByName(string $name): array
     {
         if ($name === "") {
@@ -22,6 +24,10 @@ final readonly class CityApi
         return $this->cityRepository->searchByName($name);
     }
 
+    /**
+     * @param string[] $cities
+     * @return City[]
+     */
     public function searchCitiesByNames(array $cities): array
     {
         return $this->cityRepository->searchByNames($cities);

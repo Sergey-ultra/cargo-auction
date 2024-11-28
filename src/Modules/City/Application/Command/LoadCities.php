@@ -46,6 +46,19 @@ class LoadCities extends Command
         return Command::SUCCESS;
     }
 
+    /**
+     * @return iterable<array{
+     *     id: string,
+     *     name: string,
+     *     other_name: string,
+     *     region_name: string,
+     *     district: string,
+     *     lon: string,
+     *     lat: string,
+     *     population: string,
+     *     approx: string
+     * }>
+     */
     protected function readFile(): iterable
     {
         $filePath = sprintf('%s/%s', $this->projectDir, 'RussianOikonymsDataset.tsv');

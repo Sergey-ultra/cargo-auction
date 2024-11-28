@@ -28,8 +28,9 @@ class DUpdateUsersFixtures extends Fixture implements DependentFixtureInterface
             $this->addReference(self::REFERENCE .'_'. $i, $user);
 
             if (!$user->getCompanyId()) {
+                $key = ($i % 5) + 1;
                 /** @var Company $company */
-                $company = $this->getReference(CCompanyFixtures::REFERENCE . '_' . ($i % 5) + 1);
+                $company = $this->getReference(CCompanyFixtures::REFERENCE . '_' . $key);
                 $user->setCompanyId($company->getId());
                 $manager->persist($user);
             }

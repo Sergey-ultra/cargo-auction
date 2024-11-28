@@ -41,6 +41,7 @@ final readonly class UserApi
         return $this->userRepository->findBy(['companyId' => $companyId]);
     }
 
+    /** @param int[] $ids */
     public function getByCompanyIds(array $ids): ArrayCollection
     {
         $users = $this->userRepository->findBy(['companyId' => $ids]);

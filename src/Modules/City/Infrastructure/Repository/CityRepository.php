@@ -38,6 +38,7 @@ class CityRepository extends ServiceEntityRepository implements CityRepositoryIn
         parent::__construct($registry, City::class);
     }
 
+    /** @return City[] */
     public function getMainCities(): array
     {
         $list = $this->findBy(['id' => self::MAIN_CITIES_IDS]);
@@ -55,6 +56,7 @@ class CityRepository extends ServiceEntityRepository implements CityRepositoryIn
         return $result;
     }
 
+    /** @return City[] */
     public function searchByName(string $name): array
     {
         return $this->createQueryBuilder('c')
@@ -65,6 +67,10 @@ class CityRepository extends ServiceEntityRepository implements CityRepositoryIn
             ->execute();
     }
 
+    /**
+     * @param string[] $cities
+     * @return City[]
+     */
     public function searchByNames(array $cities): array
     {
          $query = $this->createQueryBuilder('c');

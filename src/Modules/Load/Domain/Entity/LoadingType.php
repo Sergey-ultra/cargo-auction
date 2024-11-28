@@ -148,6 +148,7 @@ class LoadingType
         ]
     ];
 
+    /** @return array<int, array{name: string, short_name: string, typeId: int}> */
     public static function getTransformedTypes(): array
     {
         return array_map(
@@ -162,6 +163,7 @@ class LoadingType
         );
     }
 
+    /** @return array<int, array{name: string, short: string}> */
     public static function getTypesMapById(): array
     {
         $result = [];
