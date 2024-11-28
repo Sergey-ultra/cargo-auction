@@ -14,5 +14,8 @@ docker-build:
 app-composer-install:
 	docker exec -i cargo_php composer install
 
+app-analyze:
+	docker-compose run app composer phpstan
+
 app-jwt:
 	docker-compose run app php bin/console lexik:jwt:generate-keypair
