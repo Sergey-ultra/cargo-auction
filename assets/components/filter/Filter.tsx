@@ -3,10 +3,11 @@ import AutocompleteAddress, {City} from "../AutocompleteAddress";
 import {FilterContext} from "../../context/filter.context";
 import {Tooltip} from "@mui/material";
 import InfoIcon from "../icons/InfoIcon";
+import {FilterProvider} from "../../hooks/filter";
 
 
 function Filter() {
-    const { filter, setFilter, changeFilterAddresses } = useContext(FilterContext);
+    const { filter, setFilter, changeFilterAddresses }: FilterProvider = useContext(FilterContext);
     const changeFilter = (event: ChangeEventHandler<DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>>): void => {
         setFilter({...filter, [event.target.name]: event.target.value})
     }
@@ -21,7 +22,7 @@ function Filter() {
                 <div className="filter__element">
                     <label className="filter__label text-bold">Откуда</label>
                     <AutocompleteAddress
-                        initialValue={filter.fromAddress}
+                        initialValue={filter.from.id}
                         setCityObject={setFromAddressFilterValue}
                         label=""/>
                 </div>
@@ -36,7 +37,7 @@ function Filter() {
                     </label>
                     <input type="text" className="filter__input" id="fromRadius" name="fromRadius"
                            placeholder="км"
-                           disabled={filter.fromAddress === ''} value={filter.fromRadius}
+                           disabled={filter.from.name === ''} value={filter.fromRadius}
                            onChange={changeFilter}/>
                 </div>
                 <div className="filter__swap" onClick={changeFilterAddresses}>
@@ -49,9 +50,10 @@ function Filter() {
                 <div className="filter__element">
                     <label className="filter__label text-bold">Куда</label>
                     <AutocompleteAddress
-                        initialValue={filter.to.address}
+                        initialValue={filter.to.id}
                         setCityObject={setToAddressFilterValue}
                         label=""
+                        initialList={[]}
                     />
                 </div>
                 <div className="filter__element filter__element-radius">
@@ -64,16 +66,16 @@ function Filter() {
                         </Tooltip>
                     </label>
                     <input type="text" className="filter__input" id="toRadius" name="toRadius" placeholder="км"
-                           disabled={filter.toAddress === ''} value={filter.toRadius} onChange={changeFilter}/>
+                           disabled={filter.to.name === ''} value={filter.toRadius} onChange={changeFilter}/>
                 </div>
             </div>
             <div className="filter__block filter__block-right">
                 <div className="filter__element filter__minMax">
                     <label className="filter__label">Вес, т</label>
                     <div className="filter__block">
-                        <input type="text" className="filter__input" name="weightMin" value={filter.weightMin}
+                        <input type="text" className="filter__input" name="weightMin" value={filter.weightMin ?? ''}
                                onChange={changeFilter} placeholder="от"/>
-                        <input type="text" className="filter__input" name="weightMax" value={filter.weightMax}
+                        <input type="text" className="filter__input" name="weightMax" value={filter.weightMax ?? ''}
                                onChange={changeFilter} placeholder="до"/>
                     </div>
                 </div>
@@ -82,9 +84,9 @@ function Filter() {
                         <span>Объем, м<sup>3</sup></span>
                     </label>
                     <div className="filter__block">
-                        <input type="text" className="filter__input" name="volumeMin" value={filter.volumeMin}
+                        <input type="text" className="filter__input" name="volumeMin" value={filter.volumeMin?? ''}
                                onChange={changeFilter} placeholder="от"/>
-                        <input type="text" className="filter__input" name="volumeMax" value={filter.volumeMax}
+                        <input type="text" className="filter__input" name="volumeMax" value={filter.volumeMax ?? ''}
                                onChange={changeFilter} placeholder="до"/>
                     </div>
                 </div>

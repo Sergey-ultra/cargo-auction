@@ -1,4 +1,4 @@
-import React, {ChangeEvent, SyntheticEvent, useState} from "react";
+import React, {ChangeEvent, SyntheticEvent, useEffect, useState} from "react";
 import {Autocomplete, AutocompleteRenderInputParams, TextField} from "@mui/material";
 import {useHttp} from "../hooks/api";
 
@@ -17,20 +17,20 @@ export interface City {
 interface AutocompleteAddressProps {
     setCityObject: (cityObj: City) => void,
     label: string,
-    initialValue: string|undefined|null,
+    initialValue: number|null,
     initialList: City[]
 }
 
 function AutocompleteAddress({initialValue, setCityObject, label, initialList = []}: AutocompleteAddressProps) {
     const { request } = useHttp();
 
-    const [localName, setLocalName] = useState<string>(initialValue ?? '');
+    const [localName, setLocalName] = useState<string>( '');
     const [citiesList, setCitiesList] = useState<City[]>([...initialList]);
 
     const local = window.local || 'RU';
 
     const getSuggest = async(name: string = ''): Promise<void> => {
-        const { data }: {data:City[]} = await request('/api/city/suggest', 'GET', { params: {
+        const { data }: {data: City[]} = await request('/api/city/suggest', 'GET', { params: {
             name,
             lang: local,
             type: 1,
@@ -41,16 +41,31 @@ function AutocompleteAddress({initialValue, setCityObject, label, initialList = 
         }
     }
 
+    const getCityById = async(): Promise<void> => {
+        const { data }: { data: City } = await request(`/api/city/by-id/${initialValue}`);
+        console.log(data);
+
+        if (typeof data === 'object') {
+            setCitiesList( [data]);
+            setLocalName(data.name)
+        }
+    }
+
     const onFocus = async(): Promise<void> => {
         await getSuggest();
         console.log(citiesList);
     }
 
-
     const changeAddressValue = async (e: ChangeEvent<HTMLInputElement>): Promise<void> => {
         setLocalName(e.target.value);
         await getSuggest(e.target.value);
     }
+
+    useEffect(() => {
+        if (initialValue) {
+            getCityById();
+        }
+    }, [initialValue]);
 
     return  <Autocomplete
         sx={{m: 0, minWidth: 232}}

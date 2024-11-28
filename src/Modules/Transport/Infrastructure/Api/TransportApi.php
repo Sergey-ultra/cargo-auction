@@ -108,8 +108,6 @@ final readonly class TransportApi
         $companyCollection = $this->companyAdapter->getByIds($companyIds);
         $userCollection = $this->userAdapter->getByCompanyIds($companyIds);
 
-
-
         $transports = [];
         /**  @var Transport $item */
         foreach($result->list as $item) {

@@ -1,6 +1,5 @@
-import React, {MutableRefObject, useEffect, useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import Dialog from "@mui/material/Dialog";
-import {useHttp} from "../../../../hooks/api";
 import {Button, CircularProgress, DialogContent} from "@mui/material";
 import {YMaps, Map, Placemark, ObjectManager, ZoomControl} from '@pbe/react-yandex-maps';
 import {coordinates} from "../../LoadFormInner";
@@ -9,21 +8,21 @@ import ymaps, {GeocodeResult, IGeoObject} from "yandex-maps";
 import {useCookie} from "../../../../hooks/cookie";
 
 
-interface MapModalProps {    isOpen: boolean,
+interface MapModalProps {
+    isOpen: boolean,
     onClose: () => void,
     coordinates: coordinates,
-    setCoordinates: (coordinates: coordinates, address: string) => void
+    setCoordinates: (coordinates: coordinates, address: string, administrativeAreas: string[]) => void
 }
 
 export default function MapModal({isOpen, onClose, coordinates, setCoordinates}: MapModalProps) {
     const {getCookie} = useCookie();
     const currentLocal = getCookie('locale') ?? 'en';
 
-    const {request, isLoading, error, status} = useHttp();
-
     //const [isLoading, setIsLoading] = useState<boolean>(true);
     const [map, setMap] = useState<YMapsApi|undefined>(undefined);
     const [address, setAddress] = useState<string>("");
+    const [administrativeAreas, setAdministrativeAreas] = useState<string[]>([]);
     const [localCoordinates, setLocalCoordinates] = useState<coordinates>(coordinates);
 
 
@@ -53,20 +52,21 @@ export default function MapModal({isOpen, onClose, coordinates, setCoordinates}:
         });
         const res: IGeocodeResult = await map.geocode(coordinates);
         const geoObject: GeocodeResult = res.geoObjects.get(0);
+        console.log(geoObject.getAdministrativeAreas());
         setAddress(geoObject.getAddressLine());
-        console.log(geoObject.getCountryCode())
-        //setAddressByCoordinates();
+        setAdministrativeAreas(geoObject.getAdministrativeAreas())
     }
 
     const save = async(): Promise<void> => {
-        await request('/api/city/suggest');
-        setCoordinates(localCoordinates, address);
+        setCoordinates(localCoordinates, address, administrativeAreas);
         onClose();
     }
 
     useEffect( () => {
         setAddressByCoordinates();
     },[map]);
+
+    useEffect(() => setLocalCoordinates(coordinates), [coordinates]);
 
     return(
         <Dialog onClose={onClose} open={isOpen} maxWidth="lg">

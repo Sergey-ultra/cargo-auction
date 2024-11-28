@@ -22,4 +22,12 @@ class CityController extends AbstractController
 
         return $this->json(['data' => $cities]);
     }
+
+    #[Route('/city/by-id/{id}', name: 'city-by-id', requirements: ['id' => '\d+'], methods: ['get'])]
+    public function byId(int $id, CityApi $cityApi): JsonResponse
+    {
+        $city = $cityApi->getCityById($id);
+
+        return $this->json(['data' => $city]);
+    }
 }

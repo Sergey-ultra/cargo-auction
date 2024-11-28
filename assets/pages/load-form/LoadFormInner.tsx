@@ -40,6 +40,7 @@ import MapIcon from "../../components/icons/MapIcon";
 import {BodyOption, Contact, LabelOption, LoadingOption, LoadingType, Option} from "./types";
 import FileConstructor from "../../components/file-upload/src/FileConstructor";
 import {FileStatus} from "../../components/file-upload/src/enums";
+import {FieldValues} from "react-hook-form/dist/types/fields";
 
 export interface coordinates {
     longitude: number,
@@ -203,7 +204,7 @@ function LoadForm() {
                 temperatureTo: null,
             },
             payment: {
-                type:'negotiable',
+                type: 'negotiable',
                 priceWithoutTax: '',
                 priceWithTax: '',
                 priceCash: '',
@@ -243,7 +244,7 @@ function LoadForm() {
     }
 
     const [coordinateFunction, setCoordinatesFunction] = useState<Function>(
-        () => (coordinates: coordinates, address: string) => {}
+        () => (coordinates: coordinates, address: string, administrativeAreas: []): void => {}
     );
 
     const openMapModal = ({coordinates, coordinateFunction}: {coordinates: coordinates, coordinateFunction: Function}): void => {
@@ -252,7 +253,7 @@ function LoadForm() {
             longitude: coordinates.longitude || 37.573856
         };
         setMapCoordinates(startCoordinates);
-        setCoordinatesFunction(() => (coord: coordinates, address: string) => coordinateFunction(coord, address));
+        setCoordinatesFunction(() => (coord: coordinates, address: string, administrativeAreas: string[]) => coordinateFunction(coord, address, administrativeAreas));
         setIsOpenMapModal(true);
     }
 
@@ -324,14 +325,31 @@ function LoadForm() {
         setValue('unloading.location.coordinates.latitude', cityObj.lat);
     }
 
-    const setFromCityCoordinates = (coord: coordinates, address: string): void => {
-         setValue('loading.location.address', address);
+    const setFromCityCoordinates = (coord: coordinates, address: string, administrativeAreas: string[]): void => {
+
+         const addressesParts = address.split(', ');
+
+         const restAddress: string[] = addressesParts.filter((el: string): boolean => !administrativeAreas.includes(el));
+         let addressName: string = '';
+         let cityName = restAddress[0];
+         if (restAddress.length >= 2) {
+             restAddress.shift();
+             addressName = restAddress.join(', ');
+         }
+         const regionName: string = administrativeAreas[0];
+
+         // loading.location.cityId
+         console.log(cityName, restAddress, administrativeAreas);
+
+
+         setValue('loading.location.address', addressName);
          setValue('loading.location.coordinates.longitude', coord.longitude);
          setValue('loading.location.coordinates.latitude', coord.latitude);
     }
 
-    const setToCityCoordinates = (coord: coordinates, address: string): void => {
+    const setToCityCoordinates = (coord: coordinates, address: string, administrativeAreas: string[]): void => {
          setValue('unloading.location.address', address);
+         console.log(address, administrativeAreas);
          setValue('unloading.location.coordinates.longitude', coord.longitude);
          setValue('unloading.location.coordinates.latitude', coord.latitude);
     }
@@ -339,7 +357,7 @@ function LoadForm() {
     const setPriceType = (value: string): void => setValue('payment.type', value);
 
 
-    const saveLoad = async formData => {
+    const saveLoad = async (formData: LoadForm): Promise<void> => {
         formData.loading.cargos.weight = Number.parseFloat(formData.loading.cargos.weight);
         formData.loading.cargos.volume = Number.parseFloat(formData.loading.cargos.volume);
         const { data } = await request('/api/load/create', 'POST', {body: formData});

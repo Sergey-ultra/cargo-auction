@@ -2,32 +2,32 @@ import {useState} from "react";
 
 export interface Filter {
     from: {
-        id: string,
+        id: number|null,
         name: string,
     },
     fromRadius: string,
     to: {
-        id: string,
+        id: number|null,
         name: string,
     },
     toRadius: string,
-    weightMin: string,
-    weightMax: string,
-    volumeMin: string,
-    volumeMax: string,
+    weightMin: number|null,
+    weightMax: number|null,
+    volumeMin: number|null,
+    volumeMax: number|null,
 }
 
 export interface BackendFilter {
-    fromAddressId: string,
+    fromAddressId: number|null,
     fromAddress: string,
     fromRadius: string,
-    toAddressId: string,
+    toAddressId: number|null,
     toAddress: string,
     toRadius: string,
-    weightMin: string,
-    weightMax: string,
-    volumeMin: string,
-    volumeMax: string,
+    weightMin: number|null,
+    weightMax: number|null,
+    volumeMin: number|null,
+    volumeMax: number|null,
     page: number,
     perPage: number,
     orderBy: string
@@ -38,26 +38,26 @@ export interface FilterProvider {
     setFilter: (filter: Filter) => void,
     clearFilter: () => void,
     changeFilterAddresses: () => void,
-    convertToBackendFilter: (page: number, perPage:  number, orderBy: string) => object,
+    convertToBackendFilter: (page: number, perPage:  number, orderBy: string) => BackendFilter,
     convertFromBackendFilter: (backendFilter: BackendFilter) => void,
 }
 
 export const useFilter = () => {
     const initialState: Filter = {
         from: {
-            id: '',
+            id: null,
             name: '',
         },
         fromRadius: '',
         to: {
-            id: '',
+            id: null,
             name: '',
         },
         toRadius: '',
-        weightMin: '',
-        weightMax: '',
-        volumeMin: '',
-        volumeMax: '',
+        weightMin: null,
+        weightMax: null,
+        volumeMin: null,
+        volumeMax: null,
     };
     const [filter, setFilter] = useState<Filter>(initialState);
 

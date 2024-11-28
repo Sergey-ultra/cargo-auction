@@ -10,7 +10,7 @@ import AuthModal from "../../nav/src/AuthModal";
 import Filter from "../../../components/filter/Filter";
 import {FilterContext} from "../../../context/filter.context";
 import {useHandleSelectOptions} from "../../../hooks/handleSelectOptions";
-import {FilterProvider} from "../../../hooks/filter";
+import {BackendFilter, FilterProvider} from "../../../hooks/filter";
 import {isAuthFunc} from "../../../hooks/isAuthFunc";
 import {Option} from "../../load-form/types";
 
@@ -65,7 +65,7 @@ function LoadList(callback, deps) {
     }
 
     const saveFilter = async(name: string): Promise<void> => {
-        const localFilter = convertToBackendFilter(page, perPage, orderBy);
+        const localFilter: BackendFilter = convertToBackendFilter(page, perPage, orderBy);
         const { data } = await request('/api/load-filter', 'POST', { body: {name, filter: localFilter, type: 'load'}});
         if (data.status === 'ok') {
             closeSaveFilterModal();
