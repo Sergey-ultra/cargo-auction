@@ -1,21 +1,23 @@
 <div class="pagination">
     {% if page > 1 %}
-        <a class="page" href="{{ path('cargo.index', {  page: page - 1 }) }}"><</a>
+        <a class="page" href="{{ path('cargo.index', { ...app.request.query.all, page: page - 1 }) }}"><</a>
     {% endif %}
-    {% for i in 1..lastPage %}
-        {% if page == i %}
-            <div class="page active">{{ i }}</div>
-        {% else %}
-            <a class="page" href="{{ path('cargo.index', {  page: i }) }}">{{ i }}</a>
-        {% endif %}
-    {% endfor %}
+    {% if lastPage > 1 %}
+        {% for i in borders[0]..borders[1] %}
+            {% if page == i %}
+                <div class="page active">{{ i }}</div>
+            {% else %}
+                <a class="page" href="{{ path('cargo.index', { ...app.request.query.all, page: i }) }}">{{ i }}</a>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
     {% if page < lastPage %}
-        <a class="page" href="{{ path('cargo.index', {  page: page + 1 }) }}">></a>
+        <a class="page" href="{{ path('cargo.index',  { ...app.request.query.all, page: page + 1 }) }}">></a>
     {% endif %}
 </div>
 <style>
     .pagination {
-        gap: 5px;
+        gap: 3px;
         display: flex;
     }
 </style>

@@ -1,0 +1,21 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Поиск транспорта для грузоперевозки{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+
+    <link href="{{ asset('assets/css/cargo-index.css') }}" rel="stylesheet"/>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {{ encore_entry_script_tags('transportList') }}
+{% endblock %}
+
+{% block body %}
+    <h1>Поиск транспорта для грузоперевозки</h1>
+
+    <a class="add button" href="{{ path('transport.create') }}">Добавить</a>
+    <div id="transportList"></div>
+{% endblock %}

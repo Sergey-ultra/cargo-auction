@@ -1,0 +1,20 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Сообщения{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link href="{{ asset('assets/css/message.css') }}" rel="stylesheet"/>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {{ encore_entry_script_tags('messages') }}
+{% endblock %}
+
+{% block body %}
+    <h1>Сообщения</h1>
+    <div class="messages" id="messages"></div>
+{% endblock %}
+
+

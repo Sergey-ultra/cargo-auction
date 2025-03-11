@@ -11,17 +11,19 @@
      {% endif %}
 
      <form action="{{ path('app_sign_in') }}" method="post">
-         <label for="username">Email:</label>
-         <input type="text" id="username" name="_username" value="{{ last_username }}"/>
-
-         <label for="password">Password:</label>
-         <input type="password" id="password" name="_password"/>
-
+         <div class="form-item">
+             <label for="username" class="control-label">Email:</label>
+             <input type="text" id="username" name="_username" value="{{ last_username }}"/>
+         </div>
+         <div class="form-item">
+             <label for="password" class="control-label">Password:</label>
+             <input type="password" id="password" name="_password"/>
+         </div>
          {# If you want to control the URL the user is redirected to on success
      <input type="hidden" name="_target_path" value="/account"/> #}
 
          <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
 
-         <button type="submit">login</button>
+         <button type="submit" class="button">login</button>
      </form>
 {% endblock %}

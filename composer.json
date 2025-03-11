@@ -11,8 +11,15 @@
         "doctrine/doctrine-bundle": "^2.10",
         "doctrine/doctrine-migrations-bundle": "^3.2",
         "doctrine/orm": "^2.16",
+        "fresh/centrifugo-bundle": "^4.2",
+        "fzaninotto/faker": "^1.5",
+        "hwi/oauth-bundle": "^2.2",
+        "jsor/doctrine-postgis": "^2.2",
+        "lexik/jwt-authentication-bundle": "^2.21",
+        "php-amqplib/rabbitmq-bundle": "^2.14",
         "phpdocumentor/reflection-docblock": "^5.3",
         "phpstan/phpdoc-parser": "^1.24",
+        "sentry/sentry-symfony": "^4.13",
         "symfony/asset": "6.3.*",
         "symfony/console": "6.3.*",
         "symfony/doctrine-messenger": "6.3.*",
@@ -38,10 +45,12 @@
         "symfony/twig-bundle": "6.3.*",
         "symfony/validator": "6.3.*",
         "symfony/web-link": "6.3.*",
+        "symfony/webpack-encore-bundle": "^2.1",
         "symfony/yaml": "6.3.*",
         "symfonycasts/verify-email-bundle": "^1.15",
         "textalk/websocket": "^1.5",
         "twig/extra-bundle": "^2.12|^3.0",
+        "twig/intl-extra": "^3.8",
         "twig/twig": "^2.12|^3.0"
     },
     "config": {
@@ -72,6 +81,7 @@
         "symfony/polyfill-php81": "*"
     },
     "scripts": {
+        "phpstan": "./vendor/bin/phpstan analyse --memory-limit=2G",
         "auto-scripts": {
             "cache:clear": "symfony-cmd",
             "assets:install %PUBLIC_DIR%": "symfony-cmd"
@@ -81,6 +91,12 @@
         ],
         "post-update-cmd": [
             "@auto-scripts"
+        ],
+        "load-fixtures": [
+            "bin/console doctrine:database:drop --if-exists --force",
+            "bin/console doctrine:database:create",
+            "bin/console doctrine:mi:m",
+            "bin/console doctrine:fixtures:load"
         ]
     },
     "conflict": {
@@ -93,7 +109,10 @@
         }
     },
     "require-dev": {
+        "doctrine/doctrine-fixtures-bundle": "*",
+        "phpstan/phpstan": "^1.10",
         "phpunit/phpunit": "^9.5",
+        "qossmic/deptrac-shim": "^1.0",
         "symfony/browser-kit": "6.3.*",
         "symfony/css-selector": "6.3.*",
         "symfony/debug-bundle": "6.3.*",

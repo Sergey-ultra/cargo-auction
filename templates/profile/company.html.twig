@@ -1,0 +1,14 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Главная{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {{ encore_entry_script_tags('myCompany') }}
+{% endblock %}
+
+{% block body %}
+    <h1>Моя компания</h1>
+    <h2>Сведения о компании</h2>
+    <div id="myCompany"></div>
+{% endblock %}

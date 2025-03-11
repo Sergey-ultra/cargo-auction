@@ -1,0 +1,81 @@
+cargoAdding: Добавление груза
+notAuth: Для продолжения необходимо авторизоваться на сайте.
+periodicityDescription: ., затем переместится в архив
+dayShort: дн.
+daily: ежедневно
+workDays: по раб. дням
+placeholder:
+  address: Адрес в населенном пункте
+hideField: Скрыть поле
+chooseDate: Выберите дату
+negotiablePriceType:  Участники увидят, что возможен торг, и смогут предложить свою ставку
+fixPriceType:  Участники смогут предлагать свои услуги только по вашей ставке
+requestPriceType: Участники смогут предложить свою ставку
+auctionPriceType: Участники будут соревноваться, предлагая наиболее выгодную ставку
+canBeOffered: Можно предлагать
+ftl: отдельной машиной (FTL)
+ftlDescription: FTL - от англ. Full Truck Load. Полная загрузка грузового автомобиля
+ltl: отдельной машиной или догрузом (FTL или LTL)
+temperature: Температура
+withVatNonCash:  С НДС, безнал
+withVat: с НДС
+ruble: руб
+withoutVatNonCash: Без НДС, безнал
+withoutVat: без НДС
+counterOffers: Встречные предложения
+cash: Наличными
+onCard: На карту
+visiblyOnlyToYou: Видны только вам
+startingBid: Начальная ставка
+acceptRatesWithoutVAT: Принимать ставки без НДС
+carriersWillBeAbleToChoose: Перевозчики смогут выбрать ставку с НДС или без
+step: Шаг
+rateReduced: На столько уменьшится ставка после отклика перевозчика
+tradesDuration: Длительность Торгов
+contactIndicate: укажите, к кому обратиться по объявлению
+contacts: Контакты
+note: Примечание
+photosOfCargoAndDocuments: Фото груза и документов
+add: Добавить
+delete: Удалить
+photo: Фото
+from: от
+to: до
+label:
+  cargoType: Тип груза
+  volume: Объём (на одну машину)
+  weight: Вес (на одну машину)
+  downloadingDateStatus: Тип загрузки
+  load: Загрузка
+  unloading: Выгрузка
+  downloading: Разгрузка
+  locality: Населеный пункт
+  loadTime: Время загрузки
+  unloadingDateAndTime: Дата и время
+  body: Кузов
+  bid: Ставка
+validation:
+  cargoType: Укажите тип груза
+  volume: Укажите объем
+  weight: Укажите вес
+  downloadingDateStatus: Необходимо ввести тип загрузки
+  downloadingDate: Необходимо ввести дату загрузки
+  fromAddress: Введите адрес населенного пункта загрузки
+  toAddress: Введите адрес населенного пункта разгрузки
+  bid: Укажите хотя бы одну ставку
+block:
+  cargo: Груз
+  when: Когда
+fixedDurations:
+  10m: 10 мин
+  15m: 15 мин
+  30m: 30 мин
+  1h: 1 час
+  2h: 2 часа
+  3h: 3 часа
+  4h: 4 часа
+  6h: 6 часов
+#  countFromFirstBid:
+#    false: с момента публикации
+#    true: с момента первой ставки
+

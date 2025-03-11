@@ -1,0 +1,57 @@
+.contact {
+    display: flex;
+    flex-grow: 1;
+
+    &__inner {
+        width: 100%;
+    }
+
+    &__show {
+        border-radius: 4px;
+        box-sizing: border-box;
+        color: #39444f;
+        display: flex;
+        flex-wrap: wrap;
+        line-height: 16px;
+        padding: 7px 11px 9px;
+        position: relative;
+        width: 100%;
+        background-color: #f1ffe8;
+        box-shadow: 0 1px 2px 0 rgba(0,0,0,.2);
+        margin-bottom: 8px;
+    }
+
+    &__name {
+        margin-right: 8px;
+    }
+
+    &__phone {
+        margin-right: 8px;
+        opacity: .5;
+        color: #39444f;
+        font-size: 12px;
+        line-height: 16px;
+    }
+
+    &__add {
+        width: fit-content;
+        display: block;
+        margin-bottom: 10px;
+        color: #3a7bbf;
+        border-bottom: 1px dashed #478cc8;
+
+        &:hover {
+            cursor: pointer;
+            border-bottom: 1px solid #3a7bbf;
+        }
+    }
+
+    &__description {
+        width: 100%;
+    }
+
+    &__item {
+        width: 100%;
+        max-width: 472px;
+    }
+}

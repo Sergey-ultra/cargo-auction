@@ -1,0 +1,21 @@
+.file {
+    display: flex;
+    align-items: center;
+    padding: 10px 42px 10px 10px;
+    flex-grow: 1;
+    border: dashed #b8b8b8 1px;
+    cursor: pointer;
+    border-radius: 2px;
+    &__description {
+        margin-left: 8px;
+        color: #8c969d;
+        word-break: break-word;
+    }
+    &__input {
+        display:none;
+    }
+    &__button {
+        pointer-events: none;
+    }
+}
+

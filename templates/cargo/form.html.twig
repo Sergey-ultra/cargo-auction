@@ -1,0 +1,132 @@
+{% extends "base.html.twig" %}
+
+{% block title %}{{'form.cargoAdding'|trans}}{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    {{ encore_entry_link_tags('loadForm') }}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {{ encore_entry_script_tags('loadForm') }}
+
+{#    <script type="text/javascript" src="{{ asset('assets/js/address-input.js') }}"></script>#}
+{% endblock %}
+
+{% block body %}
+    <h1>{{'form.cargoAdding'|trans}}</h1>
+
+    <div id="load-form"></div>
+
+    <style>
+        .cTabs {
+            display: inline-flex;
+            flex-wrap: nowrap;
+            margin-right:auto;
+            max-width:100%;
+            overflow-x: auto;
+            border: 1px solid rgba(0,0,0,.2);
+            border-radius: 4px;
+        }
+        .cItem {
+            user-select: none;
+            white-space: nowrap;
+            cursor: pointer;
+            display: inline-block;
+            line-height: 36px;
+            height: 36px;
+            padding: 0 16px;
+        }
+        .cItem:not(:last-child) {
+            border-right: 1px solid rgba(0,0,0,.2);
+        }
+        .cItem-active {
+            background: #ffeb99;
+        }
+        .overlay-box {
+            position: relative;
+        }
+        .overlay-box:after {
+            background: hsla(0,0%,100%,.4);
+            bottom: 0;
+            content: "";
+            left: 0;
+            position: absolute;
+            right: 0;
+            top: 0;
+            z-index: 900;
+        }
+        .alert {
+            background-color: #ffefd9;
+            font-size: 1rem;
+            margin: 0 0 20px;
+            padding: .6666rem 1rem;
+        }
+        #fromAddressSuggest,
+        #toAddressSuggest {
+            position: absolute;
+            display: none;
+            background-color: #fff;
+            border-radius: 8px;
+            color: #000;
+            left: 0;
+            top: 100%;
+            margin-top: 4px;
+            box-shadow: 0 5px 46px #0000001f,0 7px 15px #0000001f;
+            height: 300px;
+            overflow-y: auto;
+            z-index: 3;
+        }
+        .suggest-list {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            list-style-type: none;
+        }
+        .suggest-list li {
+            padding: 8px 15px;
+        }
+        .suggest-list li:hover {
+            background-color: #f4f4f4;
+        }
+        .tab {
+            list-style: none;
+            display: flex;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            height: 32px;
+            line-height: normal;
+            padding: 0;
+            margin-bottom: 10px;
+        }
+    </style>
+{#    <script>#}
+{#        document.getElementById('agreedPriceBlock').onchange = function(e) {#}
+{#            const priceWithoutTax = document.getElementById('priceWithoutTax');#}
+{#            const priceWithTax = document.getElementById('priceWithTax');#}
+{#            if (document.querySelector('input[name="isAgreedPrice"]:checked').value == 'on') {#}
+{#                priceWithoutTax.disabled = false;#}
+{#                priceWithTax.disabled = false;#}
+{#            } else {#}
+{#                priceWithoutTax.disabled = true;#}
+{#                priceWithTax.disabled = true;#}
+{#                priceWithoutTax.value = '';#}
+{#                priceWithTax.value = '';#}
+{#            }#}
+{#        }#}
+
+{#        const fromAddressInput = document.getElementById('fromAddressInput');#}
+{#        const fromAddressSuggest = document.getElementById('fromAddressSuggest');#}
+
+
+{#        const toAddressInput = document.getElementById('toAddressInput');#}
+{#        const toAddressSuggest = document.getElementById('toAddressSuggest');#}
+
+
+{#        fromAddressInput.addEventListener('input', e => handleAddressInput(e, fromAddressInput, fromAddressSuggest));#}
+{#        toAddressInput.addEventListener('input', e => handleAddressInput(e, toAddressInput, toAddressSuggest));#}
+
+
+{#    </script>#}
+{% endblock %}

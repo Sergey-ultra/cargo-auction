@@ -1,0 +1,77 @@
+cargoAdding: Add cargo
+notAuth: To continue, you must log in to the site.
+periodicityDescription: ., then moves to the archive
+dayShort: d.
+daily: daily
+workDays: on work days
+placeholder:
+  address: Address in the locality
+hideField: Hide field
+chooseDate: Choose date
+negotiablePriceType:  Participants will see that bargaining is possible and will be able to offer their bid
+fixPriceType:  Participants will only be able to offer their services at your rate
+requestPriceType: Participants will be able to offer their bid
+auctionPriceType: Participants will compete to offer the best bid
+canBeOffered: Can be offered
+ftl: separate machine (FTL)
+ftlDescription: FTL - Full Truck Load
+ltl: separate vehicle or extra load (FTL or LTL)
+temperature: Temperature
+withVatNonCash:  With VAT, non-cash
+withVat: With VAT
+ruble: ruble
+withoutVatNonCash: Without VAT, non-cash
+withoutVat: Without VAT
+counterOffers: Counter offers
+cash: Cash
+onCard: On card
+visiblyOnlyToYou: Visibly Only To You
+startingBid: Starting Bid
+acceptRatesWithoutVAT: Accept Rates Without VAT
+carriersWillBeAbleToChoose: Carriers will be able to choose a rate with or without VAT
+step: Step
+rateReduced: The rate will be reduced by this amount after the carrier’s response
+tradesDuration: Duration of Trades
+contactIndicate: indicate who to contact regarding the ad
+contacts: Contacts
+note: Note
+photosOfCargoAndDocuments: Photos Of Cargo And Documents
+add: Add
+delete: Delete
+photo: Photo
+from: from
+to: to
+label:
+  cargoType: Cargo type
+  volume: Volume (per car)
+  weight: Weight (per car)
+  downloadingDateStatus: Downloading Date Status
+  load: Load
+  unloading: Unloading
+  downloading: Downloading
+  locality: Locality
+  loadTime: Load time
+  unloadingDateAndTime: Unloading Date And Time
+  body: Body
+  bid: Bid
+validation:
+  cargoType: Specify the type of cargo
+  volume: Specify volume
+  weight: Specify weight
+  downloadingDateStatus: You must enter a download type
+  downloadingDate: You must enter a download date
+  fromAddress: Enter the address of the loading location
+  toAddress: Enter the address of the unloading location
+  bid: Please enter at least one bid
+block:
+  cargo: Cargo
+  when: When
+fixedDurations:
+  10m: 10 min
+  15m: 15 min
+  30m: 30 min
+  1h: 1 hour
+  2h: 2 hour
+  3h: 3 hour
+  4h: 4 hour
+  6h: 6 hour

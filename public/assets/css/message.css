@@ -1,0 +1,116 @@
+.messages {
+    max-height: 903px;
+    background: #f1f1f1;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    position: relative;
+
+}
+.sidebar {
+    border-right: 1px solid #ccc;
+    flex-basis: 360px;
+    flex-shrink: 0;
+    flex-grow: 0;
+}
+.message__tabs {
+    height: 40px;
+    display: flex;
+    justify-content: space-between;
+}
+.messages__chatList {
+    height: 409px;
+    display: flex;
+    flex-direction: column;
+    /*height: 100%;*/
+    width: 360px;
+    max-height: 903px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+.message__chatLink {
+    padding: 10px;
+    min-height: 85px;
+    width: 100%;
+    display: flex;
+    border-bottom: 1px solid #ccc;
+    background-color: #fff;
+    justify-content: space-between;
+}
+.message__chatLink:hover {
+    background-color: #e8f4ff;
+}
+.message__chatLink-active {
+    background-color: #e8f4ff;
+}
+.message__chatAvatar {
+    margin: 12px 0 12px 12px;
+    height: 60px;
+    width: 60px;
+}
+.message__chatHeader {
+    display: flex;
+    line-height: 24px;
+}
+.message__chatName {
+    font-size: 14px;
+    font-weight: 800;
+    margin-bottom: 4px;
+    width: 100%;
+    max-height: 20px;
+    cursor: pointer;
+}
+.message__container {
+    width: 100%;
+    background: #ffffff;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+}
+.container__headerMain {
+    background-color: #fff;
+    padding: 12px 25px 12px 16px;
+    border-bottom: 1px solid #ccc;
+    max-height: 66px;
+}
+.container__headerHeader {
+    display: flex;
+    justify-content: space-between;
+    height: 42px;
+    align-items: center;
+}
+.message__input {
+    margin-top: auto;
+    background: #f1f1f1;
+    flex-grow: 0;
+    flex-shrink: 0;
+    max-height: 300px;
+    z-index: 1;
+}
+.message__inputContent {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 19px 12px 19.5px;
+}
+.message__input-text {
+    width: 100%;
+}
+.message__dialog {
+    padding: 10px;
+}
+.message {
+    margin-bottom: 10px;
+    border-radius: 8px;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+}
+.message-green {
+    background-color: #dcf6dd;
+}
+.message-red {
+    background-color: #f1eff0;
+}
+
+

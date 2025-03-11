@@ -7,6 +7,8 @@ doctrine:
         #server_version: '15'
 
         profiling_collect_backtrace: '%kernel.debug%'
+        types:
+            point: App\Types\PointType
     orm:
         auto_generate_proxy_classes: true
         enable_lazy_ghost_objects: true
@@ -14,18 +16,55 @@ doctrine:
         validate_xml_mapping: true
         naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
         auto_mapping: true
+        dql:
+            string_functions:
+                ST_DWithin: 'Jsor\Doctrine\PostGIS\Functions\ST_DWithin'
+                ST_MakePoint: 'Jsor\Doctrine\PostGIS\Functions\ST_MakePoint'
+                ST_SetSRID: 'Jsor\Doctrine\PostGIS\Functions\ST_SetSRID'
+                ST_Point: 'Jsor\Doctrine\PostGIS\Functions\ST_Point'
+                ST_DistanceSphere: 'Jsor\Doctrine\PostGIS\Functions\ST_DistanceSphere'
+                ST_Distance: 'Jsor\Doctrine\PostGIS\Functions\ST_Distance'
+
         mappings:
-            App:
+            Chat:
                 type: attribute
                 is_bundle: false
-                dir: '%kernel.project_dir%/src/Entity'
-                prefix: 'App\Entity'
-                alias: App
-            WebSocket:
-                dir: '%kernel.project_dir%/src/WebSocket/Entity'
+                dir: '%kernel.project_dir%/src/Modules/Chat/Domain/Entity'
+                prefix: 'App\Modules\Chat\Domain\Entity'
+                alias: Chat
+            City:
+                type: attribute
                 is_bundle: false
-                prefix: App\WebSocket\Entity
-                alias: WebSocket
+                dir: '%kernel.project_dir%/src/Modules/City/Domain/Entity'
+                prefix: 'App\Modules\City\Domain\Entity'
+                alias: City
+            Company:
+                type: attribute
+                is_bundle: false
+                dir: '%kernel.project_dir%/src/Modules/Company/Domain/Entity'
+                prefix: 'App\Modules\Company\Domain\Entity'
+                alias: Company
+            Filter:
+                type: attribute
+                is_bundle: false
+                dir: '%kernel.project_dir%/src/Modules/Filter/Domain/Entity'
+                prefix: 'App\Modules\Filter\Domain\Entity'
+                alias: Filter
+            Load:
+                dir: '%kernel.project_dir%/src/Modules/Load/Domain/Entity'
+                is_bundle: false
+                prefix: 'App\Modules\Load\Domain\Entity'
+                alias: Load
+            Transport:
+                dir: '%kernel.project_dir%/src/Modules/Transport/Domain/Entity'
+                is_bundle: false
+                prefix: 'App\Modules\Transport\Domain\Entity'
+                alias: Transport
+            User:
+                dir: '%kernel.project_dir%/src/Modules/User/Domain/Entity'
+                is_bundle: false
+                prefix: 'App\Modules\User\Domain\Entity'
+                alias: User
 
 when@test:
     doctrine:

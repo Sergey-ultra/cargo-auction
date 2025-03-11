@@ -20,13 +20,17 @@ final class Version20231210095758 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
+        $this->addSql('ALTER TABLE "user" ADD name VARCHAR(255) NOT NULL');
         $this->addSql('ALTER TABLE "user" ADD is_verified BOOLEAN NOT NULL');
+        $this->addSql('ALTER TABLE "user" ADD company_id INT DEFAULT NULL');
     }
 
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
         $this->addSql('CREATE SCHEMA public');
+        $this->addSql('ALTER TABLE "user" DROP name');
         $this->addSql('ALTER TABLE "user" DROP is_verified');
+        $this->addSql('ALTER TABLE "user" DROP company_id');
     }
 }

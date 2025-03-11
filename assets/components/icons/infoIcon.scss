@@ -1,0 +1,30 @@
+.question {
+    display: inline-flex;
+    align-self: center;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    margin-left: 4px;
+    margin-top: 3px;
+    &__button {
+        cursor: pointer;
+        display: inline-flex;
+        background: none;
+        border: none;
+        padding: 0;
+        &:hover {
+            & .question__tooltip {
+                display: none;
+            }
+            & .question__tooltip-active {
+                display: inline-flex;
+            }
+        }
+    }
+    &__tooltip {
+        display: inline-flex;
+        &-active {
+            display: none;
+        }
+    }
+}

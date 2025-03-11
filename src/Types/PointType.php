@@ -17,16 +17,18 @@ class PointType extends Type
         return self::POINT;
     }
 
-    public function getSQLDeclaration(array $column, AbstractPlatform $platform)
+    public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
     {
-        return 'POINT';
+        return 'geography(POINT, 4326)';
     }
 
-    public function convertToPHPValue($value, AbstractPlatform $platform)
+    public function convertToPHPValue($value, AbstractPlatform $platform): ?Point
     {
-        list($longitude, $latitude) = sscanf($value, 'POINT(%f %f)');
-
-        return new Point($latitude, $longitude);
+        if ($value) {
+            list($longitude, $latitude) = sscanf($value, 'POINT(%f %f)');
+            return new Point($latitude, $longitude);
+        }
+        return null;
     }
 
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
@@ -45,11 +47,11 @@ class PointType extends Type
 
     public function convertToPHPValueSQL($sqlExpr, $platform): string
     {
-        return sprintf('AsText(%s)', $sqlExpr);
+        return sprintf('ST_AsText(%s)', $sqlExpr);
     }
 
     public function convertToDatabaseValueSQL($sqlExpr, AbstractPlatform $platform): string
     {
-        return sprintf('PointFromText(%s)', $sqlExpr);
+        return sprintf('ST_SetSRID(ST_PointFromText(%s), 4326)', $sqlExpr);
     }
 }

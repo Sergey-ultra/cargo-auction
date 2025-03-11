@@ -1,0 +1,21 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Главная{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    {{ encore_entry_link_tags('loadList') }}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {{ encore_entry_script_tags('loadList') }}
+{% endblock %}
+
+{% block body %}
+    <h1>Поиск грузов</h1>
+
+    <a class="add button" href="{{ path('cargo.create') }}">{{ 'Добавить'|trans }}</a>
+
+   <div id="loadList"></div>
+{% endblock %}

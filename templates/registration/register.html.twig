@@ -1,23 +1,44 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Register{% endblock %}
+{% block title %}Регистрация{% endblock %}
 
 {% block body %}
     {% for flash_error in app.flashes('verify_email_error') %}
         <div class="alert alert-danger" role="alert">{{ flash_error }}</div>
     {% endfor %}
 
-    <h1>Register</h1>
+    <h1>Регистрация</h1>
 
     {{ form_errors(registrationForm) }}
 
     {{ form_start(registrationForm) }}
-        {{ form_row(registrationForm.email) }}
-        {{ form_row(registrationForm.plainPassword, {
-            label: 'Password'
-        }) }}
-        {{ form_row(registrationForm.agreeTerms) }}
+        <div class="form-item">
+            {{ form_label(registrationForm.name, 'Имя', { 'label_attr': {'class': 'control-label'} }) }}
+            {{ form_widget(registrationForm.name) }}
+        </div>
 
-        <button type="submit" class="btn">Register</button>
+        <div class="form-item">
+            {{ form_label(registrationForm.email, 'Email', { 'label_attr': {'class': 'control-label'} }) }}
+            {{ form_widget(registrationForm.email) }}
+        </div>
+
+        <div class="form-item">
+            {{ form_label(registrationForm.plainPassword, 'Пароль', { 'label_attr': {'class': 'control-label'} }) }}
+            {{ form_widget(registrationForm.plainPassword, {
+                label: 'Password',
+                attr: {class: 'foo'}
+            }) }}
+        </div>
+
+        <div class="form-item">
+            {{ form_label(registrationForm.role, 'Роль', { 'label_attr': {'class': 'control-label'} }) }}
+            {{ form_widget(registrationForm.role) }}
+        </div>
+        <div>
+            Нажимая кнопку «Продолжить», вы принимаете условия
+            <a href="{{ path('agreement') }}">Пользовательского соглашения</a>
+        </div>
+
+        <button type="submit" class="btn button">Регистрация</button>
     {{ form_end(registrationForm) }}
 {% endblock %}

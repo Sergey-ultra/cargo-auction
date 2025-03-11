@@ -1,0 +1,13 @@
+{
+  "allowed_origins": ["*"],
+  "token_hmac_secret_key": "6fed528602bc0ad56d248e73a19da0bd",
+  "api_key": "e68297361e30afea9eeb4daedcba1b7a",
+  "port": 8000,
+  "admin": true,
+  "engine": "memory",
+  "admin_password": "guest",
+  "admin_secret": "guest",
+  "allow_subscribe_for_client": true,
+  "token_audience": "centrifugo",
+  "token_rsa_public_key": "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwdG040YcLpXDx9RCTcZl\nlle/5vDFLZfBSqVP3kc5RqtmzppYAbVdxvFyixmWW2ICpNS0cNSu2PUwK/O1I+fY\nMBYZjL4/pnoWYASGLMqmlbfSSFqbGMnGp4Zih39vmSVoL8vVTmRqlJm7kVTfTNdB\nM2u92bnULcrkNjvV0MPRBcittZV/i//DHkcpprKPInSPzOPptsOhs30sPMxqH8Tm\nitGKpbC6zre6LYFvU1m2npOu8ZdKCG+vsT4sWeIlsCmYrOvxEEGW09rJidkkaLra\n0m2rakEAlXUwhHfCHTVccrTxbSHRO/zCvGBeW4vohEd4HVo72x/0p/k66cqIQ8hP\nCQIDAQAB\n-----END PUBLIC KEY-----"
+}
